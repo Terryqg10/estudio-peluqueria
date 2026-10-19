@@ -6,3 +6,10 @@
      v1-soft-commerce, v2-immersive-3d, v3-editorial-dark, v4-dense-workspace.
    Al instanciar con Copier se deja la del estilo elegido; ver
    design/styles/index.md y sdd/plans/PLAN-xxx.md. */
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}

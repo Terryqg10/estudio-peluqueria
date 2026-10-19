@@ -1,7 +1,7 @@
 ---
 id: SPEC-001-peluqueria-reservas
 title: Web de peluquería de mujer con reserva en tiempo real y chatbot de reglas
-status: borrador
+status: aprobada
 rigor_level: L
 created: 2026-10-19
 updated: 2026-10-19

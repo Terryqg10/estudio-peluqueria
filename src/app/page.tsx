@@ -1,12 +1,15 @@
+import { SITE } from '@/lib/site';
+
 export default function Home() {
   return (
-    <main className="mx-auto max-w-prose p-8">
-      <h1 className="text-display font-semibold">Proyecto web-os</h1>
-      <p className="mt-4 text-fg-muted">
-        Edita <code className="text-accent-text">src/app/page.tsx</code> para
-        empezar. Antes de tocar UI, lee <code>design/styles/index.md</code> y
-        pregunta con qué estilo trabajar.
+    <section className="mx-auto w-full max-w-6xl px-(--layout-gutter) py-16 sm:py-24">
+      <p className="text-accent-text">{SITE.tagline}</p>
+      <h1 className="mt-3 max-w-3xl text-display font-semibold">
+        Tu cabello, en las mejores manos
+      </h1>
+      <p className="mt-6 max-w-prose text-lg text-fg-muted">
+        Precios claros y reserva online con la disponibilidad real de cada estilista.
       </p>
-    </main>
+    </section>
   );
 }
