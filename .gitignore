@@ -38,3 +38,6 @@ backups/
 # Generado por Next.js
 /next-env.d.ts
 /AGENTS.md
+
+# Informes de Lighthouse (se regeneran; ~1 MB cada uno)
+sdd/reviews/evidencias/**/lighthouse-*.json

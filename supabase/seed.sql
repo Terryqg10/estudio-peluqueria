@@ -19,6 +19,26 @@ insert into public.services (category, name, price_from_cents, duration_min, sor
   ('Tratamientos',    'Tratamiento de keratina',   9000, 150, 70),
   ('Tratamientos',    'Tratamiento hidratante',    1800,  30, 80);
 
+-- Qué servicios hace cada estilista (ADR-0014), con solapes para que elegir importe. -- VERIFICAR: ficticio
+insert into public.stylist_services (stylist_id, service_id)
+select st.id, sv.id
+from (values
+  ('Lucía Marín',   'Corte mujer'),
+  ('Lucía Marín',   'Color'),
+  ('Lucía Marín',   'Mechas'),
+  ('Lucía Marín',   'Balayage'),
+  ('Carmen Ortega', 'Corte mujer'),
+  ('Carmen Ortega', 'Peinado'),
+  ('Carmen Ortega', 'Peinado de evento'),
+  ('Carmen Ortega', 'Color'),
+  ('Irene Solís',   'Peinado'),
+  ('Irene Solís',   'Peinado de evento'),
+  ('Irene Solís',   'Tratamiento de keratina'),
+  ('Irene Solís',   'Tratamiento hidratante')
+) as m (stylist_name, service_name)
+join public.stylists st on st.name = m.stylist_name
+join public.services sv on sv.name = m.service_name;
+
 -- Horario del salón. weekday ISO: 1 = lunes ... 7 = domingo. -- VERIFICAR
 insert into public.salon_hours (weekday, opens, closes) values
   (1, '10:00', '20:00'),

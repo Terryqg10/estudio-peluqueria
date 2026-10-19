@@ -128,6 +128,31 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"stylist_services": {
+                  Row: {
+                    "service_id": string,"stylist_id": string
+                  }
+                  Insert: {
+                    "service_id": string,"stylist_id": string
+                  }
+                  Update: {
+                    "service_id"?: string,"stylist_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "stylist_services_service_id_fkey"
+      columns: ["service_id"]
+isOneToOne: false
+      referencedRelation: "services"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "stylist_services_stylist_id_fkey"
+      columns: ["stylist_id"]
+isOneToOne: false
+      referencedRelation: "stylists"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"stylists": {
                   Row: {
                     "active": boolean,"bio": string | null,"created_at": string,"id": string,"name": string,"specialty": string | null
@@ -169,6 +194,11 @@ isOneToOne: false
             "cancel_guest_appointment":
 { Args: { "p_token": string }; Returns: {
               "id": string,"status": Database["public"]['Enums']["appointment_status"]
+            }[]
+                           },
+"get_availability":
+{ Args: { "p_date": string,"p_service_id": string,"p_stylist_id"?: string }; Returns: {
+              "starts_at": string,"stylist_id": string
             }[]
                            },
 "get_guest_appointment":

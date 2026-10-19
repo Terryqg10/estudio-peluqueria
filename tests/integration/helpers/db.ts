@@ -152,7 +152,49 @@ export async function addTimeBlock(stylistId: string, start: Date, minutes: numb
   return data.id;
 }
 
+export async function offerService(stylistId: string, serviceId: string): Promise<void> {
+  const { error } = await service
+    .from('stylist_services')
+    .insert({ stylist_id: stylistId, service_id: serviceId });
+  if (error) throw new Error(`offerService: ${error.message}`);
+}
+
+// Horario semanal de una estilista (se borra con la estilista, por cascade).
+export async function setSchedule(
+  stylistId: string,
+  weekday: number,
+  starts: string,
+  ends: string,
+): Promise<void> {
+  const { error } = await service
+    .from('stylist_schedule')
+    .insert({ stylist_id: stylistId, weekday, starts, ends });
+  if (error) throw new Error(`setSchedule: ${error.message}`);
+}
+
+const createdSalonHours: string[] = [];
+
+// Horario del salón para un día que la semilla no cubre (p. ej. el domingo, 7).
+export async function ensureSalonHours(weekday: number, opens: string, closes: string): Promise<void> {
+  const { data } = await service
+    .from('salon_hours')
+    .select('id')
+    .eq('weekday', weekday)
+    .eq('opens', opens)
+    .maybeSingle();
+  if (data) return;
+  const inserted = await service
+    .from('salon_hours')
+    .insert({ weekday, opens, closes })
+    .select('id')
+    .single();
+  if (inserted.error) throw new Error(`ensureSalonHours: ${inserted.error.message}`);
+  createdSalonHours.push(inserted.data.id);
+}
+
 export async function cleanup(): Promise<void> {
+  if (createdSalonHours.length) await service.from('salon_hours').delete().in('id', createdSalonHours);
+  createdSalonHours.length = 0;
   if (createdAppointments.length) await service.from('appointments').delete().in('id', createdAppointments);
   if (createdBlocks.length) await service.from('time_blocks').delete().in('id', createdBlocks);
   if (createdStylists.length) await service.from('stylists').delete().in('id', createdStylists);
