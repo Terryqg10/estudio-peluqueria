@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import process from 'node:process';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = path.join(ROOT, 'src', 'lib', 'db', 'types.generated.ts');
+const OUT = path.join(ROOT, 'src', 'lib', 'database.types.ts');
 const HEADER = '// AUTOGENERADO por `pnpm run db:types`. NO editar a mano.\n// Regenerar tras cada migración.\n\n';
 
 function error(m) { process.stderr.write(`[db-types] x ${m}\n`); }

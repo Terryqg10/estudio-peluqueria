@@ -1,0 +1,166 @@
+import { spawnSync } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { z } from 'zod';
+import type { Database } from '@/lib/database.types';
+
+export type Db = SupabaseClient<Database>;
+type AppointmentInsert = Database['public']['Tables']['appointments']['Insert'];
+
+const EnvSchema = z.object({
+  API_URL: z.string().url(),
+  ANON_KEY: z.string().min(1),
+  SERVICE_ROLE_KEY: z.string().min(1),
+});
+
+// En local se leen de `supabase status`; en CI pueden venir de variables de entorno.
+function readEnv() {
+  const fromEnv = {
+    API_URL: process.env.SUPABASE_URL,
+    ANON_KEY: process.env.SUPABASE_ANON_KEY,
+    SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  };
+  const direct = EnvSchema.safeParse(fromEnv);
+  if (direct.success) return direct.data;
+
+  const result = spawnSync('supabase', ['status', '-o', 'json'], { encoding: 'utf8' });
+  if (result.status !== 0) {
+    throw new Error(
+      'No se pudo obtener la configuración de Supabase local. ¿Está corriendo `supabase start`?',
+    );
+  }
+  return EnvSchema.parse(JSON.parse(result.stdout));
+}
+
+const env = readEnv();
+
+const clientOptions = { auth: { persistSession: false, autoRefreshToken: false } } as const;
+
+export function anonClient(): Db {
+  return createClient<Database>(env.API_URL, env.ANON_KEY, clientOptions);
+}
+
+export const service: Db = createClient<Database>(env.API_URL, env.SERVICE_ROLE_KEY, clientOptions);
+
+export type TestUser = { id: string; email: string; client: Db };
+
+const createdUsers: string[] = [];
+const createdStylists: string[] = [];
+const createdServices: string[] = [];
+const createdBlocks: string[] = [];
+const createdAppointments: string[] = [];
+
+export async function createUser(prefix: string): Promise<TestUser> {
+  const email = `${prefix}-${randomUUID()}@test.invalid`;
+  const password = randomUUID();
+  const { data, error } = await service.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+  });
+  if (error || !data.user) throw new Error(`createUser: ${error?.message ?? 'sin usuario'}`);
+  createdUsers.push(data.user.id);
+
+  const client = anonClient();
+  const signed = await client.auth.signInWithPassword({ email, password });
+  if (signed.error) throw new Error(`signIn: ${signed.error.message}`);
+  return { id: data.user.id, email, client };
+}
+
+export async function createAdmin(): Promise<TestUser> {
+  const user = await createUser('admin');
+  const { error } = await service.from('profiles').update({ role: 'admin' }).eq('id', user.id);
+  if (error) throw new Error(`createAdmin: ${error.message}`);
+  return user;
+}
+
+export async function createStylist(name = 'Estilista de prueba'): Promise<string> {
+  const { data, error } = await service.from('stylists').insert({ name }).select('id').single();
+  if (error) throw new Error(`createStylist: ${error.message}`);
+  createdStylists.push(data.id);
+  return data.id;
+}
+
+export async function createService(durationMin = 60): Promise<string> {
+  const { data, error } = await service
+    .from('services')
+    .insert({
+      category: 'Prueba',
+      name: `Servicio de prueba ${randomUUID()}`,
+      price_from_cents: 1000,
+      duration_min: durationMin,
+    })
+    .select('id')
+    .single();
+  if (error) throw new Error(`createService: ${error.message}`);
+  createdServices.push(data.id);
+  return data.id;
+}
+
+export function range(start: Date, minutes: number): string {
+  const end = new Date(start.getTime() + minutes * 60_000);
+  return `[${start.toISOString()},${end.toISOString()})`;
+}
+
+export function daysFromNow(days: number, hour = 10): Date {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() + days);
+  d.setUTCHours(hour, 0, 0, 0);
+  return d;
+}
+
+type NewAppointment = {
+  stylistId: string;
+  serviceId: string;
+  start: Date;
+  minutes?: number;
+  status?: Database['public']['Enums']['appointment_status'];
+  userId?: string;
+};
+
+// Inserta con service_role (la reserva real llegará en T-005). Devuelve el error
+// en lugar de lanzarlo para poder comprobar los rechazos de la BD.
+export async function insertAppointment(a: NewAppointment) {
+  const owner: Pick<AppointmentInsert, 'user_id' | 'guest_name' | 'guest_email' | 'guest_phone'> =
+    a.userId
+      ? { user_id: a.userId }
+      : {
+          guest_name: 'Invitada de prueba',
+          guest_email: 'invitada@test.invalid',
+          guest_phone: '+34600000000',
+        };
+  const row: AppointmentInsert = {
+    stylist_id: a.stylistId,
+    service_id: a.serviceId,
+    during: range(a.start, a.minutes ?? 60),
+    status: a.status ?? 'confirmed',
+    ...owner,
+  };
+  const result = await service.from('appointments').insert(row).select('id').single();
+  if (result.data) createdAppointments.push(result.data.id);
+  return result;
+}
+
+export async function addTimeBlock(stylistId: string, start: Date, minutes: number) {
+  const { data, error } = await service
+    .from('time_blocks')
+    .insert({ stylist_id: stylistId, during: range(start, minutes), kind: 'block' })
+    .select('id')
+    .single();
+  if (error) throw new Error(`addTimeBlock: ${error.message}`);
+  createdBlocks.push(data.id);
+  return data.id;
+}
+
+export async function cleanup(): Promise<void> {
+  if (createdAppointments.length) await service.from('appointments').delete().in('id', createdAppointments);
+  if (createdBlocks.length) await service.from('time_blocks').delete().in('id', createdBlocks);
+  if (createdStylists.length) await service.from('stylists').delete().in('id', createdStylists);
+  if (createdServices.length) await service.from('services').delete().in('id', createdServices);
+  for (const id of createdUsers) await service.auth.admin.deleteUser(id);
+  createdAppointments.length = 0;
+  createdBlocks.length = 0;
+  createdStylists.length = 0;
+  createdServices.length = 0;
+  createdUsers.length = 0;
+}
