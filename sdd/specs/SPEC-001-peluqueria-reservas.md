@@ -240,4 +240,16 @@ pasa por un módulo en `src/lib/<proveedor>/`; nunca desde un componente.
 | Fecha | ADR | Enmienda |
 |---|---|---|
 | 2026-10-19 | ADR-0010 | Sección 7: los estados se almacenan en inglés (`confirmed`, `completed`, `cancelled`, `no_show`) y se añade `pending` al enum, persistido pero sin uso actual (la reserva nace en `confirmed`). La interfaz muestra las etiquetas en español. Los CA no cambian |
+| 2026-10-19 | ADR-0011 | Se añade el requisito no funcional **RNF-13** y los criterios **CA-36** y **CA-37** (ver abajo). No cambia ningún requisito ni CA existente |
 | 2026-10-19 | ADR-0009 | Sección 8: se concreta el mecanismo del token de gestión (256 bits, solo hash, acceso por funciones `security definer`). No cambia ningún requisito ni CA |
+
+### Anexo de la enmienda ADR-0011
+
+| ID | Requisito |
+|---|---|
+| RNF-13 | **Imágenes responsive.** Toda imagen de contenido usa `next/image` con `alt`, dimensiones o relación de aspecto reservadas (CLS ≤ 0,1), `sizes` explícito y formatos AVIF/WebP. El hero tiene composición propia en móvil. Solo la imagen LCP lleva prioridad alta. Ninguna imagen se sale del viewport entre 320 y 1280 px. Presupuestos de peso según el plan, sección 5a |
+
+| ID | RF | Dado | Cuando | Entonces | Verificación |
+|---|---|---|---|---|---|
+| CA-36 | RNF-13 | Cada página pública con imágenes | Se recorren sus `<img>` entre 320 y 1280 px | Cada imagen tiene `alt` (vacío solo si es decorativa), dimensiones o `aspect-ratio`, `srcset` y `sizes`, y ninguna desborda el viewport | e2e `imagenes-responsive` |
+| CA-37 | RF-12, RNF-06 | Lista única de páginas públicas | Se ejecuta el barrido de 18 anchos | Se recorren todas las páginas de la lista, no solo `/`, y una página nueva se cubre al añadirla a la lista | `tests/responsive.spec.ts` parametrizado por rutas |

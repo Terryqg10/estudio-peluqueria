@@ -10,7 +10,7 @@ palette:
   approved_by: user
   checked: "check-palette OK, 2026-10-19 (14 tokens, 20 pares)"
 deploy: vercel
-status: borrador
+status: aprobada
 created: 2026-10-19
 updated: 2026-10-19
 ---
@@ -146,6 +146,22 @@ Supabase Auth con enlace OTP. Se decide con ADR-A antes de implementar.
 Transparencia: las imágenes antes/después son generadas con IA y se declara
 en el README y en la ficha del portfolio; no se presentan como clientas
 reales.
+
+### Imágenes responsive (RNF-13, ADR-0011)
+
+Toda imagen de contenido cumple, sin excepciones:
+
+| Regla | Detalle |
+|---|---|
+| Componente | `next/image`, que genera `srcset` y formatos AVIF/WebP. Nunca `<img>` suelto, salvo el `<img>` de la imagen LCP del hero (ver notas técnicas) |
+| Dimensiones | `width` y `height`, o `fill` dentro de un contenedor con `aspect-ratio` reservado. Objetivo: CLS ≤ 0,1 |
+| `sizes` | Siempre explícito y acorde con el layout (por ejemplo `100vw` en móvil y fracción del contenedor en escritorio). Sin `sizes`, el navegador descarga la más grande |
+| Alt | Obligatorio. Decorativas: `alt=""` |
+| Hero | Composición propia en móvil (imagen arriba y texto abajo, como indica v1) y recorte con `object-position` pensado para 320-1280 px. Solo la imagen LCP lleva `fetchPriority="high"` |
+| Galería antes/después | Relación de aspecto fija por par; el par se apila en móvil y va en columnas desde `--bp-md` |
+| Desborde | Ninguna imagen se sale del viewport entre 320 y 1280 px |
+| Peso | Según el presupuesto de la tabla de arriba, medido en móvil |
+| Evidencia | Test e2e `imagenes-responsive` (CA-36) y barrido de 18 anchos sobre todas las páginas (CA-37) |
 
 ### Verificación
 
