@@ -17,6 +17,10 @@ y versionado [SemVer](https://semver.org/lang/es/).
 - T-004: tabla `stylist_services`, función `get_availability` (huecos cada 15 min en
   `Europe/Madrid`, sin solapes ni bloqueos) y aviso de cambio de disponibilidad por Realtime sin
   datos personales; contrato Zod `getAvailability()` y 19 tests nuevos. ADR-0013 y ADR-0014.
+- T-005a: página `/reservar` con selección de servicio, estilista, día (tira de 14 a 60 días) y hora,
+  con disponibilidad en vivo (Realtime y sondeo de respaldo), aviso si otra persona ocupa tu hueco y
+  búsqueda de próximos días. Botón «Reservar» en la cabecera y por servicio en la home. El flujo
+  termina en el resumen; la confirmación llega con T-005b.
 - Registro de imágenes en `docs/imagenes.md` y Lighthouse como devDependency.
 
 ### Cambiado

@@ -178,6 +178,8 @@ Toda imagen de contenido cumple, sin excepciones:
 | Botón flotante del chat también en escritorio | Los FAB de llamar o reservar solo en móvil | No es un FAB de llamar ni de reservar: es la convención de chat de servicios. No tapa contenido esencial y su posición no cambia | Ayuda disponible en cualquier pantalla. Reversible |
 | Reserva con servicio como primer paso (no elegir salón ni fecha) | Cadenas: buscar salón primero | Es un solo salón; el informe señala la fricción de elegir local o fecha antes del servicio | Menos pasos; la clienta que sabe qué quiere llega antes |
 | Precios "desde" visibles | Las webs propias del sector no publican precios | Decisión de diferenciación del informe (hueco frente a marketplaces) | Quita la llamada previa |
+| La reserva (`/reservar`) exige JavaScript | Un formulario de reserva debería degradar sin JS | La selección de hueco depende de disponibilidad en vivo (Realtime y sondeo) y de estado de cliente; un fallback estático mostraría huecos desactualizados. La spec (sección 5) ya lo admite y se avisa con `<noscript>` y enlace a contacto | Disponibilidad siempre actual y feedback inmediato. Reversible: una versión por formulario `GET` sería una tarea aparte |
+| Tira de días con desplazamiento horizontal (carrusel) | Calendario mensual | Coincide con la convención de marketplaces (Fresha, Treatwell) y rinde mejor en 320 px; el desbordamiento es deliberado (`overflow-x-auto` y `data-allow-overflow`) | Menos pasos para elegir día; ventana de 60 días ampliable con «Más fechas» |
 | Sin reseñas hasta que existan verificadas | Reseñas visibles en marketplaces | No se publican reseñas inventadas | Confianza real; se añaden cuando el flujo las genere |
 
 ## 6. Estrategia de tests
