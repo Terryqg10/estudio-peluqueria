@@ -238,8 +238,13 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | **T-001** | Base de la interfaz: tokens, layout, cabecera sticky, navegación y menú móvil, pie, chatbot no incluido | CA-31 a CA-34 |
 | T-002 | Supabase local, esquema, RLS, semilla y tipos | base de CA-09, CA-12, CA-17 |
 | T-003 | Servicios y home (hero, contacto) | CA-01, CA-03, CA-04 |
-| T-004 | Disponibilidad (función y UI) | CA-06, CA-07 |
-| T-005 | Reserva con restricción anti-solape | CA-05, CA-08, CA-09, CA-10 |
+| T-004 | Disponibilidad: `stylist_services`, `get_availability` y señal en tiempo real (capa de datos y contrato de servidor). ADR-0013, ADR-0014 | CA-06; infraestructura de CA-07 |
+| T-005a | Selección de hueco en `/reservar`: servicio → estilista → día y hora, suscripción al canal `availability` con sondeo de respaldo, y botón «Reservar» por servicio (UI) | CA-05, CA-07, cierre de CA-01 |
+| T-005b | Reserva transaccional: datos de la invitada, confirmación y restricción anti-solape | CA-08, CA-10 (y CA-09 ya en T-002) |
+
+> Nota (2026-10-20): la antigua T-005 se divide en T-005a y T-005b, y la antigua «T-004 función y UI»
+> se reparte entre T-004 (datos) y T-005a (interfaz), para no mezclar capas. Se conserva la
+> numeración posterior para no romper las referencias de ADRs y reviews.
 | T-006 | Email, enlace de gestión y cancelación/cambio | CA-11, CA-13, CA-14, CA-30 |
 | T-007 | Cuenta de clienta y «mis citas» | CA-12 |
 | T-008 | Panel Admin: agenda y citas | CA-15, CA-16, CA-17 |
