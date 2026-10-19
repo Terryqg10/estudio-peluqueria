@@ -2,6 +2,7 @@ export const ROUTES = {
   home: '/',
   contacto: '/contacto',
   reservar: '/reservar',
+  reservarConfirmada: '/reservar/confirmada',
   avisoLegal: '/aviso-legal',
   privacidad: '/privacidad',
 } as const;

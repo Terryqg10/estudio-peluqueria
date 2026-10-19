@@ -1,11 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { MAX_DAYS_AHEAD, daysBetween, formatLongDate } from '@/lib/booking/dates';
+import type { AvailabilitySlot } from '@/lib/availability/schema';
+import { MAX_DAYS_AHEAD, daysBetween, formatLongDate, formatSlotTime } from '@/lib/booking/dates';
 import { groupSlotsByStart, pickStylist, type TimeOption } from '@/lib/booking/slots';
 import type { BookingData } from '@/lib/booking/types';
 import { useLiveAvailability } from '@/lib/booking/use-live-availability';
 import { formatPriceFrom } from '@/lib/services/catalog';
+import { BookingForm, EMPTY_CONTACT, type ContactValues } from './booking-form';
 import { DAY_STRIP_STEP, DayStrip } from './day-strip';
 import { NextDays } from './next-days';
 import { ServicePicker } from './service-picker';
@@ -28,6 +30,10 @@ export function BookingFlow({ data, today, initialServiceId }: Props) {
   const [date, setDate] = useState(today);
   const [daysShown, setDaysShown] = useState(DAY_STRIP_STEP);
   const [selection, setSelection] = useState<Selection | null>(null);
+  // Datos de contacto y alternativas viven aquí: si el hueco se ocupa y el formulario se oculta,
+  // lo tecleado no se pierde.
+  const [contact, setContact] = useState<ContactValues>(EMPTY_CONTACT);
+  const [alternatives, setAlternatives] = useState<AvailabilitySlot[] | null>(null);
 
   const service = data.services.find((s) => s.id === serviceId) ?? null;
   const offeredIds = useMemo(
@@ -57,11 +63,13 @@ export function BookingFlow({ data, today, initialServiceId }: Props) {
     const offered = data.offers[id] ?? [];
     if (stylistChoice !== 'any' && !offered.includes(stylistChoice)) setStylistChoice('any');
     setSelection(null);
+    setAlternatives(null);
   }
 
   function chooseStylist(id: string) {
     setStylistChoice(id);
     setSelection(null);
+    setAlternatives(null);
   }
 
   function chooseDate(next: string) {
@@ -69,11 +77,29 @@ export function BookingFlow({ data, today, initialServiceId }: Props) {
     const needed = daysBetween(today, next) + 1;
     setDaysShown((shown) => Math.min(MAX_DAYS_AHEAD, Math.max(shown, needed)));
     setSelection(null);
+    setAlternatives(null);
   }
 
   function chooseSlot(option: TimeOption) {
     setSelection({ startsAt: option.startsAt, stylistId: pickStylist(option, stylistId ?? undefined) });
+    setAlternatives(null);
   }
+
+  // La BD dijo que el hueco ya no está libre: se guardan las alternativas y se vuelve a consultar.
+  function handleSlotUnavailable(next: AvailabilitySlot[]) {
+    setAlternatives(next);
+    void refresh();
+  }
+
+  function pickAlternative(slot: AvailabilitySlot) {
+    setSelection({ startsAt: slot.startsAt, stylistId: slot.stylistId });
+    setAlternatives(null);
+  }
+
+  // Solo se proponen alternativas compatibles con el filtro de estilista actual.
+  const visibleAlternatives = (alternatives ?? []).filter(
+    (slot) => stylistId === null || slot.stylistId === stylistId,
+  );
 
   const assignedStylist = selection
     ? data.stylists.find((s) => s.id === selection.stylistId)
@@ -117,9 +143,27 @@ export function BookingFlow({ data, today, initialServiceId }: Props) {
             </p>
 
             {selectionLost ? (
-              <p role="status" className="rounded-card bg-accent-soft p-4 text-fg">
-                Esa hora acaba de ocuparse. Elige otra.
-              </p>
+              <div role="status" className="rounded-card bg-accent-soft p-4 text-fg">
+                <p>Esa hora acaba de ocuparse. Elige otra.</p>
+                {visibleAlternatives.length > 0 ? (
+                  <div className="mt-3">
+                    <p className="text-fg-muted">Horas libres cercanas:</p>
+                    <ul className="mt-2 flex flex-wrap gap-2">
+                      {visibleAlternatives.map((slot) => (
+                        <li key={`${slot.stylistId}-${slot.startsAt}`}>
+                          <button
+                            type="button"
+                            onClick={() => pickAlternative(slot)}
+                            className="inline-flex min-h-11 items-center rounded-control border border-border-strong bg-surface px-4 transition-colors duration-(--duration-fast) hover:bg-surface-muted"
+                          >
+                            {formatSlotTime(slot.startsAt)} · {data.stylists.find((s) => s.id === slot.stylistId)?.name ?? ''}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
             ) : null}
 
             {status === 'error' ? (
@@ -170,6 +214,14 @@ export function BookingFlow({ data, today, initialServiceId }: Props) {
                   <dd className="font-semibold text-accent-text">{formatPriceFrom(service.priceFromCents)}</dd>
                 </div>
               </dl>
+              <BookingForm
+                serviceId={service.id}
+                stylistId={selection.stylistId}
+                startsAt={selection.startsAt}
+                values={contact}
+                onValuesChange={setContact}
+                onSlotUnavailable={handleSlotUnavailable}
+              />
             </section>
           ) : null}
         </>

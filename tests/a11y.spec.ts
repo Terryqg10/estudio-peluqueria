@@ -34,6 +34,9 @@ test.describe('accesibilidad', () => {
     await page.locator(`button[data-date="${workday()}"]`).click(); // no depende de la hora actual
     await page.locator('button[data-starts-at]').first().click();
     await expect(page.getByRole('region', { name: 'Tu cita' })).toBeVisible();
+    // Se envía el formulario vacío para que axe revise también los errores por campo.
+    await page.getByRole('button', { name: 'Confirmar reserva' }).click();
+    await expect(page.getByText('Escribe tu nombre')).toBeVisible();
     const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
     const serious = results.violations.filter(
       (v) => v.impact === 'serious' || v.impact === 'critical',

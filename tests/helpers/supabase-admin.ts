@@ -50,3 +50,31 @@ export async function bookSlot(stylistId: string, serviceId: string, startsAtIso
 export async function deleteAppointment(id: string): Promise<void> {
   await adminClient().from('appointments').delete().eq('id', id);
 }
+
+// Citas de invitada creadas por un test (por su email único) y limpieza.
+export async function appointmentsByEmail(email: string) {
+  const { data, error } = await adminClient()
+    .from('appointments')
+    .select('id, status, user_id, guest_name, guest_email, guest_phone, consent_at, consent_version')
+    .eq('guest_email', email);
+  if (error) throw new Error(`appointmentsByEmail: ${error.message}`);
+  return data;
+}
+
+export async function deleteAppointmentsByEmail(email: string): Promise<void> {
+  await adminClient().from('appointments').delete().eq('guest_email', email);
+}
+
+// Citas activas de una estilista que solapan un instante: para comprobar que NO se creó ninguna.
+export async function activeAppointmentsAt(stylistId: string, startsAtIso: string, minutes: number) {
+  const start = new Date(startsAtIso);
+  const end = new Date(start.getTime() + minutes * 60_000);
+  const { data, error } = await adminClient()
+    .from('appointments')
+    .select('id')
+    .eq('stylist_id', stylistId)
+    .neq('status', 'cancelled')
+    .overlaps('during', `[${start.toISOString()},${end.toISOString()})`);
+  if (error) throw new Error(`activeAppointmentsAt: ${error.message}`);
+  return data;
+}

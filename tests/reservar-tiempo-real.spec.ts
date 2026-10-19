@@ -1,6 +1,13 @@
 import { test, expect, type Page } from '@playwright/test';
 import { workday } from './helpers/booking-days';
-import { bookSlot, deleteAppointment, idByName } from './helpers/supabase-admin';
+import { randomUUID } from 'node:crypto';
+import {
+  appointmentsByEmail,
+  bookSlot,
+  deleteAppointment,
+  deleteAppointmentsByEmail,
+  idByName,
+} from './helpers/supabase-admin';
 
 // CA-07 (T-005a): se ejecuta solo en el proyecto de escritorio (ver playwright.config.ts).
 // CA-07: otra sesión ocupa un hueco y esta deja de ofrecerlo sin recargar (N = 15 s).
@@ -59,6 +66,57 @@ test.describe('reservar: tiempo real (CA-07)', () => {
       await expect(page.locator(`button[data-starts-at="${startsAt}"]`)).toHaveCount(0, { timeout: 25_000 });
     } finally {
       await deleteAppointment(appointmentId);
+    }
+  });
+});
+
+// CA-08 (e2e): otra persona ocupa el hueco mientras se rellena el formulario.
+// Sin Realtime la pantalla no se entera, así que se prueba el camino del servidor: SLOT_TAKEN con alternativas.
+test.describe('reservar: hueco ocupado al confirmar (CA-08)', () => {
+  test('se avisa, se ofrecen alternativas, se conservan los datos y se puede reservar otra hora', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    await page.routeWebSocket(/realtime/, (ws) => {
+      void ws.close();
+    });
+    const email = `e2e-${randomUUID()}@test.invalid`;
+    const serviceId = await idByName('services', 'Tratamiento hidratante');
+    const stylistId = await idByName('stylists', 'Irene Solís');
+    let otherId = '';
+    try {
+      await page.goto(`/reservar?servicio=${serviceId}`);
+      await page.locator(`button[data-date="${workday()}"]`).click();
+      const slot = page.locator('button[data-starts-at]', { hasText: /^19:00$/ });
+      await expect(slot).toBeVisible();
+      const startsAt = (await slot.getAttribute('data-starts-at')) ?? '';
+      await slot.click();
+      await page.getByLabel('Nombre', { exact: true }).fill('Ana García');
+      await page.getByLabel('Email', { exact: true }).fill(email);
+      await page.getByLabel('Teléfono', { exact: true }).fill('600 000 000');
+      await page.getByRole('checkbox').check();
+
+      // Otra persona se queda con el hueco justo antes de confirmar.
+      otherId = await bookSlot(stylistId, serviceId, startsAt, 30);
+      await page.getByRole('button', { name: 'Confirmar reserva' }).click();
+
+      await expect(page.getByText('Esa hora acaba de ocuparse. Elige otra.')).toBeVisible();
+      await expect(page.getByText('Horas libres cercanas:')).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Tus datos' })).toHaveCount(0);
+      expect(await appointmentsByEmail(email)).toEqual([]); // no se creó nada, ni duplicado
+
+      // Se elige una alternativa: el formulario vuelve con los datos ya escritos.
+      await page.getByText('Horas libres cercanas:').locator('xpath=following-sibling::ul//button').first().click();
+      await expect(page.getByRole('heading', { name: 'Tus datos' })).toBeVisible();
+      await expect(page.getByLabel('Nombre', { exact: true })).toHaveValue('Ana García');
+      await expect(page.getByLabel('Email', { exact: true })).toHaveValue(email);
+
+      await page.getByRole('button', { name: 'Confirmar reserva' }).click();
+      await expect(page).toHaveURL(/\/reservar\/confirmada$/);
+      expect(await appointmentsByEmail(email)).toHaveLength(1);
+    } finally {
+      await deleteAppointmentsByEmail(email);
+      if (otherId) await deleteAppointment(otherId);
     }
   });
 });

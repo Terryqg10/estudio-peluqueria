@@ -196,6 +196,11 @@ isOneToOne: false
               "id": string,"status": Database["public"]['Enums']["appointment_status"]
             }[]
                            },
+"create_booking":
+{ Args: { "p_consent_version": string,"p_guest_email": string,"p_guest_name": string,"p_guest_phone": string,"p_service_id": string,"p_starts_at": string,"p_stylist_id": string }; Returns: {
+              "appointment_id": string,"ends_at": string,"starts_at": string
+            }[]
+                           },
 "get_availability":
 { Args: { "p_date": string,"p_service_id": string,"p_stylist_id"?: string }; Returns: {
               "starts_at": string,"stylist_id": string
