@@ -237,4 +237,7 @@ pasa por un módulo en `src/lib/<proveedor>/`; nunca desde un componente.
 
 ## 12. Enmiendas
 
-(ninguna)
+| Fecha | ADR | Enmienda |
+|---|---|---|
+| 2026-10-19 | ADR-0010 | Sección 7: los estados se almacenan en inglés (`confirmed`, `completed`, `cancelled`, `no_show`) y se añade `pending` al enum, persistido pero sin uso actual (la reserva nace en `confirmed`). La interfaz muestra las etiquetas en español. Los CA no cambian |
+| 2026-10-19 | ADR-0009 | Sección 8: se concreta el mecanismo del token de gestión (256 bits, solo hash, acceso por funciones `security definer`). No cambia ningún requisito ni CA |

@@ -82,5 +82,6 @@ Negativas:
   cerrar", y `rules/quality-gates.md`, puerta 5: "o con ADR y caducidad".
 - No modifica `docs/constitution.md`.
 
-> Nota de ubicación: el proyecto guarda los ADRs en `sdd/adrs/` (con plantilla
-> `ADR-XXX`). Este se creó en `docs/adr/` por indicación expresa del usuario.
+> Nota de ubicación: se creó en `docs/adr/` por indicación del usuario y se
+> movió a `sdd/adrs/` el 2026-10-19 (T-002), que es donde el proyecto guarda
+> los ADRs. El contenido de la decisión no cambia.

@@ -73,8 +73,9 @@ select, insert, update y delete. Los tipos TypeScript se generan desde la BD.
 | `stylists` | `id`, `name`, `specialty`, `bio`, `active` | 3 ficticias en semilla |
 | `services` | `id`, `category`, `name`, `price_from_cents`, `duration_min`, `active` | Precio "desde" |
 | `stylist_services` | `stylist_id`, `service_id` | Qué hace cada estilista |
-| `working_hours` | `stylist_id`, `weekday`, `start`, `end` | Horario semanal (varias franjas por día) |
-| `time_off` | `stylist_id`, `range` (tstzrange), `kind` (`vacaciones`/`descanso`/`bloqueo`), `note` | Vacaciones y bloqueos |
+| `salon_hours` | `weekday` (ISO 1–7), `opens`, `closes` | Horario del salón (T-002) |
+| `stylist_schedule` | `stylist_id`, `weekday`, `starts`, `ends` | Horario semanal de cada estilista (T-002; antes `working_hours`) |
+| `time_blocks` | `stylist_id`, `during` (tstzrange), `kind` (`vacation`/`break`/`block`), `note` | Vacaciones, descansos y bloqueos (T-002; antes `time_off`) |
 | `appointments` | `id`, `stylist_id`, `service_id`, `during` (tstzrange), `status`, `customer_id` (nullable), `guest_name`, `guest_email`, `guest_phone`, `consent_at`, `consent_version`, `created_at` | Ver restricción |
 | `appointment_tokens` | `appointment_id`, `token_hash`, `expires_at`, `used_at` | Solo hash |
 | `gallery_items` | `id`, `technique`, `service_id`, `stylist_id`, `before_path`, `after_path`, `alt_before`, `alt_after`, `ai_generated` | Imágenes de IA marcadas como tales |
@@ -201,7 +202,10 @@ Nivel L: M más tests de integración con BD real, CI bloqueante y ADR por cada 
 
 Se crean con `/decide` cuando se aborden, antes de implementar cada pieza:
 
-- ADR-A — Gestión de cita de invitada: token propio con hash vs Supabase OTP.
+- **Decididos en T-002:** ADR-A → `sdd/adrs/ADR-0009-reserva-invitada-y-rls.md`
+  (token de 256 bits con hash y funciones `security definer`); ADR-E →
+  `sdd/adrs/ADR-0010-estados-de-cita.md` (enum en inglés con `pending`).
+- ~~ADR-A — Gestión de cita de invitada: token propio con hash vs Supabase OTP.~~
 - ADR-B — Disponibilidad en tiempo real: Realtime/broadcast vs sondeo, y N segundos.
 - ADR-C — Proveedor de email de producción (Resend vs SendGrid) y tope de envíos.
 - ADR-D — Tipografía serif de titulares.
