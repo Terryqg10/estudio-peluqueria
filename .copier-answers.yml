@@ -1,0 +1,11 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: 435c3e2
+_src_path: C:\proyectos\web-os
+author_name: terry
+project_description: Quiero una pagina de peluqueria, enfocado en mujeres, donde enseña
+    los mejores resultados y si es buena practica enseña los precios. Ademas de reservacion
+    de cita, escogiendo dia y hora, donde la disponibilidad estara en tiempo real.
+project_name: Peluqueria
+project_slug: peluqueria
+rigor_level: M
+style: v1-soft-commerce

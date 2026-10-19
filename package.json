@@ -1,0 +1,59 @@
+{
+  "name": "peluqueria",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Quiero una pagina de peluqueria, enfocado en mujeres, donde enseña los mejores resultados y si es buena practica enseña los precios. Ademas de reservacion de cita, escogiendo dia y hora, donde la disponibilidad estara en tiempo real.",
+  "author": "terry",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e:install": "playwright install --with-deps chromium webkit",
+    "test:e2e": "playwright test",
+    "test:e2e:dev": "node scripts/test-e2e-dev.mjs",
+    "test:a11y": "node scripts/check-a11y.mjs",
+    "check-palette": "node scripts/check-palette.mjs",
+    "check-secrets": "node scripts/check-secrets.mjs",
+    "install-hooks": "node scripts/install-hooks.mjs",
+    "db:types": "node scripts/db-types.mjs",
+    "backup": "node scripts/backup.mjs",
+    "verify": "node scripts/verify.mjs"
+  },
+  "dependencies": {
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "motion": "^12.0.0",
+    "lucide-react": "^0.460.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.49.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "^16.0.0",
+    "jsdom": "^25.0.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": []
+  },
+  "packageManager": "pnpm@9.0.0"
+}
