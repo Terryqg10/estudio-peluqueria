@@ -1,0 +1,22 @@
+/* source: sector   (belleza: rosa suave / malva; sin marca ni activos previos)
+   mode: claro
+   seed: #A8456A
+   rationale: rosa malva empolvado; salón de mujer moderno, cálido y elegante. accent-fg blanco (5.6:1 sobre la semilla).
+   approved_by: user
+   generated: 2026-10-19 */
+@theme static {
+  --color-bg: #fbf6f8;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5ecf0;
+  --color-border: #ebdde3;
+  --color-border-strong: #8a7580;
+  --color-fg: #2a1820;
+  --color-fg-muted: #6b5560;
+  --color-accent: #a8456a;
+  --color-accent-hover: #8f3758;
+  --color-accent-fg: #ffffff;
+  --color-accent-soft: #f6e4eb;
+  --color-accent-text: #963a5c;
+  --color-danger: #b42318;
+  --color-success: #067647;
+}
