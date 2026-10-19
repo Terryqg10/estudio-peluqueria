@@ -241,6 +241,7 @@ pasa por un módulo en `src/lib/<proveedor>/`; nunca desde un componente.
 |---|---|---|
 | 2026-10-19 | ADR-0010 | Sección 7: los estados se almacenan en inglés (`confirmed`, `completed`, `cancelled`, `no_show`) y se añade `pending` al enum, persistido pero sin uso actual (la reserva nace en `confirmed`). La interfaz muestra las etiquetas en español. Los CA no cambian |
 | 2026-10-19 | ADR-0011 | Se añade el requisito no funcional **RNF-13** y los criterios **CA-36** y **CA-37** (ver abajo). No cambia ningún requisito ni CA existente |
+| 2026-10-21 | ADR-0015 | Sección 9: se añade una **cookie funcional de primera parte** `reserva_confirmada` (id de la cita, no personal; `httpOnly`, `SameSite=Lax`, ruta `/reservar`, 10 minutos) para mostrar la confirmación sin datos en la URL. No es de analítica ni de terceros; la frase «no se usan cookies de analítica ni de terceros» sigue siendo cierta. No cambia ningún requisito ni CA |
 | 2026-10-19 | ADR-0009 | Sección 8: se concreta el mecanismo del token de gestión (256 bits, solo hash, acceso por funciones `security definer`). No cambia ningún requisito ni CA |
 
 ### Anexo de la enmienda ADR-0011

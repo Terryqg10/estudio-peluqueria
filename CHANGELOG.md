@@ -21,6 +21,11 @@ y versionado [SemVer](https://semver.org/lang/es/).
   con disponibilidad en vivo (Realtime y sondeo de respaldo), aviso si otra persona ocupa tu hueco y
   búsqueda de próximos días. Botón «Reservar» en la cabecera y por servicio en la home. El flujo
   termina en el resumen; la confirmación llega con T-005b.
+- T-005b: reserva de invitada de extremo a extremo. Función de BD `create_booking` (solo `service_role`,
+  restricción anti-solape como árbitra), formulario «Tus datos» con consentimiento (fecha y versión) y
+  honeypot, página `/reservar/confirmada` sin datos personales y cookie de confirmación `httpOnly`.
+  Requiere `SUPABASE_SERVICE_ROLE_KEY` (solo servidor). ADR-0015 y ADR-0016. Aún sin email (T-006) ni
+  límites de citas (T-005c).
 - Registro de imágenes en `docs/imagenes.md` y Lighthouse como devDependency.
 
 ### Cambiado

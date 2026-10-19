@@ -242,7 +242,8 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-003 | Servicios y home (hero, contacto) | CA-01, CA-03, CA-04 |
 | T-004 | Disponibilidad: `stylist_services`, `get_availability` y señal en tiempo real (capa de datos y contrato de servidor). ADR-0013, ADR-0014 | CA-06; infraestructura de CA-07 |
 | T-005a | Selección de hueco en `/reservar`: servicio → estilista → día y hora, suscripción al canal `availability` con sondeo de respaldo, y botón «Reservar» por servicio (UI) | CA-05, CA-07, cierre de CA-01 |
-| T-005b | Reserva transaccional: datos de la invitada, confirmación y restricción anti-solape | CA-08, CA-10 (y CA-09 ya en T-002) |
+| T-005b | Reserva transaccional: `create_booking` (solo `service_role`, ADR-0015), formulario de invitada con consentimiento y honeypot (ADR-0016) y confirmación en `/reservar/confirmada` | CA-08, CA-10, CA-25, CA-28 (y CA-09 ya en T-002) |
+| T-005c | Límite de citas activas por email e IP (`rate_limits`, IP en hash, ADR-0016) | CA-29 |
 
 > Nota (2026-10-20): la antigua T-005 se divide en T-005a y T-005b, y la antigua «T-004 función y UI»
 > se reparte entre T-004 (datos) y T-005a (interfaz), para no mezclar capas. Se conserva la
