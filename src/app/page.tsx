@@ -1,15 +1,30 @@
-import { SITE } from '@/lib/site';
+import { ContactInfo } from '@/components/contact/contact-info';
+import { Hero } from '@/components/home/hero';
+import { ServicesSection } from '@/components/home/services-section';
+import { getServiceCatalog } from '@/lib/services/catalog';
 
-export default function Home() {
+// El catálogo se lee en cada petición para reflejar los cambios del Admin (T-009).
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  const catalog = await getServiceCatalog();
+
   return (
-    <section className="mx-auto w-full max-w-6xl px-(--layout-gutter) py-16 sm:py-24">
-      <p className="text-accent-text">{SITE.tagline}</p>
-      <h1 className="mt-3 max-w-3xl text-display font-semibold">
-        Tu cabello, en las mejores manos
-      </h1>
-      <p className="mt-6 max-w-prose text-lg text-fg-muted">
-        Precios claros y reserva online con la disponibilidad real de cada estilista.
-      </p>
-    </section>
+    <>
+      <Hero />
+      <ServicesSection catalog={catalog} />
+      <section
+        id="contacto"
+        aria-labelledby="contacto-titulo"
+        className="mx-auto w-full max-w-6xl scroll-mt-24 px-(--layout-gutter) py-12 sm:py-16"
+      >
+        <h2 id="contacto-titulo" className="font-display text-3xl font-semibold">
+          Visítanos
+        </h2>
+        <div className="mt-8">
+          <ContactInfo />
+        </div>
+      </section>
+    </>
   );
 }

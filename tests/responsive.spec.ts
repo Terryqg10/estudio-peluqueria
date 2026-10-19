@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { PUBLIC_PAGES } from '../src/lib/public-pages';
 
 // Barrido de anchos: los saltos de layout fallan entre breakpoints, no en
 // ellos. Incluye los cuatro anchos contractuales (320, 375, 768, 1280) y
@@ -11,11 +12,13 @@ const STRUCTURAL = ['header', 'nav', 'main', 'footer'];
 
 type Offender = { path: string; left: number; right: number; reason: string };
 
+// CA-37: se recorren todas las páginas públicas de la lista única (ADR-0011).
 test.describe('responsive', () => {
+  for (const route of PUBLIC_PAGES) {
   for (const width of WIDTHS) {
-    test(`sin desbordamiento ni contenido recortado a ${width}px`, async ({ page }) => {
+    test(`${route}: sin desbordamiento ni contenido recortado a ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
-      await page.goto('/');
+      await page.goto(route);
 
       // 1. Ningún elemento estructural se sale del viewport.
       for (const selector of STRUCTURAL) {
@@ -123,5 +126,6 @@ test.describe('responsive', () => {
         `elementos desbordados o recortados a ${width}px`,
       ).toEqual([]);
     });
+  }
   }
 });

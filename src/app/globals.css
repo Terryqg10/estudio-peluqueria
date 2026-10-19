@@ -7,6 +7,11 @@
    Al instanciar con Copier se deja la del estilo elegido; ver
    design/styles/index.md y sdd/plans/PLAN-xxx.md. */
 
+/* Fuente de titulares (ADR-0012). No toca los tokens de v1. */
+@theme {
+  --font-display: var(--font-heading), ui-serif, Georgia, serif;
+}
+
 @layer base {
   :focus-visible {
     outline: 2px solid var(--color-accent);
