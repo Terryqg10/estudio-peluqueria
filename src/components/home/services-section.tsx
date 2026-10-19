@@ -62,6 +62,13 @@ export function ServicesSection({ catalog }: { catalog: CatalogResult }) {
                     <p className="mt-3 text-lg font-semibold text-accent-text">
                       {formatPriceFrom(service.price_from_cents)}
                     </p>
+                    <Link
+                      href={{ pathname: ROUTES.reservar, query: { servicio: service.id } }}
+                      aria-label={`Reservar ${service.name}`}
+                      className="mt-4 inline-flex min-h-11 items-center rounded-control bg-accent px-5 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover"
+                    >
+                      Reservar
+                    </Link>
                   </li>
                 ))}
               </ul>

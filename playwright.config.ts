@@ -23,7 +23,12 @@ export default defineConfig({
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile', use: { ...devices['iPhone 13'] } },
+    {
+      name: 'mobile',
+      use: { ...devices['iPhone 13'] },
+      // Ocupan huecos reales y dependen de WebSockets: solo en escritorio (sin .skip).
+      testIgnore: '**/reservar-tiempo-real.spec.ts',
+    },
   ],
   webServer: {
     command: usaProd ? `pnpm run build && pnpm run start -p ${PORT}` : `pnpm run dev -p ${PORT}`,

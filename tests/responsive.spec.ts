@@ -1,5 +1,20 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { PUBLIC_PAGES } from '../src/lib/public-pages';
+import { ROUTES } from '../src/lib/routes';
+
+// Algunas páginas solo muestran lo más ancho tras interactuar. En /reservar se mide con un
+// servicio, un día con horas y una hora elegidos (tira de días, rejilla y resumen incluidos).
+async function prepareState(page: Page, route: string): Promise<void> {
+  if (route !== ROUTES.reservar) return;
+  await page.getByLabel(/Balayage/).first().check({ force: true });
+  const days = page.locator('button[data-date]');
+  for (let i = 1; i < 7; i++) {
+    await days.nth(i).click();
+    if ((await page.locator('button[data-starts-at]').count()) > 0) break;
+  }
+  await page.locator('button[data-starts-at]').first().click();
+  await expect(page.getByRole('region', { name: 'Tu cita' })).toBeVisible();
+}
 
 // Barrido de anchos: los saltos de layout fallan entre breakpoints, no en
 // ellos. Incluye los cuatro anchos contractuales (320, 375, 768, 1280) y
@@ -19,6 +34,7 @@ test.describe('responsive', () => {
     test(`${route}: sin desbordamiento ni contenido recortado a ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto(route);
+      await prepareState(page, route);
 
       // 1. Ningún elemento estructural se sale del viewport.
       for (const selector of STRUCTURAL) {

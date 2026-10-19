@@ -1,6 +1,7 @@
 export const ROUTES = {
   home: '/',
   contacto: '/contacto',
+  reservar: '/reservar',
   avisoLegal: '/aviso-legal',
   privacidad: '/privacidad',
 } as const;

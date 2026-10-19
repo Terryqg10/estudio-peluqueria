@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
-import type { NavItem } from '@/lib/navigation';
+import { BOOKING_CTA, type NavItem } from '@/lib/navigation';
 import { SITE } from '@/lib/site';
 import { useHashOverlay } from '@/lib/ui/use-hash-overlay';
 
@@ -95,6 +95,13 @@ export function MobileMenu({ items }: { items: readonly NavItem[] }) {
               {item.label}
             </Link>
           ))}
+          <Link
+            href={BOOKING_CTA.href}
+            onClick={close}
+            className="mt-4 inline-flex min-h-11 items-center justify-center rounded-control bg-accent px-6 text-xl font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover"
+          >
+            {BOOKING_CTA.label}
+          </Link>
         </nav>
         {/* Clic fuera: el resto del panel cierra el menú. */}
         <a href={CLOSE_HASH} tabIndex={-1} aria-hidden="true" className="flex-1" />
