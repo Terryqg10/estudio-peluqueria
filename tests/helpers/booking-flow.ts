@@ -1,0 +1,34 @@
+import { expect, type Page } from '@playwright/test';
+import { workday } from './booking-days';
+import { idByName } from './supabase-admin';
+
+// Pasos compartidos de la reserva en los e2e (T-005b y T-006a). Usa «Tratamiento hidratante»
+// (30 min, solo Irene) y un día laborable futuro.
+export async function startBooking(page: Page, time: string): Promise<string> {
+  const serviceId = await idByName('services', 'Tratamiento hidratante');
+  await page.goto(`/reservar?servicio=${serviceId}`);
+  await page.locator(`button[data-date="${workday()}"]`).click();
+  const slot = page.locator('button[data-starts-at]', { hasText: new RegExp(`^${time}$`) });
+  await expect(slot).toBeVisible();
+  const startsAt = (await slot.getAttribute('data-starts-at')) ?? '';
+  await slot.click();
+  await expect(page.getByRole('heading', { name: 'Tus datos' })).toBeVisible();
+  return startsAt;
+}
+
+export async function fillForm(page: Page, email: string, over: { name?: string; phone?: string } = {}) {
+  await page.getByLabel('Nombre', { exact: true }).fill(over.name ?? 'Ana García');
+  await page.getByLabel('Email', { exact: true }).fill(email);
+  await page.getByLabel('Teléfono', { exact: true }).fill(over.phone ?? '+34 600 000 000');
+  await page.getByRole('checkbox').check();
+}
+
+export const submit = (page: Page) => page.getByRole('button', { name: 'Confirmar reserva' });
+
+// Envía el formulario con el teclado (Enter sobre el botón, que primero se enfoca): no depende de su
+// posición en pantalla. La disponibilidad se actualiza en vivo y otros tests reservan a la vez en la
+// misma estilista, así que el formulario puede desplazarse un instante y un clic por coordenadas
+// caería fuera del botón (observado en WebKit móvil: ni error de validación ni «Reservando…»).
+export async function submitForm(page: Page): Promise<void> {
+  await submit(page).press('Enter');
+}

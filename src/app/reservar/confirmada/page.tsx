@@ -29,6 +29,17 @@ export default async function ReservaConfirmadaPage() {
           <h1 className="font-display text-display font-semibold">Reserva confirmada</h1>
           <p className="mt-3 text-fg-muted">Tu cita está reservada. Estos son sus datos:</p>
 
+          {confirmation.emailSent ? (
+            <p role="status" className="mt-4 rounded-card bg-accent-soft p-4 text-fg">
+              Te hemos enviado un email con el enlace personal de tu cita.
+            </p>
+          ) : (
+            <p role="alert" className="mt-4 rounded-card bg-surface p-4 text-fg shadow-card">
+              No hemos podido enviarte el email de confirmación. Tu cita está reservada; si necesitas
+              gestionarla, consulta nuestro contacto.
+            </p>
+          )}
+
           <dl className="mt-8 grid gap-4 rounded-container bg-surface p-6 shadow-card sm:grid-cols-2">
             <div>
               <dt className="text-fg-muted">Servicio</dt>

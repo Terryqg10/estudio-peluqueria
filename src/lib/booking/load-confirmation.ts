@@ -9,6 +9,8 @@ export type Confirmation = {
   priceFromCents: number;
   startsAt: string;
   endsAt: string;
+  // ¿Se envió el email con el enlace de la cita? (T-006a, ADR-0018)
+  emailSent: boolean;
 };
 
 const IdSchema = z.string().uuid();
@@ -23,7 +25,7 @@ export async function loadConfirmation(rawId: string | undefined): Promise<Confi
 
   const { data, error } = await client
     .from('appointments')
-    .select('during, status, services(name, price_from_cents), stylists(name)')
+    .select('during, status, confirmation_email_sent_at, services(name, price_from_cents), stylists(name)')
     .eq('id', parsed.data)
     .maybeSingle();
 
@@ -37,5 +39,6 @@ export async function loadConfirmation(rawId: string | undefined): Promise<Confi
     priceFromCents: data.services.price_from_cents,
     startsAt: range.start,
     endsAt: range.end,
+    emailSent: data.confirmation_email_sent_at !== null,
   };
 }

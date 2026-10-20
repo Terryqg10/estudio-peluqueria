@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { test, expect, type Page } from '@playwright/test';
-import { workday } from './helpers/booking-days';
+import { test, expect } from '@playwright/test';
+import { fillForm, startBooking, submitForm } from './helpers/booking-flow';
 import {
   activeAppointmentsAt,
   appointmentsByEmail,
@@ -17,27 +17,6 @@ function timesFor(projectName: string): string[] {
   return projectName === 'mobile' ? TIMES.mobile : TIMES.chromium;
 }
 
-async function startBooking(page: Page, time: string): Promise<string> {
-  const serviceId = await idByName('services', 'Tratamiento hidratante');
-  await page.goto(`/reservar?servicio=${serviceId}`);
-  await page.locator(`button[data-date="${workday()}"]`).click();
-  const slot = page.locator('button[data-starts-at]', { hasText: new RegExp(`^${time}$`) });
-  await expect(slot).toBeVisible();
-  const startsAt = (await slot.getAttribute('data-starts-at')) ?? '';
-  await slot.click();
-  await expect(page.getByRole('heading', { name: 'Tus datos' })).toBeVisible();
-  return startsAt;
-}
-
-async function fillForm(page: Page, email: string, over: { name?: string; phone?: string } = {}) {
-  await page.getByLabel('Nombre', { exact: true }).fill(over.name ?? 'Ana García');
-  await page.getByLabel('Email', { exact: true }).fill(email);
-  await page.getByLabel('Teléfono', { exact: true }).fill(over.phone ?? '+34 600 000 000');
-  await page.getByRole('checkbox').check();
-}
-
-const submit = (page: Page) => page.getByRole('button', { name: 'Confirmar reserva' });
-
 test.describe('reservar: reserva de invitada', () => {
   test('CA-10: con datos válidos y consentimiento se crea la cita y se muestra la confirmación', async ({
     page,
@@ -48,7 +27,7 @@ test.describe('reservar: reserva de invitada', () => {
     try {
       await startBooking(page, time ?? '10:00');
       await fillForm(page, email);
-      await submit(page).click();
+      await submitForm(page);
 
       await expect(page).toHaveURL(/\/reservar\/confirmada$/);
       await expect(page.getByRole('heading', { level: 1, name: 'Reserva confirmada' })).toBeVisible();
@@ -89,7 +68,7 @@ test.describe('reservar: reserva de invitada', () => {
     const startsAt = await startBooking(page, time);
     const stylistId = await idByName('stylists', 'Irene Solís');
 
-    await submit(page).click();
+    await submitForm(page);
     await expect(page.getByText('Escribe tu nombre')).toBeVisible();
     await expect(page.getByText(/Escribe un email válido/)).toBeVisible();
     await expect(page.getByText(/Escribe un teléfono válido/)).toBeVisible();
@@ -111,7 +90,7 @@ test.describe('reservar: reserva de invitada', () => {
       await startBooking(page, time);
       await fillForm(page, email);
       await page.getByRole('checkbox').uncheck();
-      await submit(page).click();
+      await submitForm(page);
 
       await expect(page.getByText('Debes aceptar para poder reservar')).toBeVisible();
       await expect(page.getByLabel('Nombre', { exact: true })).not.toHaveAttribute('aria-invalid', 'true');
@@ -125,7 +104,7 @@ test.describe('reservar: reserva de invitada', () => {
     const time = timesFor(testInfo.project.name)[3] ?? '13:00';
     await startBooking(page, time);
     await fillForm(page, 'no-es-un-email', { phone: '12' });
-    await submit(page).click();
+    await submitForm(page);
 
     await expect(page.getByText(/Escribe un email válido/)).toBeVisible();
     await expect(page.getByText(/Escribe un teléfono válido/)).toBeVisible();
@@ -142,7 +121,7 @@ test.describe('reservar: reserva de invitada', () => {
       await startBooking(page, alt);
       await fillForm(page, email);
       await page.locator('input[name="website"]').fill('https://spam.example', { force: true });
-      await submit(page).click();
+      await submitForm(page);
 
       // (Next añade su propio role="alert" para anunciar rutas: se filtra por el texto.)
       const alert = page.getByRole('alert').filter({ hasText: 'No hemos podido completar la reserva' });

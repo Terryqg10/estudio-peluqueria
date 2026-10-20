@@ -47,13 +47,13 @@ isOneToOne: true
                   ]
                 },"appointments": {
                   Row: {
-                    "consent_at": string | null,"consent_version": string | null,"created_at": string,"during": unknown,"guest_email": string | null,"guest_name": string | null,"guest_phone": string | null,"id": string,"service_id": string,"status": Database["public"]['Enums']["appointment_status"],"stylist_id": string,"updated_at": string,"user_id": string | null
+                    "confirmation_email_sent_at": string | null,"consent_at": string | null,"consent_version": string | null,"created_at": string,"during": unknown,"guest_email": string | null,"guest_name": string | null,"guest_phone": string | null,"id": string,"service_id": string,"status": Database["public"]['Enums']["appointment_status"],"stylist_id": string,"updated_at": string,"user_id": string | null
                   }
                   Insert: {
-                    "consent_at"?: string | null,"consent_version"?: string | null,"created_at"?: string,"during": unknown,"guest_email"?: string | null,"guest_name"?: string | null,"guest_phone"?: string | null,"id"?: string,"service_id": string,"status"?: Database["public"]['Enums']["appointment_status"],"stylist_id": string,"updated_at"?: string,"user_id"?: string | null
+                    "confirmation_email_sent_at"?: string | null,"consent_at"?: string | null,"consent_version"?: string | null,"created_at"?: string,"during": unknown,"guest_email"?: string | null,"guest_name"?: string | null,"guest_phone"?: string | null,"id"?: string,"service_id": string,"status"?: Database["public"]['Enums']["appointment_status"],"stylist_id": string,"updated_at"?: string,"user_id"?: string | null
                   }
                   Update: {
-                    "consent_at"?: string | null,"consent_version"?: string | null,"created_at"?: string,"during"?: unknown,"guest_email"?: string | null,"guest_name"?: string | null,"guest_phone"?: string | null,"id"?: string,"service_id"?: string,"status"?: Database["public"]['Enums']["appointment_status"],"stylist_id"?: string,"updated_at"?: string,"user_id"?: string | null
+                    "confirmation_email_sent_at"?: string | null,"consent_at"?: string | null,"consent_version"?: string | null,"created_at"?: string,"during"?: unknown,"guest_email"?: string | null,"guest_name"?: string | null,"guest_phone"?: string | null,"id"?: string,"service_id"?: string,"status"?: Database["public"]['Enums']["appointment_status"],"stylist_id"?: string,"updated_at"?: string,"user_id"?: string | null
                   }
                   Relationships: [
                     {

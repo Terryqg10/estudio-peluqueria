@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PUBLIC_PAGES } from '../src/lib/public-pages';
 import { workday } from './helpers/booking-days';
+import { submitForm } from './helpers/booking-flow';
+import { createAppointmentWithToken, deleteAppointment } from './helpers/supabase-admin';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
 
@@ -35,7 +37,7 @@ test.describe('accesibilidad', () => {
     await page.locator('button[data-starts-at]').first().click();
     await expect(page.getByRole('region', { name: 'Tu cita' })).toBeVisible();
     // Se envía el formulario vacío para que axe revise también los errores por campo.
-    await page.getByRole('button', { name: 'Confirmar reserva' }).click();
+    await submitForm(page);
     await expect(page.getByText('Escribe tu nombre')).toBeVisible();
     const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
     const serious = results.violations.filter(
@@ -43,6 +45,22 @@ test.describe('accesibilidad', () => {
     );
     for (const v of serious) console.error(`[a11y] ${v.id} (${v.impact}): ${v.help}`);
     expect(serious, 'violaciones graves o críticas de axe').toEqual([]);
+  });
+
+  test('/cita/<token> válido: sin violaciones graves ni críticas', async ({ page }) => {
+    const { id, token } = await createAppointmentWithToken();
+    try {
+      await page.goto(`/cita/${token}`);
+      await expect(page.getByRole('heading', { level: 1, name: 'Tu cita' })).toBeVisible();
+      const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+      const serious = results.violations.filter(
+        (v) => v.impact === 'serious' || v.impact === 'critical',
+      );
+      for (const v of serious) console.error(`[a11y] ${v.id} (${v.impact}): ${v.help}`);
+      expect(serious, 'violaciones graves o críticas de axe').toEqual([]);
+    } finally {
+      await deleteAppointment(id);
+    }
   });
 
   test('respeta prefers-reduced-motion', async ({ browser }) => {

@@ -7,4 +7,5 @@ export const PUBLIC_PAGES = [
   ROUTES.contacto,
   ROUTES.reservar,
   ROUTES.reservarConfirmada, // sin cookie muestra «No encontramos tu reserva»
+  `${ROUTES.cita}/${'A'.repeat(43)}`, // enlace de cita no válido (la vista válida se prueba con un token real)
 ] as const;

@@ -17,7 +17,7 @@ export default defineConfig({
     : [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: BASE_URL,
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure', // conserva la traza de cualquier fallo, también sin reintentos
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },

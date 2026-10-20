@@ -3,6 +3,7 @@ export const ROUTES = {
   contacto: '/contacto',
   reservar: '/reservar',
   reservarConfirmada: '/reservar/confirmada',
+  cita: '/cita', // /cita/<token>: enlace personal de la cita (ADR-0018)
   avisoLegal: '/aviso-legal',
   privacidad: '/privacidad',
 } as const;

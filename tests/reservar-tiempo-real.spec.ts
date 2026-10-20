@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { workday } from './helpers/booking-days';
+import { submitForm } from './helpers/booking-flow';
 import { randomUUID } from 'node:crypto';
 import {
   appointmentsByEmail,
@@ -98,7 +99,7 @@ test.describe('reservar: hueco ocupado al confirmar (CA-08)', () => {
 
       // Otra persona se queda con el hueco justo antes de confirmar.
       otherId = await bookSlot(stylistId, serviceId, startsAt, 30);
-      await page.getByRole('button', { name: 'Confirmar reserva' }).click();
+      await submitForm(page);
 
       await expect(page.getByText('Esa hora acaba de ocuparse. Elige otra.')).toBeVisible();
       await expect(page.getByText('Horas libres cercanas:')).toBeVisible();
@@ -111,7 +112,7 @@ test.describe('reservar: hueco ocupado al confirmar (CA-08)', () => {
       await expect(page.getByLabel('Nombre', { exact: true })).toHaveValue('Ana García');
       await expect(page.getByLabel('Email', { exact: true })).toHaveValue(email);
 
-      await page.getByRole('button', { name: 'Confirmar reserva' }).click();
+      await submitForm(page);
       await expect(page).toHaveURL(/\/reservar\/confirmada$/);
       expect(await appointmentsByEmail(email)).toHaveLength(1);
     } finally {
