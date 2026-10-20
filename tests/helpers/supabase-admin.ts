@@ -95,33 +95,64 @@ export async function activeAppointmentsAt(stylistId: string, startsAtIso: strin
 // Cita de invitada creada a mano con service_role y su token de gestión (T-006a). Se coloca de
 // madrugada, 30 días adelante y con un desplazamiento aleatorio, para no pisar a otros tests.
 // `past: true` la pone en el pasado: su token nace ya caducado (expira al inicio de la cita).
-export async function createAppointmentWithToken(options: { past?: boolean } = {}) {
+export async function createAppointmentWithToken(options: { past?: boolean; soon?: boolean } = {}) {
   const client = adminClient();
   const stylistId = await idByName('stylists', 'Irene Solís');
   const serviceId = await idByName('services', 'Tratamiento hidratante');
-  const offsetMinutes = Math.floor(Math.random() * 190) * 15;
-  const start = new Date();
-  start.setUTCDate(start.getUTCDate() + (options.past ? -10 : 30));
-  start.setUTCHours(0, 0, 0, 0);
-  start.setUTCMinutes(offsetMinutes);
-  const end = new Date(start.getTime() + 30 * 60_000);
 
-  const { data, error } = await client
-    .from('appointments')
-    .insert({
-      stylist_id: stylistId,
-      service_id: serviceId,
-      during: `[${start.toISOString()},${end.toISOString()})`,
-      status: 'confirmed',
-      guest_name: 'Persona de prueba',
-      guest_email: `token-${Date.now()}-${offsetMinutes}@test.invalid`,
-      guest_phone: '+34600000000',
-    })
-    .select('id')
-    .single();
-  if (error) throw new Error(`createAppointmentWithToken: ${error.message}`);
-  const token = await issueToken(data.id);
-  return { id: data.id, token };
+  // Los tests corren en paralelo y comparten estilista: si el hueco aleatorio choca con otro
+  // (restricción anti-solape, código 23P01) se prueba con otro. Cualquier otro error se propaga.
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const offsetMinutes = Math.floor(Math.random() * 190) * 15;
+    const start = new Date();
+    if (options.soon) {
+      // Dentro de las próximas 24 h (entre 2 y 7 h): fuera de la ventana de cancelación.
+      start.setTime(start.getTime() + (2 * 60 + Math.floor(Math.random() * 300)) * 60_000);
+      start.setUTCSeconds(0, 0);
+    } else {
+      start.setUTCDate(start.getUTCDate() + (options.past ? -10 : 30));
+      start.setUTCHours(0, 0, 0, 0);
+      start.setUTCMinutes(offsetMinutes);
+    }
+    const end = new Date(start.getTime() + 30 * 60_000);
+
+    const { data, error } = await client
+      .from('appointments')
+      .insert({
+        stylist_id: stylistId,
+        service_id: serviceId,
+        during: `[${start.toISOString()},${end.toISOString()})`,
+        status: 'confirmed',
+        guest_name: 'Persona de prueba',
+        guest_email: `token-${Date.now()}-${offsetMinutes}@test.invalid`,
+        guest_phone: '+34600000000',
+      })
+      .select('id')
+      .single();
+    if (error) {
+      if (error.code === '23P01') continue;
+      throw new Error(`createAppointmentWithToken: ${error.message}`);
+    }
+    const token = await issueToken(data.id);
+    return { id: data.id, token, stylistId, startsAt: start.toISOString() };
+  }
+  throw new Error('createAppointmentWithToken: no se encontró un hueco libre en 10 intentos');
+}
+
+// Mueve una cita a dentro de 8-20 h (menos de 24 h), reintentando si el hueco choca con otra.
+export async function moveAppointmentSoon(id: string): Promise<void> {
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const start = new Date(Date.now() + (8 * 60 + Math.floor(Math.random() * 720)) * 60_000);
+    start.setUTCSeconds(0, 0);
+    const end = new Date(start.getTime() + 30 * 60_000);
+    const { error } = await adminClient()
+      .from('appointments')
+      .update({ during: `[${start.toISOString()},${end.toISOString()})` })
+      .eq('id', id);
+    if (!error) return;
+    if (error.code !== '23P01') throw new Error(`moveAppointmentSoon: ${error.message}`);
+  }
+  throw new Error('moveAppointmentSoon: no se encontró un hueco libre en 10 intentos');
 }
 
 // Emite (o re-emite: invalida el anterior) el token de gestión de una cita.

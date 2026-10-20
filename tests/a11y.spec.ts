@@ -52,12 +52,19 @@ test.describe('accesibilidad', () => {
     try {
       await page.goto(`/cita/${token}`);
       await expect(page.getByRole('heading', { level: 1, name: 'Tu cita' })).toBeVisible();
-      const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
-      const serious = results.violations.filter(
-        (v) => v.impact === 'serious' || v.impact === 'critical',
-      );
-      for (const v of serious) console.error(`[a11y] ${v.id} (${v.impact}): ${v.help}`);
-      expect(serious, 'violaciones graves o críticas de axe').toEqual([]);
+      const check = async () => {
+        const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+        const serious = results.violations.filter(
+          (v) => v.impact === 'serious' || v.impact === 'critical',
+        );
+        for (const v of serious) console.error(`[a11y] ${v.id} (${v.impact}): ${v.help}`);
+        expect(serious, 'violaciones graves o críticas de axe').toEqual([]);
+      };
+      await check();
+      // T-006b: también con la confirmación de cancelación abierta.
+      await page.getByRole('button', { name: 'Cancelar cita' }).click();
+      await expect(page.getByRole('heading', { name: '¿Cancelar tu cita?' })).toBeVisible();
+      await check();
     } finally {
       await deleteAppointment(id);
     }

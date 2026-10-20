@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { z } from 'zod';
+import { TokenSchema } from '@/lib/booking/token';
 import { formatLongDate, formatSlotTime, madridDateOf } from '@/lib/booking/dates';
 import { STATUS_LABELS } from '@/lib/booking/status';
 import { ROUTES } from '@/lib/routes';
 import { formatPriceFrom } from '@/lib/services/catalog';
 import { createPublicClient } from '@/lib/supabase/public-client';
+import { CancelAppointment } from './cancel-appointment';
 
 // El token va en la URL: no se indexa, no se cachea y no se envía a terceros en la cabecera Referer
 // (ADR-0018).
@@ -17,8 +18,8 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-// 32 bytes en base64url sin relleno = 43 caracteres (ADR-0009).
-const TokenSchema = z.string().regex(/^[A-Za-z0-9_-]{43}$/);
+// Margen mínimo para cancelar desde el enlace (RF-05). La BD lo vuelve a comprobar.
+const CANCEL_WINDOW_MS = 24 * 60 * 60_000;
 
 const LINK_CLASS =
   'inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
@@ -29,6 +30,7 @@ type Appointment = {
   stylistName: string;
   startsAt: string;
   status: keyof typeof STATUS_LABELS;
+  canCancel: boolean;
 };
 
 // Consulta con la clave anónima y la función pública de la BD. Cualquier fallo (forma incorrecta,
@@ -55,6 +57,7 @@ async function loadAppointment(rawToken: string): Promise<Appointment | null> {
     stylistName: stylist.data?.name ?? 'Estilista',
     startsAt: row.starts_at,
     status: row.status,
+    canCancel: new Date(row.starts_at).getTime() - Date.now() >= CANCEL_WINDOW_MS,
   };
 }
 
@@ -81,6 +84,8 @@ export default async function CitaPage({ params }: { params: Promise<{ token: st
       </section>
     );
   }
+
+  const isActive = appointment.status === 'confirmed' || appointment.status === 'pending';
 
   return (
     <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
@@ -118,7 +123,23 @@ export default async function CitaPage({ params }: { params: Promise<{ token: st
         ) : null}
       </dl>
 
+      {isActive ? (
+        appointment.canCancel ? (
+          <CancelAppointment token={token} />
+        ) : (
+          <p className="mt-8 rounded-card bg-accent-soft p-4 text-fg">
+            Faltan menos de 24 horas para tu cita y ya no se puede cancelar ni cambiar desde aquí.
+            Contacta con el salón.
+          </p>
+        )
+      ) : null}
+
       <div className="mt-8 flex flex-wrap gap-2">
+        {appointment.status === 'cancelled' ? (
+          <Link href={ROUTES.reservar} className={LINK_CLASS}>
+            Reservar otra cita
+          </Link>
+        ) : null}
         <Link href={ROUTES.home} className={LINK_CLASS}>
           Volver al inicio
         </Link>
