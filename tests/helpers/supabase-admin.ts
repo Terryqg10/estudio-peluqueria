@@ -221,3 +221,15 @@ export async function createAccountAppointment(userId: string, dayOffset = 30) {
   }
   throw new Error('createAccountAppointment: no se encontró un hueco libre en 10 intentos');
 }
+
+// Rol de una cuenta (T-008a, ADR-0022). Solo `service_role` puede cambiarlo; los e2e simulan el script
+// `admin:promote` sin lanzarlo (el script ya tiene su propio test de integración).
+export async function setRole(userId: string, role: 'admin' | 'client'): Promise<void> {
+  const { error } = await adminClient().from('profiles').upsert({ id: userId, role }, { onConflict: 'id' });
+  if (error) throw new Error(`setRole: ${error.message}`);
+}
+
+export async function deleteProfile(userId: string): Promise<void> {
+  const { error } = await adminClient().from('profiles').delete().eq('id', userId);
+  if (error) throw new Error(`deleteProfile: ${error.message}`);
+}

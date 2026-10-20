@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { isAdminSession } from '@/lib/account/require-admin';
 import { createAuthClient } from '@/lib/supabase/auth-server';
 import { ROUTES } from '@/lib/routes';
 import { LoginForm } from './login-form';
@@ -19,7 +20,7 @@ export default async function AccesoPage() {
   // Con sesión abierta no hace falta pedir otro enlace.
   const client = await createAuthClient();
   const { data } = client ? await client.auth.getUser() : { data: { user: null } };
-  if (data.user) redirect(ROUTES.misCitas);
+  if (client && data.user) redirect((await isAdminSession(client)) ? ROUTES.admin : ROUTES.misCitas);
 
   return (
     <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">

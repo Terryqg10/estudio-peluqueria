@@ -1,45 +1,11 @@
-import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect, type Browser, type Page } from '@playwright/test';
-import { deleteEmailsTo, emailCountTo, waitForLoginPath } from './helpers/mailpit';
-import {
-  createAccountAppointment,
-  deleteAccount,
-  userIdByEmail,
-} from './helpers/supabase-admin';
+import { test, expect } from '@playwright/test';
+import { cleanup, freshPage, newEmail, requestLink, signIn } from './helpers/account-flow';
+import { emailCountTo, waitForLoginPath } from './helpers/mailpit';
+import { createAccountAppointment, userIdByEmail } from './helpers/supabase-admin';
 
 // T-007: acceso por enlace mágico y «mis citas» (CA-12, ADR-0021). Cada test usa emails únicos.
-const newEmail = () => `acceso-${randomUUID()}@test.invalid`;
-const SENT = /te hemos enviado un enlace/;
-
-async function requestLink(page: Page, email: string) {
-  await page.goto('/acceso');
-  await page.getByLabel('Email').fill(email);
-  await page.getByRole('button', { name: 'Enviarme el enlace' }).click();
-  await expect(page.getByRole('status')).toContainText(SENT);
-}
-
-// Pide el enlace, lo abre desde el correo y entra pulsando el botón (el GET solo muestra el botón).
-async function signIn(page: Page, email: string) {
-  await requestLink(page, email);
-  const path = await waitForLoginPath(email);
-  await page.goto(path);
-  await page.getByRole('button', { name: 'Entrar en mi cuenta' }).click();
-  await expect(page).toHaveURL(/\/mis-citas$/);
-}
-
-async function cleanup(emails: string[]) {
-  for (const email of emails) {
-    await deleteAccount(email);
-    await deleteEmailsTo(email);
-  }
-}
-
-async function freshPage(browser: Browser) {
-  const context = await browser.newContext();
-  return { context, page: await context.newPage() };
-}
 
 test.describe('acceso por enlace mágico', () => {
   test('sin sesión, /mis-citas lleva al acceso', async ({ page }) => {

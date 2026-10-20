@@ -1,4 +1,5 @@
 import { createAuthClient } from '@/lib/supabase/auth-server';
+import { isAdminSession } from './require-admin';
 import { TokenHashSchema, type ConfirmResult } from './schema';
 
 // Canjea el `token_hash` del enlace y abre la sesión (cookie de servidor). Un enlace caducado, ya
@@ -15,5 +16,6 @@ export async function confirmLoginLink(rawTokenHash: unknown): Promise<ConfirmRe
     // 5xx = fallo del servicio; 4xx = enlace malo.
     return { ok: false, error: error.status !== undefined && error.status >= 500 ? 'UNAVAILABLE' : 'INVALID_LINK' };
   }
-  return { ok: true };
+  // El destino lo decide el rol de la BD, nunca algo que mande el navegador (ADR-0022).
+  return { ok: true, destination: (await isAdminSession(client)) ? 'admin' : 'cuenta' };
 }

@@ -26,7 +26,8 @@
     "install-hooks": "node scripts/install-hooks.mjs",
     "db:types": "node scripts/db-types.mjs",
     "backup": "node scripts/backup.mjs",
-    "verify": "node scripts/verify.mjs"
+    "verify": "node scripts/verify.mjs",
+    "admin:promote": "node scripts/admin-promote.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

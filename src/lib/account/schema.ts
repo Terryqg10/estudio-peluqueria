@@ -24,7 +24,9 @@ export type LoginLinkResult =
   | { ok: false; error: 'INVALID_INPUT'; message: string }
   | { ok: false; error: 'UNAVAILABLE' };
 
-export type ConfirmResult = { ok: true } | { ok: false; error: 'INVALID_LINK' | 'UNAVAILABLE' };
+export type ConfirmResult =
+  | { ok: true; destination: 'admin' | 'cuenta' } // el Admin va al panel; las demás cuentas, a «mis citas»
+  | { ok: false; error: 'INVALID_LINK' | 'UNAVAILABLE' };
 
 // Estado del formulario de acceso (acción de servidor con useActionState). Lleva el email para no
 // vaciar el campo; nunca dice si la cuenta existe.

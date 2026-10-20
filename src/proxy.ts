@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { getPublicEnv } from '@/lib/env';
 
 // Renueva la sesión de la clienta (ADR-0021): refresca el token y reescribe las cookies. Solo corre
-// en las rutas de la cuenta; el resto de la web es pública y no toca Auth. No decide permisos: la
+// en las rutas de la cuenta y del panel Admin; el resto de la web es pública y no toca Auth. No decide permisos: la
 // RLS y las páginas comprueban la sesión por su cuenta.
 export async function proxy(request: NextRequest) {
   const env = getPublicEnv();
@@ -25,5 +25,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/mis-citas/:path*', '/acceso/:path*'],
+  matcher: ['/mis-citas/:path*', '/acceso/:path*', '/admin/:path*'],
 };

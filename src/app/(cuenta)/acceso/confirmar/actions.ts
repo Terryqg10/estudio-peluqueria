@@ -8,6 +8,6 @@ import { ROUTES } from '@/lib/routes';
 // que abra la URL con GET no gasta el enlace de un solo uso (ADR-0021).
 export async function confirmLoginAction(formData: FormData): Promise<void> {
   const result = await confirmLoginLink(formData.get('token_hash'));
-  if (result.ok) redirect(ROUTES.misCitas);
+  if (result.ok) redirect(result.destination === 'admin' ? ROUTES.admin : ROUTES.misCitas);
   redirect(`${ROUTES.accesoConfirmar}?error=${result.error === 'UNAVAILABLE' ? 'servicio' : 'enlace'}`);
 }
