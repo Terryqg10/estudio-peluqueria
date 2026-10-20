@@ -115,6 +115,8 @@ Esquemas Zod en `src/lib/schemas/`; los tipos se derivan con `z.infer`.
 **Gestión de la invitada (decisión provisional):** token aleatorio de ≥ 256 bits,
 guardado como hash, con caducidad; el enlace es `/cita/<token>`. Alternativa:
 Supabase Auth con enlace OTP. Se decide con ADR-A antes de implementar.
+> Resuelto: la **cuenta de clienta** usa enlace mágico de Supabase Auth con SMTP propio (ADR-0021, T-007);
+> la **invitada** conserva el token propio (ADR-0009).
 
 ## 5. UI
 
@@ -252,7 +254,7 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-006b | Cancelar la cita desde el enlace (≥ 24 h) con `cancel_guest_appointment` | CA-13, CA-14 (parte cancelar) |
 | T-006c | Cambiar la cita desde el enlace (día, hora, estilista; mismo servicio) con función de BD de reprogramación | CA-14 (parte cambiar) |
 | T-006d | Email de aviso tras cancelar o cambiar (pendiente; requiere enmienda de spec) | — |
-| T-007 | Cuenta de clienta y «mis citas» | CA-12 |
+| T-007 | Cuenta de clienta con enlace mágico (ADR-0021) y «mis citas» de solo lectura. Reservar con cuenta queda para otra tarea | CA-12 |
 | T-008 | Panel Admin: agenda y citas | CA-15, CA-16, CA-17 |
 | T-009 | Admin: servicios, horarios, vacaciones, bloqueos | CA-18 a CA-20 |
 | T-010 | Chatbot de reglas | CA-21 a CA-24 |
