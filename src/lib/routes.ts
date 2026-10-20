@@ -4,6 +4,9 @@ export const ROUTES = {
   reservar: '/reservar',
   reservarConfirmada: '/reservar/confirmada',
   cita: '/cita', // /cita/<token>: enlace personal de la cita (ADR-0018)
+  acceso: '/acceso', // enlace mágico por email (ADR-0021)
+  accesoConfirmar: '/acceso/confirmar',
+  misCitas: '/mis-citas',
   avisoLegal: '/aviso-legal',
   privacidad: '/privacidad',
 } as const;

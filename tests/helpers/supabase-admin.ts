@@ -175,3 +175,49 @@ export async function emailSentAt(appointmentId: string): Promise<string | null>
   if (error) throw new Error(`emailSentAt: ${error.message}`);
   return data.confirmation_email_sent_at;
 }
+
+// Cuentas de clienta (T-007): el id de la cuenta creada por el primer enlace y su limpieza.
+export async function userIdByEmail(email: string): Promise<string | null> {
+  const { data, error } = await adminClient().auth.admin.listUsers({ perPage: 1000 });
+  if (error) throw new Error(`userIdByEmail: ${error.message}`);
+  return data.users.find((u) => u.email === email)?.id ?? null;
+}
+
+export async function deleteAccount(email: string): Promise<void> {
+  const id = await userIdByEmail(email);
+  if (!id) return;
+  await adminClient().from('appointments').delete().eq('user_id', id);
+  await adminClient().auth.admin.deleteUser(id);
+}
+
+// Cita asociada a una cuenta (`user_id`), no de invitada. Mismo reparto de huecos que
+// `createAppointmentWithToken`: de madrugada, 30 días adelante, con reintento si choca.
+export async function createAccountAppointment(userId: string, dayOffset = 30) {
+  const client = adminClient();
+  const stylistId = await idByName('stylists', 'Irene Solís');
+  const serviceId = await idByName('services', 'Tratamiento hidratante');
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const start = new Date();
+    start.setUTCDate(start.getUTCDate() + dayOffset);
+    start.setUTCHours(0, 0, 0, 0);
+    start.setUTCMinutes(Math.floor(Math.random() * 190) * 15);
+    const end = new Date(start.getTime() + 30 * 60_000);
+    const { data, error } = await client
+      .from('appointments')
+      .insert({
+        stylist_id: stylistId,
+        service_id: serviceId,
+        during: `[${start.toISOString()},${end.toISOString()})`,
+        status: 'confirmed',
+        user_id: userId,
+      })
+      .select('id')
+      .single();
+    if (error) {
+      if (error.code === '23P01') continue;
+      throw new Error(`createAccountAppointment: ${error.message}`);
+    }
+    return data.id;
+  }
+  throw new Error('createAccountAppointment: no se encontró un hueco libre en 10 intentos');
+}

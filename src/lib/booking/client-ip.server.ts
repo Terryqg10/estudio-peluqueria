@@ -50,6 +50,24 @@ export function resolveClientIpHash(source: Source, headers: RequestHeaders, str
   return { ok: true, ipHash: createHmac('sha256', salt).update(ip).digest('hex') };
 }
 
+// Hash con sal de una clave que no debe guardarse en claro (p. ej. el email del cupo de envíos del
+// acceso, ADR-0021). Fuera de producción usa la sal de desarrollo; en producción sin sal, null.
+export function hashWithSalt(source: Source, strict: boolean, value: string): string | null {
+  const parsed = RawSchema.safeParse(source);
+  if (!parsed.success) return null;
+  const salt = parsed.data.RATE_LIMIT_SALT ?? (strict ? undefined : DEV_SALT);
+  if (!salt) return null;
+  return createHmac('sha256', salt).update(value).digest('hex');
+}
+
+export function getKeyHash(value: string): string | null {
+  return hashWithSalt(
+    { RATE_LIMIT_SALT: process.env.RATE_LIMIT_SALT, RATE_LIMIT_IP_ENFORCE: process.env.RATE_LIMIT_IP_ENFORCE },
+    isStrictEnvironment(),
+    value,
+  );
+}
+
 export function getClientIpHash(headers: RequestHeaders): IpHashResult {
   return resolveClientIpHash(
     {
