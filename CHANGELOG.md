@@ -33,6 +33,11 @@ y versionado [SemVer](https://semver.org/lang/es/).
 - T-006b: cancelar la cita desde `/cita/<token>` con confirmación en línea, solo si faltan ≥ 24 h
   (la BD lo decide; antes, aviso de contactar con el salón). El hueco queda libre. Sin dependencias
   nuevas. La antigua T-006b se divide: cambiar la cita pasa a T-006c y el email de aviso a T-006d.
+- T-008a: acceso del Admin al panel `/admin` con el mismo enlace mágico y el rol en BD (`profiles.role`).
+  Guardián de servidor (sin sesión → `/acceso`, sin rol → 404) además de la RLS, destino por rol tras entrar,
+  panel con `noindex` y sin caché, y `pnpm admin:promote <email> [--revoke] [--local]` para dar o quitar el
+  rol (Node, sin shell). ADR-0022. Sin dependencias nuevas. Aún sin herramientas en el panel (T-008b y
+  T-008c) y sin segundo factor para el Admin (VERIFICAR antes de un salón real).
 - T-007: cuenta de clienta con enlace mágico de Supabase Auth (sin contraseña) y página «Mis citas» de solo
   lectura, con la RLS como única barrera (CA-12). El enlace abre una página con un botón (un antivirus no lo
   gasta), caduca a los 15 min y la respuesta es idéntica exista o no la cuenta. Cupo de 3 envíos por email y
