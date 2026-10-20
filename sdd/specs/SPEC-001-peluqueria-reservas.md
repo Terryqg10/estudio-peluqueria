@@ -170,7 +170,7 @@ Cualquier otra transición se rechaza.
 | Nombre, email, teléfono | Gestionar la cita y contactar | Supabase (Postgres) | Mientras haya citas y hasta 24 meses tras la última (VERIFICAR) | Borrado a petición; anonimización automática a los 24 meses |
 | Cuenta de clienta (email, id de auth) | Ver sus citas | Supabase Auth | Hasta que la clienta lo pida | Baja de cuenta |
 | Hash del token de gestión | Acceso a la cita de invitada | Supabase | Hasta caducidad o fin de la cita | Se elimina con la cita o al caducar |
-| IP (para límites) | Antiabuso | Solo como hash y con TTL corto (VERIFICAR) | Horas | Caducidad automática |
+| IP (para límites) | Antiabuso | Solo como hash (HMAC con sal de servidor) y con TTL corto (VERIFICAR) | Horas (los registros de más de dos ventanas de 60 min se borran) | Caducidad automática |
 | Consentimiento (fecha y versión) | Prueba de consentimiento | Supabase | Mientras exista el dato asociado | Con el dato asociado |
 | Mensajes del chatbot | No se guardan | n/a | n/a | n/a |
 
@@ -243,6 +243,7 @@ pasa por un módulo en `src/lib/<proveedor>/`; nunca desde un componente.
 | 2026-10-19 | ADR-0011 | Se añade el requisito no funcional **RNF-13** y los criterios **CA-36** y **CA-37** (ver abajo). No cambia ningún requisito ni CA existente |
 | 2026-10-21 | ADR-0017 y ADR-0018 | Secciones 9 y 10: el **nombre, el email y los datos de la cita se envían al proveedor de email** (Resend, solo en producción; en desarrollo, a Mailpit local) para mandar la confirmación con el enlace personal `/cita/<token>`. La página del enlace no muestra datos personales y se sirve con `no-store`, `noindex` y `Referrer-Policy: no-referrer`; el token no se guarda en claro ni se registra. Se añade la columna `confirmation_email_sent_at` (no personal). VERIFICAR los términos de Resend y el contrato de encargado de tratamiento antes de activarlo. No cambia ningún requisito ni CA |
 | 2026-10-21 | ADR-0015 | Sección 9: se añade una **cookie funcional de primera parte** `reserva_confirmada` (id de la cita, no personal; `httpOnly`, `SameSite=Lax`, ruta `/reservar`, 10 minutos) para mostrar la confirmación sin datos en la URL. No es de analítica ni de terceros; la frase «no se usan cookies de analítica ni de terceros» sigue siendo cierta. No cambia ningún requisito ni CA |
+| 2026-10-22 | ADR-0020 | RF-10, CA-29 y sección 9: el límite por **email** es de **citas activas** (cancelar una libera cupo, como dice CA-29); el límite por **IP** es de **reservas creadas por ventana** (no de citas activas), porque contar citas activas por IP obligaría a guardar el hash de la IP mientras la cita siga activa (semanas), incompatible con «solo hash y TTL de horas». La IP se guarda solo como HMAC-SHA256 con una sal secreta de servidor (`RATE_LIMIT_SALT`) y los registros de más de dos ventanas se borran. Valores iniciales (VERIFICAR con el salón): 3 citas activas por email; 10 reservas por hora por IP. Para la IP, «tras cancelar una, puede reservar» pasa a ser «puede reservar al pasar la ventana». No cambia ningún otro requisito ni CA |
 | 2026-10-19 | ADR-0009 | Sección 8: se concreta el mecanismo del token de gestión (256 bits, solo hash, acceso por funciones `security definer`). No cambia ningún requisito ni CA |
 
 ### Anexo de la enmienda ADR-0011

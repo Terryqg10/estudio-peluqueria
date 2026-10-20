@@ -37,6 +37,10 @@ y versionado [SemVer](https://semver.org/lang/es/).
   faltan ≥ 24 h. Función de BD que mueve la misma cita y conserva el token (caducidad al nuevo inicio),
   con el cálculo de disponibilidad compartido (`availability_core`) y huecos que no cuentan la propia
   cita. ADR-0019. Sin dependencias nuevas; aún sin aviso por email (T-006d).
+- T-005c: límites antiabuso de la reserva dentro de `create_booking`: máximo de citas activas por email (3,
+  cancelar libera) y de reservas por hora por IP (10), con la IP solo como hash con sal de servidor y
+  caducidad en horas (`rate_limits`). Mensajes claros en el formulario. ADR-0020 y enmienda de RF-10/CA-29.
+  Sin dependencias nuevas; hace falta `RATE_LIMIT_SALT` en producción.
 - Registro de imágenes en `docs/imagenes.md` y Lighthouse como devDependency.
 
 ### Cambiado

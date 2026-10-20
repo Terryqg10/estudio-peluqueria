@@ -259,6 +259,7 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-011 | Galería antes/después | CA-02 |
 | T-012 | Privacidad, antiabuso y retención | CA-25 a CA-29 |
 | T-013 | Keep-alive y CI bloqueante | CA-35 |
+| T-014 | Estabilizar los tests de tiempo-real (flaky bajo carga; anotada al cerrar T-005c) | — |
 
 ## 10. Notas técnicas
 
