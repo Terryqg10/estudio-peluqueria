@@ -54,6 +54,9 @@ y versionado [SemVer](https://semver.org/lang/es/).
 - Registro de imágenes en `docs/imagenes.md` y Lighthouse como devDependency.
 
 ### Cambiado
+- Puertos del Supabase local movidos +100 (API 54421, BD 54422, Studio 54423, Mailpit 54424…, y `site_url`
+  a `127.0.0.1:3100`) para poder tener a la vez otro proyecto con Supabase local. El Mailpit por defecto del
+  código pasa a `54424`. Hay que actualizar `NEXT_PUBLIC_SUPABASE_URL` en `.env.local` a `http://127.0.0.1:54421`.
 - Spec `SPEC-001` aprobada y enmendada (estados de cita, token de invitada, RNF-13, CA-36 y
   CA-37). Plan `PLAN-001` aprobado.
 

@@ -8,7 +8,7 @@ describe('resolveEmailEnv (ADR-0017)', () => {
       provider: 'mailpit',
       from: 'Atelier Malva <reservas@atelier-malva.example>',
       appUrl: 'http://localhost:3000',
-      mailpitUrl: 'http://127.0.0.1:54324',
+      mailpitUrl: 'http://127.0.0.1:54424',
       resendApiKey: null,
     });
   });

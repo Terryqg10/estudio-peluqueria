@@ -24,7 +24,7 @@ const DEV_DEFAULTS = {
   provider: 'mailpit',
   from: 'Atelier Malva <reservas@atelier-malva.example>', // VERIFICAR: remitente real en producción
   appUrl: 'http://localhost:3000',
-  mailpitUrl: 'http://127.0.0.1:54324',
+  mailpitUrl: 'http://127.0.0.1:54424',
 } as const;
 
 const stripTrailingSlash = (url: string) => url.replace(/\/+$/, '');

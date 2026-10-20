@@ -8,7 +8,7 @@ import type { Database } from '../../src/lib/database.types';
 const EnvSchema = z.object({
   API_URL: z.string().url(),
   SERVICE_ROLE_KEY: z.string().min(1),
-  MAILPIT_URL: z.string().url().default('http://127.0.0.1:54324'),
+  MAILPIT_URL: z.string().url().default('http://127.0.0.1:54424'),
 });
 
 type StatusEnv = z.infer<typeof EnvSchema>;
