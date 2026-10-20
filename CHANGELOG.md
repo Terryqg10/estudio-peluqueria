@@ -30,6 +30,9 @@ y versionado [SemVer](https://semver.org/lang/es/).
   Adaptador `EmailSender` sin dependencias nuevas (Mailpit local y Resend por variable de entorno), la
   cita se mantiene si falla el envío y la confirmación avisa. Enlace con un único mensaje de «no válido
   o caducado». ADR-0017 y ADR-0018. Aún sin cancelar ni cambiar la cita (T-006b).
+- T-006b: cancelar la cita desde `/cita/<token>` con confirmación en línea, solo si faltan ≥ 24 h
+  (la BD lo decide; antes, aviso de contactar con el salón). El hueco queda libre. Sin dependencias
+  nuevas. La antigua T-006b se divide: cambiar la cita pasa a T-006c y el email de aviso a T-006d.
 - Registro de imágenes en `docs/imagenes.md` y Lighthouse como devDependency.
 
 ### Cambiado

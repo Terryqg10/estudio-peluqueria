@@ -249,7 +249,9 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 > se reparte entre T-004 (datos) y T-005a (interfaz), para no mezclar capas. Se conserva la
 > numeración posterior para no romper las referencias de ADRs y reviews.
 | T-006a | Adaptador `EmailSender` (Mailpit local y Resend por variable, ADR-0017), envío de la confirmación tras reservar con token y enlace `/cita/<token>` de solo lectura (ADR-0018) | CA-11, CA-30 |
-| T-006b | Gestión desde el enlace: cancelar (≥ 24 h) y cambiar la cita (función de BD de reprogramación) | CA-13, CA-14 |
+| T-006b | Cancelar la cita desde el enlace (≥ 24 h) con `cancel_guest_appointment` | CA-13, CA-14 (parte cancelar) |
+| T-006c | Cambiar la cita desde el enlace (día, hora, estilista; mismo servicio) con función de BD de reprogramación | CA-14 (parte cambiar) |
+| T-006d | Email de aviso tras cancelar o cambiar (pendiente; requiere enmienda de spec) | — |
 | T-007 | Cuenta de clienta y «mis citas» | CA-12 |
 | T-008 | Panel Admin: agenda y citas | CA-15, CA-16, CA-17 |
 | T-009 | Admin: servicios, horarios, vacaciones, bloqueos | CA-18 a CA-20 |
