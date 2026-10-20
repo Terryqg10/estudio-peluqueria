@@ -33,6 +33,10 @@ y versionado [SemVer](https://semver.org/lang/es/).
 - T-006b: cancelar la cita desde `/cita/<token>` con confirmación en línea, solo si faltan ≥ 24 h
   (la BD lo decide; antes, aviso de contactar con el salón). El hueco queda libre. Sin dependencias
   nuevas. La antigua T-006b se divide: cambiar la cita pasa a T-006c y el email de aviso a T-006d.
+- T-006c: cambiar la cita desde `/cita/<token>/cambiar` (estilista, día y hora; mismo servicio), solo si
+  faltan ≥ 24 h. Función de BD que mueve la misma cita y conserva el token (caducidad al nuevo inicio),
+  con el cálculo de disponibilidad compartido (`availability_core`) y huecos que no cuentan la propia
+  cita. ADR-0019. Sin dependencias nuevas; aún sin aviso por email (T-006d).
 - Registro de imágenes en `docs/imagenes.md` y Lighthouse como devDependency.
 
 ### Cambiado
