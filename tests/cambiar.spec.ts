@@ -148,6 +148,14 @@ test.describe('cambiar la cita desde el enlace', () => {
     const date = dayFor(testInfo.project.name);
     const { id, token } = await createAppointmentWithToken({ startsAt: at(date, HOUR.tarde, 0) });
     try {
+      // CA-14: la página tiene los datos de ANTES de que la cita pasara a menos de 24 h y es el SERVIDOR quien
+      // rechaza el cambio. Se bloquea el canal en tiempo real para que la página no se entere antes: con él, el
+      // aviso de la BD recarga la disponibilidad, el servidor responde TOO_LATE y el botón «Confirmar el
+      // cambio» desaparece a propósito (correcto en el producto). Sin bloquearlo, el test dependía de la
+      // velocidad de la máquina: pasaba en local y fallaba en el runner de CI (T-013a). El CA no cambia.
+      await page.routeWebSocket(/realtime/, (ws) => {
+        void ws.close();
+      });
       await openChange(page, token, date);
       await slotButton(page, `${HOUR.tarde}:30`).click();
 
