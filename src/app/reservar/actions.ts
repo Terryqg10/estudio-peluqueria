@@ -5,6 +5,7 @@ import { getAvailability } from '@/lib/availability/get-availability';
 import { findNextDaysWithSlots } from '@/lib/availability/next-days';
 import type { NextDaysResult } from '@/lib/availability/next-days';
 import type { AvailabilityResult } from '@/lib/availability/schema';
+import { getClientIpHash } from '@/lib/booking/client-ip.server';
 import { CONFIRMATION_COOKIE, confirmationCookieOptions } from '@/lib/booking/confirmation-cookie';
 import { createBooking } from '@/lib/booking/create-booking';
 import type { BookingResult } from '@/lib/booking/schema';
@@ -23,9 +24,14 @@ export async function loadNextDaysAction(input: unknown): Promise<NextDaysResult
 // Crea la reserva (T-005b). Si va bien, deja una cookie httpOnly con el id de la cita para la
 // página de confirmación; nunca se devuelven datos personales ni identificadores al cliente.
 export async function createBookingAction(input: unknown): Promise<BookingResult> {
-  const outcome = await createBooking(input);
+  // Hash de la IP para el límite por IP (ADR-0020). Si en producción falta la sal, se falla cerrado.
+  const requestHeaders = await headers();
+  const ip = getClientIpHash(requestHeaders);
+  if (!ip.ok) return { ok: false, error: 'UNAVAILABLE' };
+
+  const outcome = await createBooking(input, { ipHash: ip.ipHash });
   if (!outcome.ok) return outcome;
-  const [store, requestHeaders] = await Promise.all([cookies(), headers()]);
+  const store = await cookies();
   store.set(
     CONFIRMATION_COOKIE,
     outcome.appointmentId,

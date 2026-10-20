@@ -95,7 +95,7 @@ export async function activeAppointmentsAt(stylistId: string, startsAtIso: strin
 // Cita de invitada creada a mano con service_role y su token de gestión (T-006a). Se coloca de
 // madrugada, 30 días adelante y con un desplazamiento aleatorio, para no pisar a otros tests.
 // `past: true` la pone en el pasado: su token nace ya caducado (expira al inicio de la cita).
-export async function createAppointmentWithToken(options: { past?: boolean; soon?: boolean; startsAt?: string } = {}) {
+export async function createAppointmentWithToken(options: { past?: boolean; soon?: boolean; startsAt?: string; guestEmail?: string } = {}) {
   const client = adminClient();
   const stylistId = await idByName('stylists', 'Irene Solís');
   const serviceId = await idByName('services', 'Tratamiento hidratante');
@@ -126,7 +126,7 @@ export async function createAppointmentWithToken(options: { past?: boolean; soon
         during: `[${start.toISOString()},${end.toISOString()})`,
         status: 'confirmed',
         guest_name: 'Persona de prueba',
-        guest_email: `token-${Date.now()}-${offsetMinutes}@test.invalid`,
+        guest_email: options.guestEmail ?? `token-${Date.now()}-${offsetMinutes}@test.invalid`,
         guest_phone: '+34600000000',
       })
       .select('id')

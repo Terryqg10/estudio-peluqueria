@@ -82,6 +82,14 @@ export function BookingForm({
         onSlotUnavailable(result.alternatives);
       } else if (result.error === 'OUT_OF_WINDOW') {
         onSlotUnavailable([]);
+      } else if (result.error === 'LIMIT_EMAIL') {
+        setMessage(
+          'Ya tienes el máximo de citas activas con este email. Cancela una desde el enlace de tu email o contacta con el salón.',
+        );
+      } else if (result.error === 'LIMIT_IP') {
+        setMessage(
+          'Hemos recibido demasiadas reservas desde tu conexión. Inténtalo de nuevo más tarde o contacta con el salón.',
+        );
       } else {
         setMessage('No hemos podido completar la reserva. Inténtalo de nuevo en unos minutos.');
       }

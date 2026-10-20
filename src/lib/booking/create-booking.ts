@@ -2,6 +2,7 @@ import { getAvailability } from '@/lib/availability/get-availability';
 import type { AvailabilitySlot } from '@/lib/availability/schema';
 import { createServiceClient } from '@/lib/supabase/service-client';
 import { CONSENT_VERSION } from './consent';
+import { BOOKING_LIMITS } from './limits';
 import { madridDateOf } from './dates';
 import { isHoneypotTriggered } from './honeypot';
 import { BookingFormSchema, toFieldErrors, type BookingResult } from './schema';
@@ -30,7 +31,11 @@ async function alternativesFor(serviceId: string, startsAt: string): Promise<Ava
 
 // Crea la reserva de invitada (T-005b). Orden: honeypot → Zod → función de BD (ADR-0015).
 // Los errores de la BD se traducen a respuestas estables; los desconocidos no revelan detalles.
-export async function createBooking(input: unknown): Promise<CreatedBooking | BookingFailure> {
+// `ipHash` es el hash de la IP del visitante (nunca la IP) o null si no se aplica el límite por IP.
+export async function createBooking(
+  input: unknown,
+  context: { ipHash: string | null } = { ipHash: null },
+): Promise<CreatedBooking | BookingFailure> {
   // El honeypot se mira sobre la entrada cruda y responde igual que un fallo ordinario (CA-28).
   if (isHoneypotTriggered(input)) return { ok: false, error: 'UNAVAILABLE' };
 
@@ -54,6 +59,10 @@ export async function createBooking(input: unknown): Promise<CreatedBooking | Bo
     p_guest_email: data.email,
     p_guest_phone: data.phone,
     p_consent_version: CONSENT_VERSION,
+    ...(context.ipHash ? { p_ip_hash: context.ipHash } : {}),
+    p_max_active_per_email: BOOKING_LIMITS.maxActivePerEmail,
+    p_max_per_ip: BOOKING_LIMITS.maxPerIp,
+    p_ip_window_minutes: BOOKING_LIMITS.ipWindowMinutes,
   });
 
   if (error) {
@@ -65,6 +74,8 @@ export async function createBooking(input: unknown): Promise<CreatedBooking | Bo
       };
     }
     if (error.message === 'OUT_OF_WINDOW') return { ok: false, error: 'OUT_OF_WINDOW' };
+    if (error.message === 'LIMIT_EMAIL') return { ok: false, error: 'LIMIT_EMAIL' };
+    if (error.message === 'LIMIT_IP') return { ok: false, error: 'LIMIT_IP' };
     return { ok: false, error: 'UNAVAILABLE' };
   }
 

@@ -71,7 +71,23 @@ describe('createBooking', () => {
       p_guest_email: 'ana@correo.com',
       p_guest_phone: '600 000 000',
       p_consent_version: 'borrador-1',
+      // Límites antiabuso (T-005c, ADR-0020): sin IP no se envía hash.
+      p_max_active_per_email: 3,
+      p_max_per_ip: 10,
+      p_ip_window_minutes: 60,
     });
+  });
+
+  it('CA-29: con hash de IP lo envía a la BD (nunca la IP) y traduce LIMIT_EMAIL y LIMIT_IP', async () => {
+    const ipHash = 'a'.repeat(64);
+    rpc.mockResolvedValue({ data: [{ appointment_id: 'cita-1' }], error: null });
+    await createBooking(valid, { ipHash });
+    expect(rpc).toHaveBeenCalledWith('create_booking', expect.objectContaining({ p_ip_hash: ipHash }));
+
+    rpc.mockResolvedValue({ data: null, error: { message: 'LIMIT_EMAIL' } });
+    expect(await createBooking(valid)).toEqual({ ok: false, error: 'LIMIT_EMAIL' });
+    rpc.mockResolvedValue({ data: null, error: { message: 'LIMIT_IP' } });
+    expect(await createBooking(valid, { ipHash })).toEqual({ ok: false, error: 'LIMIT_IP' });
   });
 
   it('CA-08: SLOT_TAKEN devuelve alternativas del mismo día, las más cercanas y sin el hueco pedido', async () => {

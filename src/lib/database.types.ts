@@ -83,6 +83,19 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"rate_limits": {
+                  Row: {
+                    "created_at": string,"id": number,"key_hash": string,"kind": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"id"?: never,"key_hash": string,"kind": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: never,"key_hash"?: string,"kind"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"salon_hours": {
                   Row: {
                     "closes": string,"id": string,"opens": string,"weekday": number
@@ -202,7 +215,7 @@ isOneToOne: false
             }[]
                            },
 "create_booking":
-{ Args: { "p_consent_version": string,"p_guest_email": string,"p_guest_name": string,"p_guest_phone": string,"p_service_id": string,"p_starts_at": string,"p_stylist_id": string }; Returns: {
+{ Args: { "p_consent_version": string,"p_guest_email": string,"p_guest_name": string,"p_guest_phone": string,"p_ip_hash"?: string,"p_ip_window_minutes"?: number,"p_max_active_per_email"?: number,"p_max_per_ip"?: number,"p_service_id": string,"p_starts_at": string,"p_stylist_id": string }; Returns: {
               "appointment_id": string,"ends_at": string,"starts_at": string
             }[]
                            },

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
   addTimeBlock,
@@ -42,6 +43,8 @@ describe('reserva: create_booking', () => {
       p_stylist_id: stylistA,
       p_starts_at: at(10, 30),
       ...GOOD,
+      // Un email distinto por reserva: aquí no se prueban los límites de citas por persona (T-005c).
+      p_guest_email: `ana-${randomUUID()}@test.invalid`,
       ...over,
     });
 

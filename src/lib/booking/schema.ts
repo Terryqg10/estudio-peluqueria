@@ -45,7 +45,7 @@ export type BookingResult =
   | { ok: true }
   | { ok: false; error: 'INVALID_INPUT'; fieldErrors: FieldErrors }
   | { ok: false; error: 'SLOT_TAKEN'; alternatives: AvailabilitySlot[] }
-  | { ok: false; error: 'OUT_OF_WINDOW' | 'UNAVAILABLE' };
+  | { ok: false; error: 'OUT_OF_WINDOW' | 'UNAVAILABLE' | 'LIMIT_EMAIL' | 'LIMIT_IP' };
 
 // Primer mensaje de error por campo del formulario, a partir de los problemas de Zod.
 export function toFieldErrors(error: z.ZodError): FieldErrors {
