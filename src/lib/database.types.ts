@@ -191,7 +191,12 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "cancel_guest_appointment":
+            "availability_core":
+{ Args: { "p_date": string,"p_exclude_appointment": string,"p_service_id": string,"p_stylist_id": string }; Returns: {
+              "starts_at": string,"stylist_id": string
+            }[]
+                           },
+"cancel_guest_appointment":
 { Args: { "p_token": string }; Returns: {
               "id": string,"status": Database["public"]['Enums']["appointment_status"]
             }[]
@@ -211,11 +216,21 @@ isOneToOne: false
               "ends_at": string,"id": string,"service_id": string,"starts_at": string,"status": Database["public"]['Enums']["appointment_status"],"stylist_id": string
             }[]
                            },
+"get_guest_reschedule_availability":
+{ Args: { "p_date": string,"p_token": string }; Returns: {
+              "starts_at": string,"stylist_id": string
+            }[]
+                           },
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
 "issue_management_token":
 { Args: { "p_appointment_id": string }; Returns: string
+                           },
+"reschedule_guest_appointment":
+{ Args: { "p_starts_at": string,"p_stylist_id": string,"p_token": string }; Returns: {
+              "ends_at": string,"id": string,"starts_at": string,"stylist_id": string
+            }[]
                            }
           }
           Enums: {

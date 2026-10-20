@@ -95,7 +95,7 @@ export async function activeAppointmentsAt(stylistId: string, startsAtIso: strin
 // Cita de invitada creada a mano con service_role y su token de gestión (T-006a). Se coloca de
 // madrugada, 30 días adelante y con un desplazamiento aleatorio, para no pisar a otros tests.
 // `past: true` la pone en el pasado: su token nace ya caducado (expira al inicio de la cita).
-export async function createAppointmentWithToken(options: { past?: boolean; soon?: boolean } = {}) {
+export async function createAppointmentWithToken(options: { past?: boolean; soon?: boolean; startsAt?: string } = {}) {
   const client = adminClient();
   const stylistId = await idByName('stylists', 'Irene Solís');
   const serviceId = await idByName('services', 'Tratamiento hidratante');
@@ -105,7 +105,9 @@ export async function createAppointmentWithToken(options: { past?: boolean; soon
   for (let attempt = 0; attempt < 10; attempt++) {
     const offsetMinutes = Math.floor(Math.random() * 190) * 15;
     const start = new Date();
-    if (options.soon) {
+    if (options.startsAt) {
+      start.setTime(new Date(options.startsAt).getTime()); // hueco exacto (sin reintento si choca)
+    } else if (options.soon) {
       // Dentro de las próximas 24 h (entre 2 y 7 h): fuera de la ventana de cancelación.
       start.setTime(start.getTime() + (2 * 60 + Math.floor(Math.random() * 300)) * 60_000);
       start.setUTCSeconds(0, 0);
@@ -130,7 +132,7 @@ export async function createAppointmentWithToken(options: { past?: boolean; soon
       .select('id')
       .single();
     if (error) {
-      if (error.code === '23P01') continue;
+      if (error.code === '23P01' && !options.startsAt) continue;
       throw new Error(`createAppointmentWithToken: ${error.message}`);
     }
     const token = await issueToken(data.id);

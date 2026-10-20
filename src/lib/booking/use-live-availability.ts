@@ -16,6 +16,20 @@ export type LiveParams = {
 export type LoadStatus = 'loading' | 'ready' | 'error';
 export type ChannelState = 'connecting' | 'live' | 'fallback';
 
+// Cargador de huecos: por defecto el de /reservar; /cita/<token>/cambiar usa uno que ignora la propia cita.
+export type SlotLoader = (params: {
+  serviceId: string;
+  stylistId: string | null;
+  date: string;
+}) => Promise<{ ok: true; slots: Slot[] } | { ok: false }>;
+
+const defaultLoader: SlotLoader = (current) =>
+  loadAvailabilityAction({
+    serviceId: current.serviceId,
+    date: current.date,
+    ...(current.stylistId ? { stylistId: current.stylistId } : {}),
+  });
+
 type Loaded = { key: string; slots: Slot[]; status: 'ready' | 'error' };
 
 const keyOf = (p: Pick<LiveParams, 'serviceId' | 'stylistId' | 'date'>) =>
@@ -23,17 +37,19 @@ const keyOf = (p: Pick<LiveParams, 'serviceId' | 'stylistId' | 'date'>) =>
 
 // Disponibilidad en vivo (ADR-0013): carga por acción de servidor, avisos por el canal
 // `availability`, nueva consulta al suscribirse y sondeo de respaldo (15 s sin canal, 60 s con él).
-export function useLiveAvailability(params: LiveParams | null) {
+export function useLiveAvailability(params: LiveParams | null, load: SlotLoader = defaultLoader) {
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [channel, setChannel] = useState<ChannelState>(() =>
     getBrowserClient() ? 'connecting' : 'fallback',
   );
   const paramsRef = useRef<LiveParams | null>(params);
+  const loadRef = useRef<SlotLoader>(load);
   const requestRef = useRef(0);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     paramsRef.current = params;
+    loadRef.current = load;
   });
 
   const refetch = useCallback(async () => {
@@ -41,11 +57,7 @@ export function useLiveAvailability(params: LiveParams | null) {
     if (!current) return;
     const requestId = ++requestRef.current;
     const key = keyOf(current);
-    const result = await loadAvailabilityAction({
-      serviceId: current.serviceId,
-      date: current.date,
-      ...(current.stylistId ? { stylistId: current.stylistId } : {}),
-    });
+    const result = await loadRef.current(current);
     if (requestId !== requestRef.current) return; // respuesta obsoleta: otra consulta es más reciente
     if (result.ok) setLoaded({ key, slots: result.slots, status: 'ready' });
     else setLoaded({ key, slots: [], status: 'error' }); // no se muestran huecos desactualizados

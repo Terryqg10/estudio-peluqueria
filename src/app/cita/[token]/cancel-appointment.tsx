@@ -59,7 +59,7 @@ export function CancelAppointment({ token }: { token: string }) {
   }
 
   return (
-    <div className="mt-8">
+    <div className="mt-4">
       {error ? (
         <div role="alert" className="mb-4 rounded-card bg-accent-soft p-4 text-fg">
           <p>{MESSAGES[error]}</p>

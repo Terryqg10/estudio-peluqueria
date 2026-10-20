@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { TokenSchema } from '@/lib/booking/token';
 import { formatLongDate, formatSlotTime, madridDateOf } from '@/lib/booking/dates';
+import { loadGuestAppointment } from '@/lib/booking/load-guest-appointment';
 import { STATUS_LABELS } from '@/lib/booking/status';
 import { ROUTES } from '@/lib/routes';
 import { formatPriceFrom } from '@/lib/services/catalog';
-import { createPublicClient } from '@/lib/supabase/public-client';
 import { CancelAppointment } from './cancel-appointment';
 
 // El token va en la URL: no se indexa, no se cachea y no se envía a terceros en la cabecera Referer
@@ -18,52 +17,21 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-// Margen mínimo para cancelar desde el enlace (RF-05). La BD lo vuelve a comprobar.
-const CANCEL_WINDOW_MS = 24 * 60 * 60_000;
-
 const LINK_CLASS =
   'inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
 
-type Appointment = {
-  serviceName: string;
-  priceFromCents: number | null;
-  stylistName: string;
-  startsAt: string;
-  status: keyof typeof STATUS_LABELS;
-  canCancel: boolean;
-};
+const CHANGE_LINK_CLASS =
+  'inline-flex min-h-11 items-center justify-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover';
 
-// Consulta con la clave anónima y la función pública de la BD. Cualquier fallo (forma incorrecta,
-// desconocido, manipulado o caducado) da el MISMO resultado: no revela si la cita existe (ADR-0009).
-async function loadAppointment(rawToken: string): Promise<Appointment | null> {
-  const token = TokenSchema.safeParse(rawToken);
-  if (!token.success) return null;
-
-  const client = createPublicClient();
-  if (!client) return null;
-
-  const { data, error } = await client.rpc('get_guest_appointment', { p_token: token.data });
-  const row = data?.[0];
-  if (error || !row) return null;
-
-  const [service, stylist] = await Promise.all([
-    client.from('services').select('name, price_from_cents').eq('id', row.service_id).maybeSingle(),
-    client.from('stylists').select('name').eq('id', row.stylist_id).maybeSingle(),
-  ]);
-
-  return {
-    serviceName: service.data?.name ?? 'Servicio',
-    priceFromCents: service.data?.price_from_cents ?? null,
-    stylistName: stylist.data?.name ?? 'Estilista',
-    startsAt: row.starts_at,
-    status: row.status,
-    canCancel: new Date(row.starts_at).getTime() - Date.now() >= CANCEL_WINDOW_MS,
-  };
-}
-
-export default async function CitaPage({ params }: { params: Promise<{ token: string }> }) {
-  const { token } = await params;
-  const appointment = await loadAppointment(token);
+export default async function CitaPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ token: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const [{ token }, query] = await Promise.all([params, searchParams]);
+  const appointment = await loadGuestAppointment(token);
 
   if (!appointment) {
     return (
@@ -86,11 +54,19 @@ export default async function CitaPage({ params }: { params: Promise<{ token: st
   }
 
   const isActive = appointment.status === 'confirmed' || appointment.status === 'pending';
+  // Tras cambiar la cita se vuelve aquí con ?cambiada=1 (T-006c): solo un aviso, sin datos.
+  const justChanged = query.cambiada === '1' && isActive;
 
   return (
     <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
       <h1 className="font-display text-display font-semibold">Tu cita</h1>
       <p className="mt-3 text-fg-muted">Estos son los datos de tu cita.</p>
+
+      {justChanged ? (
+        <p role="status" className="mt-6 rounded-card bg-accent-soft p-4 text-fg">
+          Hemos cambiado tu cita. Estos son sus nuevos datos.
+        </p>
+      ) : null}
 
       <dl className="mt-8 grid gap-4 rounded-container bg-surface p-6 shadow-card sm:grid-cols-2">
         <div>
@@ -124,8 +100,15 @@ export default async function CitaPage({ params }: { params: Promise<{ token: st
       </dl>
 
       {isActive ? (
-        appointment.canCancel ? (
-          <CancelAppointment token={token} />
+        appointment.canChange ? (
+          <>
+            <div className="mt-8">
+              <Link href={`${ROUTES.cita}/${token}/cambiar`} className={CHANGE_LINK_CLASS}>
+                Cambiar cita
+              </Link>
+            </div>
+            <CancelAppointment token={token} />
+          </>
         ) : (
           <p className="mt-8 rounded-card bg-accent-soft p-4 text-fg">
             Faltan menos de 24 horas para tu cita y ya no se puede cancelar ni cambiar desde aquí.

@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PUBLIC_PAGES } from '../src/lib/public-pages';
-import { workday } from './helpers/booking-days';
+import { nextDay, workday } from './helpers/booking-days';
 import { submitForm } from './helpers/booking-flow';
+import { madridInstant } from './integration/helpers/time';
 import { createAppointmentWithToken, deleteAppointment } from './helpers/supabase-admin';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
@@ -65,6 +66,30 @@ test.describe('accesibilidad', () => {
       await page.getByRole('button', { name: 'Cancelar cita' }).click();
       await expect(page.getByRole('heading', { name: '¿Cancelar tu cita?' })).toBeVisible();
       await check();
+    } finally {
+      await deleteAppointment(id);
+    }
+  });
+
+  test('/cita/<token>/cambiar con una hora elegida: sin violaciones graves ni críticas', async ({ page }, testInfo) => {
+    // Con transiciones activas axe puede medir un botón a medio cambiar de color.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    // Día a 7 o más días y una hora propia por proyecto (16:00 / 17:00) para no chocar con otros e2e.
+    const date = nextDay(7, (d) => d <= 5);
+    const hour = testInfo.project.name === 'mobile' ? 17 : 16;
+    const { id, token } = await createAppointmentWithToken({ startsAt: madridInstant(date, hour, 0) });
+    try {
+      await page.goto(`/cita/${token}/cambiar`);
+      await expect(page.getByRole('heading', { level: 1, name: 'Cambiar tu cita' })).toBeVisible();
+      await page.locator(`button[data-date="${date}"]`).click();
+      await page.locator('button[data-starts-at]', { hasText: new RegExp(`^${hour}:30$`) }).click();
+      await expect(page.getByRole('heading', { name: 'Tu cita nueva' })).toBeVisible();
+      const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+      const serious = results.violations.filter(
+        (v) => v.impact === 'serious' || v.impact === 'critical',
+      );
+      for (const v of serious) console.error(`[a11y] ${v.id} (${v.impact}): ${v.help}`);
+      expect(serious, 'violaciones graves o críticas de axe').toEqual([]);
     } finally {
       await deleteAppointment(id);
     }
