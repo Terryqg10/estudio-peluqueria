@@ -23,6 +23,7 @@
     "test:a11y": "node scripts/check-a11y.mjs",
     "check-palette": "node scripts/check-palette.mjs",
     "check-secrets": "node scripts/check-secrets.mjs",
+    "check-audit": "node scripts/check-audit.mjs",
     "install-hooks": "node scripts/install-hooks.mjs",
     "db:types": "node scripts/db-types.mjs",
     "backup": "node scripts/backup.mjs",

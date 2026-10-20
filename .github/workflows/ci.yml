@@ -1,5 +1,9 @@
 name: CI
 
+# CI bloqueante (RNF-09, ADR-0025). Un fallo en cualquier job impide dar por buena la fusión: el job final
+# «CI OK» agrega el resultado y es el que debe marcarse como comprobación obligatoria en la protección de la
+# rama (configuración de GitHub, no del repo). Sin secretos de GitHub: el Supabase de los tests es el LOCAL,
+# que se arranca dentro del runner (`supabase start`).
 on:
   push:
     branches: [main]
@@ -13,9 +17,15 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Mismas versiones que el desarrollo local (supabase --version).
+  SUPABASE_CLI_VERSION: 2.118.0
+  # Servicios del Supabase local que la web no usa: no se arrancan (ahorra minutos y memoria).
+  SUPABASE_EXCLUDE: storage-api,imgproxy,studio,edge-runtime,logflare,vector,supavisor,postgres-meta
+
 jobs:
-  main:
-    name: Typecheck, lint, tests, build
+  quality:
+    name: Calidad (tipos, lint, paleta, audit, unitarios, build)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -43,32 +53,20 @@ jobs:
       - name: Check palette
         run: pnpm run check-palette
 
-      - name: Audit
-        run: pnpm audit --audit-level=high
+      # Producción: cero hallazgos. Completo: solo los de ADR-0008 y ADR-0023 (scripts/audit-allowlist.json).
+      - name: Audit (ADR-0025)
+        run: pnpm run check-audit
 
       - name: Unit tests
         run: pnpm run test
 
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium webkit
-
       - name: Build
         run: pnpm run build
 
-      - name: End-to-end tests (incluye axe)
-        run: pnpm run test:e2e
-
-      - name: Upload Playwright report
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
-
   secrets:
-    name: gitleaks
+    name: Secretos (gitleaks)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -79,3 +77,104 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  integration:
+    name: Integración con BD real (Supabase local)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: ${{ env.SUPABASE_CLI_VERSION }}
+
+      # Aplica las migraciones y el seed de supabase/ (mismos que en local).
+      - name: Start Supabase
+        run: supabase start -x ${{ env.SUPABASE_EXCLUDE }}
+
+      - name: Integration tests
+        run: pnpm run test:integration
+
+      - name: Supabase logs (solo si falla)
+        if: failure()
+        run: docker ps -a --format '{{.Names}} {{.Status}}'
+
+  e2e:
+    name: e2e ${{ matrix.shard }}/4 (incluye axe y responsive)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: ${{ env.SUPABASE_CLI_VERSION }}
+
+      - name: Start Supabase
+        run: supabase start -x ${{ env.SUPABASE_EXCLUDE }}
+
+      # La web de los e2e habla con el Supabase local del runner (claves de demostración, enmascaradas).
+      - name: Export Supabase env
+        run: node scripts/ci-supabase-env.mjs
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium webkit
+
+      # Playwright construye y arranca la web (webServer de playwright.config.ts).
+      - name: End-to-end tests
+        run: pnpm exec playwright test --shard=${{ matrix.shard }}/4
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.shard }}
+          path: playwright-report/
+          retention-days: 7
+
+  ci-ok:
+    name: CI OK
+    needs: [quality, secrets, integration, e2e]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Todas las comprobaciones deben pasar
+        run: |
+          echo "quality=${{ needs.quality.result }} secrets=${{ needs.secrets.result }} integration=${{ needs.integration.result }} e2e=${{ needs.e2e.result }}"
+          test "${{ needs.quality.result }}" = "success"
+          test "${{ needs.secrets.result }}" = "success"
+          test "${{ needs.integration.result }}" = "success"
+          test "${{ needs.e2e.result }}" = "success"
