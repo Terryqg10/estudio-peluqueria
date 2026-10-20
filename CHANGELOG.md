@@ -26,6 +26,10 @@ y versionado [SemVer](https://semver.org/lang/es/).
   honeypot, página `/reservar/confirmada` sin datos personales y cookie de confirmación `httpOnly`.
   Requiere `SUPABASE_SERVICE_ROLE_KEY` (solo servidor). ADR-0015 y ADR-0016. Aún sin email (T-006) ni
   límites de citas (T-005c).
+- T-006a: email de confirmación tras reservar con un enlace personal `/cita/<token>` de solo lectura.
+  Adaptador `EmailSender` sin dependencias nuevas (Mailpit local y Resend por variable de entorno), la
+  cita se mantiene si falla el envío y la confirmación avisa. Enlace con un único mensaje de «no válido
+  o caducado». ADR-0017 y ADR-0018. Aún sin cancelar ni cambiar la cita (T-006b).
 - Registro de imágenes en `docs/imagenes.md` y Lighthouse como devDependency.
 
 ### Cambiado
