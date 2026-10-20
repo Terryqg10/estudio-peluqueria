@@ -33,6 +33,11 @@ y versionado [SemVer](https://semver.org/lang/es/).
 - T-006b: cancelar la cita desde `/cita/<token>` con confirmación en línea, solo si faltan ≥ 24 h
   (la BD lo decide; antes, aviso de contactar con el salón). El hueco queda libre. Sin dependencias
   nuevas. La antigua T-006b se divide: cambiar la cita pasa a T-006c y el email de aviso a T-006d.
+- T-014: los tests de tiempo real ya no esperan 1,5 s fijos tras `SUBSCRIBED`: una sonda confirma antes de cada
+  test que el canal entrega y, si no, reabre la conexión (hasta 3 intentos) y falla con el historial del canal.
+  Sin cambios en producción. La causa del fallo original no se reprodujo. Descubierto el defecto T-015
+  (deadlock de `create_booking` bajo reservas simultáneas, ~15 % de las pasadas de integración). ADR-0023
+  amplía la excepción de `pnpm audit` a 3 avisos nuevos de `vite` y se agenda T-016 (upgrade de Vitest y Vite).
 - T-008a: acceso del Admin al panel `/admin` con el mismo enlace mágico y el rol en BD (`profiles.role`).
   Guardián de servidor (sin sesión → `/acceso`, sin rol → 404) además de la RLS, destino por rol tras entrar,
   panel con `noindex` y sin caché, y `pnpm admin:promote <email> [--revoke] [--local]` para dar o quitar el

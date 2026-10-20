@@ -265,6 +265,8 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-012 | Privacidad, antiabuso y retención | CA-25 a CA-29 |
 | T-013 | Keep-alive y CI bloqueante | CA-35 |
 | T-014 | Estabilizar los tests de tiempo-real (flaky bajo carga; anotada al cerrar T-005c) | — |
+| T-015 | Deadlock de `create_booking` y la reprogramación bajo reservas simultáneas al mismo hueco (defecto; borrador) | CA-08 |
+| T-016 | Mantenimiento: actualizar Vitest y Vite y cerrar la excepción de `pnpm audit` (ADR-0008 y ADR-0023); antes de publicar | — |
 
 ## 10. Notas técnicas
 

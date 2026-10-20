@@ -1,7 +1,6 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import {
   addTimeBlock,
-  anonClient,
   cleanup,
   createService,
   createStylist,
@@ -9,53 +8,41 @@ import {
   insertAppointment,
   service,
 } from './helpers/db';
+import { AvailabilityListener, type AvailabilityMessage as Message } from './helpers/realtime';
 
 // ADR-0013 / CA-07 (solo infraestructura): al cambiar una cita o un bloqueo, la BD emite un
 // broadcast público «availability» sin datos personales. La suscripción de la UI llega después.
-type Message = { payload: Record<string, unknown> };
-
+// T-014: antes de cada test se confirma con una sonda que el canal entrega (ver helpers/realtime.ts).
 describe('tiempo-real (ADR-0013)', () => {
-  const received: Message[] = [];
-  const client = anonClient();
+  let listener: AvailabilityListener;
   let stylistId: string;
   let serviceId: string;
 
   beforeAll(async () => {
     stylistId = await createStylist();
     serviceId = await createService(60);
+    listener = new AvailabilityListener(await createStylist('Sonda de tiempo real'));
+    await listener.ensureDelivering();
+  }, 90_000);
 
-    await new Promise<void>((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error('Realtime no llegó a SUBSCRIBED')), 10_000);
-      client
-        .channel('availability')
-        .on('broadcast', { event: 'availability_changed' }, (message: Message) => {
-          received.push(message);
-        })
-        .subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            clearTimeout(timer);
-            resolve();
-          }
-        });
-    });
-    // Tras SUBSCRIBED el servidor aún puede estar registrando la suscripción: sin esta espera
-    // se pierde el primer mensaje. La UI no puede depender de ello (ver ADR-0013).
-    await new Promise((r) => setTimeout(r, 1500));
-  });
+  beforeEach(async () => {
+    await listener.ensureDelivering();
+  }, 90_000);
 
   afterAll(async () => {
-    await client.removeAllChannels();
+    await listener.close();
     await cleanup();
   });
 
   async function waitFor(predicate: (m: Message) => boolean, ms = 8000): Promise<Message> {
     const end = Date.now() + ms;
     while (Date.now() < end) {
-      const found = received.find(predicate);
+      const found = listener.received.find(predicate);
       if (found) return found;
       await new Promise((r) => setTimeout(r, 100));
     }
-    throw new Error('No llegó el mensaje de disponibilidad a tiempo');
+    // Con el historial del canal: si vuelve a fallar, queda evidencia de qué pasó y cuándo.
+    throw new Error(`No llegó el mensaje de disponibilidad a tiempo\n${listener.report()}`);
   }
 
   it('al crear una cita se emite un aviso con la estilista y la franja, sin datos personales', async () => {
