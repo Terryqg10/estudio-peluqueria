@@ -33,6 +33,10 @@ y versionado [SemVer](https://semver.org/lang/es/).
 - T-006b: cancelar la cita desde `/cita/<token>` con confirmación en línea, solo si faltan ≥ 24 h
   (la BD lo decide; antes, aviso de contactar con el salón). El hueco queda libre. Sin dependencias
   nuevas. La antigua T-006b se divide: cambiar la cita pasa a T-006c y el email de aviso a T-006d.
+- T-015 (implementada; pendiente de `/check` completo y review): `create_booking` y `reschedule_guest_appointment`
+  toman un bloqueo por estilista (`pg_advisory_xact_lock`) antes de comprobar disponibilidad y escribir. Con 6
+  peticiones simultáneas al mismo hueco ya no hay deadlock (`40P01`, antes en 8 de 50 rondas, de 4 a 5 s): una
+  gana y las demás reciben `SLOT_TAKEN` en milisegundos. Migración nueva, permisos sin cambios, ADR-0024.
 - T-014: los tests de tiempo real ya no esperan 1,5 s fijos tras `SUBSCRIBED`: una sonda confirma antes de cada
   test que el canal entrega y, si no, reabre la conexión (hasta 3 intentos) y falla con el historial del canal.
   Sin cambios en producción. La causa del fallo original no se reprodujo. Descubierto el defecto T-015
