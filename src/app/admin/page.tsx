@@ -1,10 +1,12 @@
+import Link from 'next/link';
 import { requireAdmin } from '@/lib/account/require-admin';
+import { ROUTES } from '@/lib/routes';
 import { signOutAction } from '@/app/(cuenta)/mis-citas/actions';
 
 const BUTTON_CLASS =
   'inline-flex min-h-11 items-center justify-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
 
-// Estructura del panel (T-008a). La agenda llega con T-008b y la edición de citas con T-008c: hasta
+// Estructura del panel (T-008a) con la agenda (T-008b). La edición de citas llega con T-008c: hasta
 // entonces no hay enlaces a pantallas que no existen.
 export default async function AdminPage() {
   const admin = await requireAdmin();
@@ -17,9 +19,16 @@ export default async function AdminPage() {
       <div className="mt-8 rounded-container bg-surface p-6 shadow-card">
         <p className="font-semibold">Tu cuenta tiene acceso de administración.</p>
         <p className="mt-2 text-fg-muted">
-          Desde aquí se gestionarán la agenda y las citas del salón. Todavía no hay herramientas en el
-          panel.
+          Desde aquí se consulta la agenda del salón.
         </p>
+        <div className="mt-6">
+          <Link
+            href={ROUTES.adminAgenda}
+            className="inline-flex min-h-11 items-center justify-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover"
+          >
+            Ver la agenda
+          </Link>
+        </div>
       </div>
 
       <div className="mt-10 flex flex-wrap gap-2">

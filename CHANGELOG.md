@@ -6,6 +6,7 @@ y versionado [SemVer](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Añadido
+- T-008b: agenda semanal del Admin en `/admin/agenda` (solo lectura, con la RLS y sin `service_role`): cuadrícula por estilista en escritorio, vista de un día en móvil, navegación por semanas con enlaces y detalle con teléfono. Las clientas con cuenta aparecen sin datos de contacto (pendiente). Tests unitarios y e2e `admin-agenda`.
 - T-001: base de la interfaz con cabecera sticky, navegación, menú móvil sin JavaScript
   (`:target` y `useHashOverlay`), pie y página `/contacto`. Paleta `#A8456A` validada.
 - T-002: Supabase local con esquema de reservas, restricción anti-solape (`tstzrange`), RLS en

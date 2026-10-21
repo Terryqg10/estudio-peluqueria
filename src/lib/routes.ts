@@ -8,6 +8,7 @@ export const ROUTES = {
   accesoConfirmar: '/acceso/confirmar',
   misCitas: '/mis-citas',
   admin: '/admin', // panel Admin: sin enlazar desde la navegación pública (ADR-0022)
+  adminAgenda: '/admin/agenda', // agenda semanal del Admin (T-008b)
   avisoLegal: '/aviso-legal',
   privacidad: '/privacidad',
 } as const;
