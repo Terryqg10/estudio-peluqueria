@@ -3,6 +3,13 @@
   "caduca": "cierre de T-016",
   "hallazgos": [
     {
+      "id": "GHSA-5gmw-xhrv-c9v3",
+      "package": "tinypool",
+      "severity": "critical",
+      "adr": "ADR-0008",
+      "title": "Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution"
+    },
+    {
       "id": "GHSA-85c8-ppgw-ccpr",
       "package": "tinypool",
       "severity": "critical",
