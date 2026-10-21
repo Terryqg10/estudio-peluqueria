@@ -33,6 +33,12 @@ y versionado [SemVer](https://semver.org/lang/es/).
 - T-006b: cancelar la cita desde `/cita/<token>` con confirmación en línea, solo si faltan ≥ 24 h
   (la BD lo decide; antes, aviso de contactar con el salón). El hueco queda libre. Sin dependencias
   nuevas. La antigua T-006b se divide: cambiar la cita pasa a T-006c y el email de aviso a T-006d.
+- T-013a: CI bloqueante en GitHub Actions (RNF-09): calidad (tipos, lint, paleta, audit, unitarios, build), gitleaks,
+  integración con el Supabase local del runner y e2e en 4 fragmentos, más un job `CI OK` para usar como
+  comprobación obligatoria. El audit aplica de verdad ADR-0008 y ADR-0023 (lista blanca por id y paquete; producción sin
+  ningún hallazgo). Corrige la CI de la plantilla (fallaba por no tener `.node-version`) y dos fallos que solo
+  aparecían en Linux: un token de prueba marcado por gitleaks 8.24 y una carrera en el e2e de cambio con menos de
+  24 h. ADR-0025. Sin dependencias nuevas. Hay que marcar `CI OK` como obligatoria en la protección de `main`.
 - T-015: `create_booking` y `reschedule_guest_appointment`
   toman un bloqueo por estilista (`pg_advisory_xact_lock`) antes de comprobar disponibilidad y escribir. Con 6
   peticiones simultáneas al mismo hueco ya no hay deadlock (`40P01`, antes en 8 de 50 rondas, de 4 a 5 s): una

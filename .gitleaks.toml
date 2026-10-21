@@ -14,3 +14,10 @@ paths = [
   '''README\.md$''',
   '''pnpm-lock\.yaml$''',
 ]
+# Token de PRUEBA de 43 caracteres (alfabeto en orden): lo usan tests/unit/email-template.test.ts y
+# tests/unit/send-confirmation.test.ts para construir un enlace de ejemplo. No es un secreto. Se permite el
+# valor EXACTO, no los archivos: un secreto real en esos tests seguiría detectándose. (gitleaks 8.24 de la CI
+# lo marca como generic-api-key; el 8.30 local, no.)
+regexes = [
+  '''abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNO12''',
+]
