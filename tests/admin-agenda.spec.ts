@@ -167,6 +167,7 @@ test.describe('agenda semanal del Admin (CA-15)', () => {
   });
 
   test('va con noindex y sin caché, pasa axe y no desborda de 320 a 1280 px', async ({ page }) => {
+    test.setTimeout(90_000); // axe en muchos anchos: con todos los e2e en paralelo supera los 30 s por defecto
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const email = newEmail('admin');
     let id: string | null = null;

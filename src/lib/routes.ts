@@ -9,6 +9,7 @@ export const ROUTES = {
   misCitas: '/mis-citas',
   admin: '/admin', // panel Admin: sin enlazar desde la navegación pública (ADR-0022)
   adminAgenda: '/admin/agenda', // agenda semanal del Admin (T-008b)
+  adminServicios: '/admin/servicios', // gestión de servicios (T-009a)
   avisoLegal: '/aviso-legal',
   privacidad: '/privacidad',
 } as const;

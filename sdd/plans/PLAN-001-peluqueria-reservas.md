@@ -263,7 +263,9 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-019 | Selector de día y hora más limpio: semana de 7 días con flechas y horas en 3 columnas (reserva, cambio y panel). ADR no necesario | — |
 | T-017 | Datos de contacto de las clientas con cuenta en el panel (borrador) | — |
 | T-018 | Aviso por email cuando el Admin mueve o cancela una cita (borrador) | — |
-| T-009 | Admin: servicios, horarios, vacaciones, bloqueos | CA-18 a CA-20 |
+| T-009a | Admin: servicios (crear, editar, activar/desactivar; función de BD atómica) | CA-18 |
+| T-009b | Admin: bloqueos de franja y vacaciones (borrador) | CA-19, CA-20 |
+| T-009c | Admin: horarios semanales del salón y de las estilistas (borrador) | — |
 | T-010 | Chatbot de reglas | CA-21 a CA-24 |
 | T-011 | Galería antes/después | CA-02 |
 | T-012 | Privacidad, antiabuso y retención | CA-25 a CA-29 |

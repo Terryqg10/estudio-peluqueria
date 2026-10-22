@@ -6,6 +6,7 @@ y versionado [SemVer](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Añadido
+- T-009a: gestión de servicios del Admin en `/admin/servicios` (CA-18): crear, editar y activar o desactivar con sus estilistas, mediante la función de BD atómica `admin_save_service`. Sin borrado (se desactiva). Migración nueva. T-009 queda dividida en T-009a, T-009b (bloqueos y vacaciones) y T-009c (horarios).
 - T-019: selector de día y hora más limpio en la reserva, el cambio por enlace y «Mover cita»: semana de 7 días con flechas (hasta 60 días), horas en 3 columnas con bordes suaves, y títulos más grandes. Sin cambios de BD.
 - T-008d: pantalla «Mover cita» rediseñada con carrusel de días, horas en píldora y barra inferior fija, y notas para la estilista en una tabla solo del Admin (`appointment_notes`, ADR-0027, enmienda de la spec). Migración nueva.
 - T-008c: el Admin mueve y cancela citas desde `/admin/agenda/cita/<id>` (CA-16): tres funciones de BD que exigen `is_admin()`, reutilizan `availability_core` y el bloqueo por estilista y no aplican la ventana de 24 h. Cancelar pide confirmación. Sin aviso a la clienta (T-018) y sin contacto de las clientas con cuenta (T-017). ADR-0026. Migración nueva.

@@ -238,6 +238,9 @@ isOneToOne: false
               "ends_at": string,"id": string,"starts_at": string,"stylist_id": string
             }[]
                            },
+"admin_save_service":
+{ Args: { "p_active": boolean,"p_category": string,"p_duration_min": number,"p_id"?: string,"p_name": string,"p_price_from_cents": number,"p_stylist_ids": (string)[] }; Returns: string
+                           },
 "availability_core":
 { Args: { "p_date": string,"p_exclude_appointment": string,"p_service_id": string,"p_stylist_id": string }; Returns: {
               "starts_at": string,"stylist_id": string

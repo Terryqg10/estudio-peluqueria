@@ -19,14 +19,20 @@ export default async function AdminPage() {
       <div className="mt-8 rounded-container bg-surface p-6 shadow-card">
         <p className="font-semibold">Tu cuenta tiene acceso de administración.</p>
         <p className="mt-2 text-fg-muted">
-          Desde aquí se consulta la agenda del salón.
+          Desde aquí se consulta la agenda del salón y se gestionan los servicios.
         </p>
-        <div className="mt-6">
+        <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href={ROUTES.adminAgenda}
             className="inline-flex min-h-11 items-center justify-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover"
           >
             Ver la agenda
+          </Link>
+          <Link
+            href={ROUTES.adminServicios}
+            className="inline-flex min-h-11 items-center justify-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft"
+          >
+            Servicios
           </Link>
         </div>
       </div>
