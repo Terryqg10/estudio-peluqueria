@@ -233,6 +233,9 @@ isOneToOne: false
               "id": string,"status": Database["public"]['Enums']["appointment_status"]
             }[]
                            },
+"admin_create_time_blocks":
+{ Args: { "p_ends_at": string,"p_kind": Database["public"]['Enums']["time_block_kind"],"p_note"?: string,"p_starts_at": string,"p_stylist_ids": (string)[] }; Returns: number
+                           },
 "admin_reschedule_appointment":
 { Args: { "p_appointment_id": string,"p_starts_at": string,"p_stylist_id": string }; Returns: {
               "ends_at": string,"id": string,"starts_at": string,"stylist_id": string
