@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { workday } from './helpers/booking-days';
+import { pickDay, workday } from './helpers/booking-days';
 import { submitForm } from './helpers/booking-flow';
 import { randomUUID } from 'node:crypto';
 import {
@@ -19,7 +19,7 @@ test.describe('reservar: tiempo real (CA-07)', () => {
   async function openBalayageDay(page: Page) {
     const serviceId = await idByName('services', 'Balayage');
     await page.goto(`/reservar?servicio=${serviceId}`);
-    await page.locator(`[data-date="${workday()}"]`).click();
+    await pickDay(page, workday());
     await expect(page.locator('button[data-starts-at]').first()).toBeVisible();
     return { serviceId, stylistId: await idByName('stylists', 'Lucía Marín') };
   }
@@ -87,7 +87,7 @@ test.describe('reservar: hueco ocupado al confirmar (CA-08)', () => {
     let otherId = '';
     try {
       await page.goto(`/reservar?servicio=${serviceId}`);
-      await page.locator(`button[data-date="${workday()}"]`).click();
+      await pickDay(page, workday());
       const slot = page.locator('button[data-starts-at]', { hasText: /^19:00$/ });
       await expect(slot).toBeVisible();
       const startsAt = (await slot.getAttribute('data-starts-at')) ?? '';

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PUBLIC_PAGES } from '../src/lib/public-pages';
-import { nextDay, workday } from './helpers/booking-days';
+import { nextDay, pickDay, workday } from './helpers/booking-days';
 import { submitForm } from './helpers/booking-flow';
 import { madridInstant } from './integration/helpers/time';
 import { createAppointmentWithToken, deleteAppointment } from './helpers/supabase-admin';
@@ -34,7 +34,7 @@ test.describe('accesibilidad', () => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/reservar');
     await page.getByLabel(/Balayage/).first().check({ force: true });
-    await page.locator(`button[data-date="${workday()}"]`).click(); // no depende de la hora actual
+    await pickDay(page, workday()); // no depende de la hora actual
     await page.locator('button[data-starts-at]').first().click();
     await expect(page.getByRole('region', { name: 'Tu cita' })).toBeVisible();
     // Se envía el formulario vacío para que axe revise también los errores por campo.
@@ -81,7 +81,7 @@ test.describe('accesibilidad', () => {
     try {
       await page.goto(`/cita/${token}/cambiar`);
       await expect(page.getByRole('heading', { level: 1, name: 'Cambiar tu cita' })).toBeVisible();
-      await page.locator(`button[data-date="${date}"]`).click();
+      await pickDay(page, date);
       await page.locator('button[data-starts-at]', { hasText: new RegExp(`^${hour}:30$`) }).click();
       await expect(page.getByRole('heading', { name: 'Tu cita nueva' })).toBeVisible();
       const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();

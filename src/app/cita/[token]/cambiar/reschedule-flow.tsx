@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MAX_DAYS_AHEAD, daysBetween, formatLongDate, formatSlotTime, madridDateOf } from '@/lib/booking/dates';
+import { formatLongDate, formatSlotTime, madridDateOf } from '@/lib/booking/dates';
 import type { RescheduleError } from '@/lib/booking/reschedule-appointment';
 import { groupSlotsByStart, pickStylist, type TimeOption } from '@/lib/booking/slots';
 import type { StylistOption } from '@/lib/booking/types';
 import { useLiveAvailability, type SlotLoader } from '@/lib/booking/use-live-availability';
 import { ROUTES } from '@/lib/routes';
-import { DAY_STRIP_STEP, DayStrip } from '@/app/reservar/day-strip';
+import { DayStrip } from '@/app/reservar/day-strip';
 import { SlotGrid } from '@/app/reservar/slot-grid';
 import { StylistPicker } from '@/app/reservar/stylist-picker';
 import { loadRescheduleAvailabilityAction, rescheduleAppointmentAction } from './actions';
@@ -44,7 +44,6 @@ export function RescheduleFlow({ token, serviceId, serviceName, current, stylist
   const router = useRouter();
   const [stylistChoice, setStylistChoice] = useState<string>('any');
   const [date, setDate] = useState(madridDateOf(current.startsAt) > today ? madridDateOf(current.startsAt) : today);
-  const [daysShown, setDaysShown] = useState(DAY_STRIP_STEP);
   const [selection, setSelection] = useState<Selection | null>(null);
   const [error, setError] = useState<RescheduleError | null>(null);
   const [pending, setPending] = useState(false);
@@ -95,8 +94,6 @@ export function RescheduleFlow({ token, serviceId, serviceName, current, stylist
 
   function chooseDate(next: string) {
     setDate(next);
-    const needed = daysBetween(today, next) + 1;
-    setDaysShown((shown) => Math.min(MAX_DAYS_AHEAD, Math.max(shown, needed)));
     setSelection(null);
     setError(null);
   }
@@ -162,16 +159,10 @@ export function RescheduleFlow({ token, serviceId, serviceName, current, stylist
       <StylistPicker stylists={stylists} selectedId={stylistChoice} onSelect={chooseStylist} />
 
       <section aria-labelledby="dia-titulo" className="space-y-4">
-        <h2 id="dia-titulo" className="font-display text-2xl font-semibold">
+        <h2 id="dia-titulo" className="font-display text-3xl font-semibold">
           Elige día y hora nuevos
         </h2>
-        <DayStrip
-          today={today}
-          selected={date}
-          visibleCount={daysShown}
-          onSelect={chooseDate}
-          onShowMore={() => setDaysShown((n) => Math.min(MAX_DAYS_AHEAD, n + DAY_STRIP_STEP))}
-        />
+        <DayStrip today={today} selected={date} onSelect={chooseDate} />
 
         <p role="status" className="text-fg-muted">
           {status === 'loading'

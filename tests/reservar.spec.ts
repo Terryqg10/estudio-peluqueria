@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { sunday, workday } from './helpers/booking-days';
+import { pickDay, sunday, workday } from './helpers/booking-days';
 
 // T-005a: selección de hueco en /reservar (CA-05, CA-07, CA-01).
 
@@ -74,7 +74,7 @@ test.describe('reservar: huecos', () => {
     await page.goto('/reservar');
     await chooseService(page, 'Balayage');
     const date = workday();
-    await page.locator(`[data-date="${date}"]`).click();
+    await pickDay(page, date);
 
     const first = page.locator('button[data-starts-at]').first();
     await expect(first).toBeVisible();
@@ -95,7 +95,7 @@ test.describe('reservar: huecos', () => {
   test('un día cerrado propone los próximos con disponibilidad', async ({ page }) => {
     await page.goto('/reservar');
     await chooseService(page, 'Balayage');
-    await page.locator(`[data-date="${sunday()}"]`).click();
+    await pickDay(page, sunday());
 
     await expect(page.getByText('No quedan horas libres este día.')).toBeVisible();
     const suggestion = page.getByText('Próximos días con disponibilidad:');
@@ -107,17 +107,44 @@ test.describe('reservar: huecos', () => {
     await expect(page.locator('button[data-starts-at]').first()).toBeVisible();
   });
 
-  test('«Más fechas» amplía la tira de días hasta la ventana de reserva (60 días)', async ({ page }) => {
+  test('el selector muestra una semana (7 días) y las flechas llegan hasta la ventana de reserva (60 días)', async ({ page }) => {
     await page.goto('/reservar');
     await chooseService(page, 'Corte mujer');
-    expect(await page.locator('button[data-date]').count()).toBe(14);
-    await page.getByRole('button', { name: 'Más fechas' }).click();
-    expect(await page.locator('button[data-date]').count()).toBe(28);
-    for (let i = 0; i < 3; i++) {
-      const more = page.getByRole('button', { name: 'Más fechas' });
-      if (await more.count()) await more.click();
-    }
-    expect(await page.locator('button[data-date]').count()).toBe(60);
+    const days = page.locator('button[data-date]');
+    const prev = page.getByRole('button', { name: 'Semana anterior' });
+    const next = page.getByRole('button', { name: 'Semana siguiente' });
+
+    await expect(days).toHaveCount(7);
+    await expect(prev).toBeDisabled();
     await expect(page.getByRole('button', { name: 'Más fechas' })).toHaveCount(0);
+
+    // 60 días = 8 semanas completas + una última de 4 días.
+    let seen = 7;
+    for (let i = 0; i < 8; i++) {
+      await next.click();
+      seen += await days.count();
+    }
+    expect(seen).toBe(60);
+    await expect(next).toBeDisabled();
+    await expect(days).toHaveCount(4);
+
+    await prev.click();
+    await expect(days).toHaveCount(7);
+  });
+
+  test('las horas van en tres columnas y agrupadas en mañana o tarde', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto('/reservar');
+    await chooseService(page, 'Balayage');
+    await pickDay(page, workday());
+    await expect(page.locator('button[data-starts-at]').first()).toBeVisible();
+
+    const columns = await page
+      .locator('button[data-starts-at]')
+      .first()
+      .evaluate((el) => getComputedStyle(el.closest('ul') as HTMLElement).gridTemplateColumns.split(' ').length);
+    expect(columns).toBe(3);
+    // Otros tests ocupan huecos de ese día: se exige al menos un grupo, no los dos.
+    await expect(page.getByRole('heading', { name: /^(Mañana|Tarde)$/ }).first()).toBeVisible();
   });
 });

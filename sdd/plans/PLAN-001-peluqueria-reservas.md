@@ -260,6 +260,7 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-008b | Agenda semanal por estilista, solo lectura: cuadrícula ≥ 1280 px y vista de un día en móvil, navegación por URL | CA-15 |
 | T-008c | Modificar y cancelar citas desde el panel, sin ventana de 24 h: funciones de BD del Admin y pantalla por cita. ADR-0026 | CA-16 |
 | T-008d | Rediseño de «Mover cita» (carrusel de días, horas en píldora, barra sticky) y notas para la estilista. ADR-0027 | CA-16 |
+| T-019 | Selector de día y hora más limpio: semana de 7 días con flechas y horas en 3 columnas (reserva, cambio y panel). ADR no necesario | — |
 | T-017 | Datos de contacto de las clientas con cuenta en el panel (borrador) | — |
 | T-018 | Aviso por email cuando el Admin mueve o cancela una cita (borrador) | — |
 | T-009 | Admin: servicios, horarios, vacaciones, bloqueos | CA-18 a CA-20 |

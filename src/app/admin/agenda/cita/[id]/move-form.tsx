@@ -1,7 +1,7 @@
 'use client';
 
 import { useId, useState } from 'react';
-import { DAY_STRIP_STEP, DayStrip } from '@/app/reservar/day-strip';
+import { DayStrip } from '@/app/reservar/day-strip';
 import { SlotGrid } from '@/app/reservar/slot-grid';
 import { formatLongDate, formatSlotTime } from '@/lib/booking/dates';
 import { groupSlotsByStart } from '@/lib/booking/slots';
@@ -43,7 +43,6 @@ export function MoveForm({
   const noteId = useId();
   const [stylistId, setStylistId] = useState(currentStylistId);
   const [date, setDate] = useState(currentDate);
-  const [visibleDays, setVisibleDays] = useState(DAY_STRIP_STEP);
   const [slots, setSlots] = useState<DaySlot[]>(initialSlots);
   const [status, setStatus] = useState<'ok' | 'loading' | 'error'>('ok');
   const [chosen, setChosen] = useState<string | null>(null); // inicio ISO del hueco elegido
@@ -133,13 +132,7 @@ export function MoveForm({
             Fecha
           </h2>
           <div className="mt-4">
-            <DayStrip
-              today={today}
-              selected={date}
-              visibleCount={visibleDays}
-              onSelect={(next) => void chooseDay(next)}
-              onShowMore={() => setVisibleDays((n) => n + DAY_STRIP_STEP)}
-            />
+            <DayStrip today={today} selected={date} onSelect={(next) => void chooseDay(next)} />
           </div>
         </section>
 

@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { daysBetween, todayInMadrid } from '../src/lib/booking/dates';
-import { nextDay } from './helpers/booking-days';
+import { nextDay, pickDay } from './helpers/booking-days';
 import { madridInstant } from './integration/helpers/time';
 import {
   activeAppointmentsAt,
@@ -34,7 +34,7 @@ async function statusAndStart(id: string) {
 async function openChange(page: Page, token: string, date: string) {
   await page.goto(`/cita/${token}/cambiar`);
   await expect(page.getByRole('heading', { level: 1, name: 'Cambiar tu cita' })).toBeVisible();
-  await page.locator(`button[data-date="${date}"]`).click();
+  await pickDay(page, date);
 }
 
 const slotButton = (page: Page, time: string) =>
@@ -57,7 +57,7 @@ test.describe('cambiar la cita desde el enlace', () => {
       await expect(page).toHaveURL(new RegExp(`/cita/${token}/cambiar$`));
       await expect(page.getByRole('heading', { level: 1, name: 'Cambiar tu cita' })).toBeVisible();
       await expect(page.getByRole('heading', { name: 'Tu cita actual' })).toBeVisible();
-      await page.locator(`button[data-date="${date}"]`).click();
+      await pickDay(page, date);
 
       // La hora actual no se ofrece; un hueco que solapa con ella sí.
       await expect(slotButton(page, `${HOUR.mover}:15`)).toBeVisible();

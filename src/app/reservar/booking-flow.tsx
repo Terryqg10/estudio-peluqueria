@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from 'react';
 import type { AvailabilitySlot } from '@/lib/availability/schema';
-import { MAX_DAYS_AHEAD, daysBetween, formatLongDate, formatSlotTime } from '@/lib/booking/dates';
+import { formatLongDate, formatSlotTime } from '@/lib/booking/dates';
 import { groupSlotsByStart, pickStylist, type TimeOption } from '@/lib/booking/slots';
 import type { BookingData } from '@/lib/booking/types';
 import { useLiveAvailability } from '@/lib/booking/use-live-availability';
 import { formatPriceFrom } from '@/lib/services/catalog';
 import { BookingForm, EMPTY_CONTACT, type ContactValues } from './booking-form';
-import { DAY_STRIP_STEP, DayStrip } from './day-strip';
+import { DayStrip } from './day-strip';
 import { NextDays } from './next-days';
 import { ServicePicker } from './service-picker';
 import { SlotGrid } from './slot-grid';
@@ -28,7 +28,6 @@ export function BookingFlow({ data, today, initialServiceId }: Props) {
   const [serviceId, setServiceId] = useState<string | null>(initialServiceId);
   const [stylistChoice, setStylistChoice] = useState<string>('any');
   const [date, setDate] = useState(today);
-  const [daysShown, setDaysShown] = useState(DAY_STRIP_STEP);
   const [selection, setSelection] = useState<Selection | null>(null);
   // Datos de contacto y alternativas viven aquí: si el hueco se ocupa y el formulario se oculta,
   // lo tecleado no se pierde.
@@ -74,8 +73,6 @@ export function BookingFlow({ data, today, initialServiceId }: Props) {
 
   function chooseDate(next: string) {
     setDate(next);
-    const needed = daysBetween(today, next) + 1;
-    setDaysShown((shown) => Math.min(MAX_DAYS_AHEAD, Math.max(shown, needed)));
     setSelection(null);
     setAlternatives(null);
   }
@@ -121,16 +118,10 @@ export function BookingFlow({ data, today, initialServiceId }: Props) {
           <StylistPicker stylists={offeredStylists} selectedId={stylistChoice} onSelect={chooseStylist} />
 
           <section aria-labelledby="dia-titulo" className="space-y-4">
-            <h3 id="dia-titulo" className="font-display text-2xl font-semibold">
+            <h3 id="dia-titulo" className="font-display text-3xl font-semibold">
               Elige día y hora
             </h3>
-            <DayStrip
-              today={today}
-              selected={date}
-              visibleCount={daysShown}
-              onSelect={chooseDate}
-              onShowMore={() => setDaysShown((n) => Math.min(MAX_DAYS_AHEAD, n + DAY_STRIP_STEP))}
-            />
+            <DayStrip today={today} selected={date} onSelect={chooseDate} />
 
             <p role="status" className="text-fg-muted">
               {status === 'loading'
@@ -154,7 +145,7 @@ export function BookingFlow({ data, today, initialServiceId }: Props) {
                           <button
                             type="button"
                             onClick={() => pickAlternative(slot)}
-                            className="inline-flex min-h-11 items-center rounded-control border border-border-strong bg-surface px-4 transition-colors duration-(--duration-fast) hover:bg-surface-muted"
+                            className="inline-flex min-h-11 items-center rounded-control border border-border bg-surface px-4 transition-colors duration-(--duration-fast) hover:bg-surface-muted"
                           >
                             {formatSlotTime(slot.startsAt)} · {data.stylists.find((s) => s.id === slot.stylistId)?.name ?? ''}
                           </button>

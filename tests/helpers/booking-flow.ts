@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { workday } from './booking-days';
+import { pickDay, workday } from './booking-days';
 import { idByName } from './supabase-admin';
 
 // Pasos compartidos de la reserva en los e2e (T-005b y T-006a). Usa «Tratamiento hidratante»
@@ -7,7 +7,7 @@ import { idByName } from './supabase-admin';
 export async function startBooking(page: Page, time: string): Promise<string> {
   const serviceId = await idByName('services', 'Tratamiento hidratante');
   await page.goto(`/reservar?servicio=${serviceId}`);
-  await page.locator(`button[data-date="${workday()}"]`).click();
+  await pickDay(page, workday());
   const slot = page.locator('button[data-starts-at]', { hasText: new RegExp(`^${time}$`) });
   await expect(slot).toBeVisible();
   const startsAt = (await slot.getAttribute('data-starts-at')) ?? '';
