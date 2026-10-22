@@ -204,7 +204,22 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "availability_core":
+            "admin_appointment_availability":
+{ Args: { "p_appointment_id": string,"p_date": string }; Returns: {
+              "starts_at": string,"stylist_id": string
+            }[]
+                           },
+"admin_cancel_appointment":
+{ Args: { "p_appointment_id": string }; Returns: {
+              "id": string,"status": Database["public"]['Enums']["appointment_status"]
+            }[]
+                           },
+"admin_reschedule_appointment":
+{ Args: { "p_appointment_id": string,"p_starts_at": string,"p_stylist_id": string }; Returns: {
+              "ends_at": string,"id": string,"starts_at": string,"stylist_id": string
+            }[]
+                           },
+"availability_core":
 { Args: { "p_date": string,"p_exclude_appointment": string,"p_service_id": string,"p_stylist_id": string }; Returns: {
               "starts_at": string,"stylist_id": string
             }[]

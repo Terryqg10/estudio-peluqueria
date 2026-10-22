@@ -6,7 +6,7 @@ import { TIME_ZONE, addDays, daysBetween, madridDateOf, todayInMadrid } from '@/
 
 export const MAX_WEEKS_AWAY = 53;
 
-const DateParam = z
+export const LocalDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/)
   .refine((value) => {
@@ -52,14 +52,14 @@ export function parseWeekQuery(
   const today = todayInMadrid(now);
   const currentMonday = mondayOf(today);
 
-  const week = DateParam.safeParse(raw.semana);
+  const week = LocalDateSchema.safeParse(raw.semana);
   let monday = currentMonday;
   if (week.success) {
     const candidate = mondayOf(week.data);
     if (Math.abs(daysBetween(currentMonday, candidate)) <= MAX_WEEKS_AWAY * 7) monday = candidate;
   }
 
-  const day = DateParam.safeParse(raw.dia);
+  const day = LocalDateSchema.safeParse(raw.dia);
   const days = weekDays(monday);
   return { monday, day: day.success && days.includes(day.data) ? day.data : null };
 }

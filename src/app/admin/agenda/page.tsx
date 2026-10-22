@@ -13,11 +13,15 @@ export const dynamic = 'force-dynamic';
 const NAV_LINK =
   'inline-flex min-h-11 items-center justify-center rounded-control px-4 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
 
-type SearchParams = Promise<{ semana?: string | string[]; dia?: string | string[] }>;
+type SearchParams = Promise<{ semana?: string | string[]; dia?: string | string[]; aviso?: string | string[] }>;
+
+const NOTICES = { movida: 'Cita movida.', cancelada: 'Cita cancelada.' } as const;
 
 export default async function AgendaPage({ searchParams }: { searchParams: SearchParams }) {
   const admin = await requireAdmin(); // un layout no basta (ADR-0022)
-  const query = parseWeekQuery(await searchParams);
+  const raw = await searchParams;
+  const query = parseWeekQuery(raw);
+  const notice = raw.aviso === 'movida' || raw.aviso === 'cancelada' ? NOTICES[raw.aviso] : null;
   const days = weekDays(query.monday);
   const today = todayInMadrid();
   const currentMonday = mondayOf(today);
@@ -59,6 +63,12 @@ export default async function AgendaPage({ searchParams }: { searchParams: Searc
       <p className="mt-3 text-fg-muted" data-testid="week-title">
         {title}
       </p>
+
+      {notice ? (
+        <p role="status" className="mt-4 rounded-card bg-accent-soft p-4 font-semibold text-fg">
+          {notice}
+        </p>
+      ) : null}
 
       <div className="mt-6">
         {result.state === 'error' ? (

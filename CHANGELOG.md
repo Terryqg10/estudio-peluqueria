@@ -6,6 +6,7 @@ y versionado [SemVer](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Añadido
+- T-008c: el Admin mueve y cancela citas desde `/admin/agenda/cita/<id>` (CA-16): tres funciones de BD que exigen `is_admin()`, reutilizan `availability_core` y el bloqueo por estilista y no aplican la ventana de 24 h. Cancelar pide confirmación. Sin aviso a la clienta (T-018) y sin contacto de las clientas con cuenta (T-017). ADR-0026. Migración nueva.
 - T-008b: agenda semanal del Admin en `/admin/agenda` (solo lectura, con la RLS y sin `service_role`): cuadrícula por estilista en escritorio, vista de un día en móvil, navegación por semanas con enlaces y detalle con teléfono. Las clientas con cuenta aparecen sin datos de contacto (pendiente). Tests unitarios y e2e `admin-agenda`.
 - T-001: base de la interfaz con cabecera sticky, navegación, menú móvil sin JavaScript
   (`:target` y `useHashOverlay`), pie y página `/contacto`. Paleta `#A8456A` validada.

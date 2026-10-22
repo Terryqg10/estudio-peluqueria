@@ -258,7 +258,9 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-007 | Cuenta de clienta con enlace mágico (ADR-0021) y «mis citas» de solo lectura. Reservar con cuenta queda para otra tarea | CA-12 |
 | T-008a | Acceso del Admin (mismo enlace mágico, rol en BD, guardián de servidor y RLS, script de alta) y protección de `/admin`. ADR-0022 | CA-17 |
 | T-008b | Agenda semanal por estilista, solo lectura: cuadrícula ≥ 1280 px y vista de un día en móvil, navegación por URL | CA-15 |
-| T-008c | Modificar y cancelar citas desde el panel, sin ventana de 24 h (borrador) | CA-16 |
+| T-008c | Modificar y cancelar citas desde el panel, sin ventana de 24 h: funciones de BD del Admin y pantalla por cita. ADR-0026 | CA-16 |
+| T-017 | Datos de contacto de las clientas con cuenta en el panel (borrador) | — |
+| T-018 | Aviso por email cuando el Admin mueve o cancela una cita (borrador) | — |
 | T-009 | Admin: servicios, horarios, vacaciones, bloqueos | CA-18 a CA-20 |
 | T-010 | Chatbot de reglas | CA-21 a CA-24 |
 | T-011 | Galería antes/después | CA-02 |
