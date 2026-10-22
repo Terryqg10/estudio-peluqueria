@@ -266,7 +266,7 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-009a | Admin: servicios (crear, editar, activar/desactivar; función de BD atómica) | CA-18 |
 | T-009b | Admin: bloqueos de franja y vacaciones; función de BD atómica que rechaza si hay citas. ADR-0028 | CA-19, CA-20 |
 | T-009c | Admin: horarios semanales del salón y de las estilistas; función de BD atómica que rechaza si deja citas fuera. ADR-0029 | CA-38, CA-39 |
-| T-010 | Chatbot de reglas | CA-21 a CA-24 |
+| T-010 | Chatbot de reglas: botón flotante, `<dialog>` nativo y árbol de 4 opciones sin red ni almacenamiento | CA-21 a CA-24 |
 | T-011 | Galería antes/después | CA-02 |
 | T-012 | Privacidad, antiabuso y retención | CA-25 a CA-29 |
 | T-013a | CI bloqueante en GitHub Actions: Supabase local en el runner, audit con lista blanca (ADR-0008 y ADR-0023) y e2e en 4 fragmentos. ADR-0025 | RNF-09 |

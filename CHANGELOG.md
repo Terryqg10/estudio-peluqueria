@@ -6,6 +6,7 @@ y versionado [SemVer](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Añadido
+- T-010: chatbot de reglas (CA-21 a CA-24): botón flotante abajo a la derecha en las páginas públicas (no en `/admin`) que abre un diálogo nativo con 4 opciones (Reservar cita, Ver precios, Horarios, Hablar con un humano por WhatsApp). Sin IA, sin red y sin guardar nada. Número de WhatsApp de marcador (VERIFICAR). Sin dependencias nuevas.
 - T-009c: horarios semanales del salón y de cada estilista en `/admin/horarios` (CA-38, CA-39, por enmienda de la spec): varios tramos por día, función de BD atómica que rechaza el cambio si deja citas futuras fuera y las lista con enlace a «Mover cita». ADR-0029. Migración nueva. Con esto queda cerrada T-009 (RF-07).
 - T-009b: bloqueos de franja y vacaciones del Admin en `/admin/bloqueos` (CA-19, CA-20): una estilista o todas, calendario mensual propio, función de BD atómica que rechaza el bloqueo si hay citas activas y las lista con enlace a «Mover cita». ADR-0028. Migración nueva.
 - T-009a: gestión de servicios del Admin en `/admin/servicios` (CA-18): crear, editar y activar o desactivar con sus estilistas, mediante la función de BD atómica `admin_save_service`. Sin borrado (se desactiva). Migración nueva. T-009 queda dividida en T-009a, T-009b (bloqueos y vacaciones) y T-009c (horarios).

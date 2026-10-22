@@ -5,7 +5,7 @@ import { SITE } from '@/lib/site';
 export function SiteFooter() {
   return (
     <footer className="border-t border-border bg-surface-muted">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-(--layout-gutter) py-10 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-(--layout-gutter) pb-24 pt-10 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-lg font-semibold text-fg">{SITE.name}</p>
           <p className="mt-1 text-fg-muted">{SITE.tagline}</p>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Fraunces, Geist } from 'next/font/google';
 import { SiteHeader } from '@/components/layout/site-header';
+import { Chatbot } from '@/components/chatbot/chatbot';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SITE } from '@/lib/site';
 import './globals.css';
@@ -31,6 +32,7 @@ export default function RootLayout({
           {children}
         </main>
         <SiteFooter />
+        <Chatbot whatsappNumber={SITE.contact.whatsapp} />
       </body>
     </html>
   );

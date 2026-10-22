@@ -9,6 +9,7 @@ export const SITE = {
     address: 'Calle del Ejemplo 12, 28001 Madrid', // VERIFICAR: dirección ficticia
     phoneDisplay: '+34 600 000 000', // VERIFICAR: marcador, sustituir al publicar
     phoneHref: 'tel:+34600000000',
+    whatsapp: '34600000000', // VERIFICAR: marcador (E.164 sin «+»), sustituir al publicar
     hours: [
       { days: 'Lunes a viernes', time: '10:00 – 20:00' }, // VERIFICAR
       { days: 'Sábado', time: '10:00 – 14:00' }, // VERIFICAR
