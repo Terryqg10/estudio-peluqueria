@@ -21,9 +21,14 @@ export const MoveInputSchema = z.object({
     .pipe(z.tuple([z.string().uuid(), z.string().datetime({ offset: true })])),
 });
 
+// Nota interna para la estilista (ADR-0027): texto libre, hasta 500 caracteres; vacía = sin nota.
+export const NOTE_MAX_LENGTH = 500;
+export const NoteSchema = z.string().trim().max(NOTE_MAX_LENGTH);
+
 export type AdminAppointment = {
   id: string;
   stylistId: string;
+  note: string;
   stylistName: string;
   serviceName: string;
   date: string;
@@ -86,9 +91,17 @@ export async function loadAdminAppointment(
     profilePhone = profile.data?.phone ?? null;
   }
 
+  const noteRes = await client
+    .from('appointment_notes')
+    .select('note')
+    .eq('appointment_id', data.id)
+    .maybeSingle();
+  if (noteRes.error) return 'error';
+
   return {
     id: data.id,
     stylistId: data.stylist_id,
+    note: noteRes.data?.note ?? '',
     stylistName: data.stylists?.name ?? 'Estilista',
     serviceName: data.services?.name ?? 'Servicio',
     date: madridDateOf(range.start),
@@ -120,6 +133,54 @@ export async function loadMoveSlots(
   return slots.data
     .map((s) => ({ stylistId: s.stylist_id, stylistName: names.get(s.stylist_id) ?? 'Estilista', startsAt: s.starts_at }))
     .sort((a, b) => a.stylistName.localeCompare(b.stylistName, 'es') || a.startsAt.localeCompare(b.startsAt));
+}
+
+export type StylistOption = { id: string; name: string };
+
+// Estilistas activas que hacen el servicio de la cita (las que se pueden elegir al mover).
+export async function loadStylistOptions(
+  client: SupabaseClient<Database>,
+  appointmentId: string,
+): Promise<StylistOption[] | 'error'> {
+  const appt = await client.from('appointments').select('service_id').eq('id', appointmentId).maybeSingle();
+  if (appt.error) return 'error';
+  if (!appt.data) return [];
+
+  const offered = await client
+    .from('stylist_services')
+    .select('stylist_id')
+    .eq('service_id', appt.data.service_id);
+  const stylists = await client.from('stylists').select('id, name').eq('active', true).order('name');
+  if (offered.error || stylists.error) return 'error';
+
+  const ids = new Set(offered.data.map((o) => o.stylist_id));
+  return stylists.data.filter((s) => ids.has(s.id));
+}
+
+// Guarda o borra la nota de la cita. Una nota vacía borra la fila.
+export async function saveNote(
+  client: SupabaseClient<Database>,
+  appointmentId: string,
+  rawNote: unknown,
+): Promise<{ ok: true } | { ok: false; error: ManageError }> {
+  const id = AppointmentIdSchema.safeParse(appointmentId);
+  const note = NoteSchema.safeParse(rawNote);
+  if (!id.success || !note.success) return { ok: false, error: 'INVALID_INPUT' };
+
+  try {
+    const result =
+      note.data === ''
+        ? await client.from('appointment_notes').delete().eq('appointment_id', id.data)
+        : await client
+            .from('appointment_notes')
+            .upsert(
+              { appointment_id: id.data, note: note.data, updated_at: new Date().toISOString() },
+              { onConflict: 'appointment_id' },
+            );
+    return result.error ? { ok: false, error: 'UNAVAILABLE' } : { ok: true };
+  } catch {
+    return { ok: false, error: 'UNAVAILABLE' };
+  }
 }
 
 export async function moveAppointment(

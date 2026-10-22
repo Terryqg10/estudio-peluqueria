@@ -15,13 +15,20 @@ const NAV_LINK =
 
 type SearchParams = Promise<{ semana?: string | string[]; dia?: string | string[]; aviso?: string | string[] }>;
 
-const NOTICES = { movida: 'Cita movida.', cancelada: 'Cita cancelada.' } as const;
+const NOTICES = {
+  movida: 'Cita movida.',
+  guardada: 'Cambios guardados.',
+  cancelada: 'Cita cancelada.',
+} as const;
 
 export default async function AgendaPage({ searchParams }: { searchParams: SearchParams }) {
   const admin = await requireAdmin(); // un layout no basta (ADR-0022)
   const raw = await searchParams;
   const query = parseWeekQuery(raw);
-  const notice = raw.aviso === 'movida' || raw.aviso === 'cancelada' ? NOTICES[raw.aviso] : null;
+  const notice =
+    raw.aviso === 'movida' || raw.aviso === 'guardada' || raw.aviso === 'cancelada'
+      ? NOTICES[raw.aviso]
+      : null;
   const days = weekDays(query.monday);
   const today = todayInMadrid();
   const currentMonday = mondayOf(today);

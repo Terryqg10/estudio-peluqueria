@@ -26,7 +26,26 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "appointment_tokens": {
+            "appointment_notes": {
+                  Row: {
+                    "appointment_id": string,"note": string,"updated_at": string
+                  }
+                  Insert: {
+                    "appointment_id": string,"note": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "appointment_id"?: string,"note"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "appointment_notes_appointment_id_fkey"
+      columns: ["appointment_id"]
+isOneToOne: true
+      referencedRelation: "appointments"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"appointment_tokens": {
                   Row: {
                     "appointment_id": string,"created_at": string,"expires_at": string,"token_hash": string
                   }
