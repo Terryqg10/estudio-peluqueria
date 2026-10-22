@@ -11,6 +11,7 @@ export const ROUTES = {
   adminAgenda: '/admin/agenda', // agenda semanal del Admin (T-008b)
   adminServicios: '/admin/servicios', // gestión de servicios (T-009a)
   adminBloqueos: '/admin/bloqueos', // bloqueos de franja y vacaciones (T-009b)
+  adminHorarios: '/admin/horarios', // horarios semanales del salón y de las estilistas (T-009c)
   avisoLegal: '/aviso-legal',
   privacidad: '/privacidad',
 } as const;

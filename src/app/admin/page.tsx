@@ -19,7 +19,7 @@ export default async function AdminPage() {
       <div className="mt-8 rounded-container bg-surface p-6 shadow-card">
         <p className="font-semibold">Tu cuenta tiene acceso de administración.</p>
         <p className="mt-2 text-fg-muted">
-          Desde aquí se consulta la agenda del salón y se gestionan los servicios, los bloqueos y las vacaciones.
+          Desde aquí se consulta la agenda del salón y se gestionan los servicios, los horarios, los bloqueos y las vacaciones.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
@@ -39,6 +39,12 @@ export default async function AdminPage() {
             className="inline-flex min-h-11 items-center justify-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft"
           >
             Bloqueos y vacaciones
+          </Link>
+          <Link
+            href={ROUTES.adminHorarios}
+            className="inline-flex min-h-11 items-center justify-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft"
+          >
+            Horarios
           </Link>
         </div>
       </div>

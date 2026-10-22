@@ -6,6 +6,7 @@ y versionado [SemVer](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Añadido
+- T-009c: horarios semanales del salón y de cada estilista en `/admin/horarios` (CA-38, CA-39, por enmienda de la spec): varios tramos por día, función de BD atómica que rechaza el cambio si deja citas futuras fuera y las lista con enlace a «Mover cita». ADR-0029. Migración nueva. Con esto queda cerrada T-009 (RF-07).
 - T-009b: bloqueos de franja y vacaciones del Admin en `/admin/bloqueos` (CA-19, CA-20): una estilista o todas, calendario mensual propio, función de BD atómica que rechaza el bloqueo si hay citas activas y las lista con enlace a «Mover cita». ADR-0028. Migración nueva.
 - T-009a: gestión de servicios del Admin en `/admin/servicios` (CA-18): crear, editar y activar o desactivar con sus estilistas, mediante la función de BD atómica `admin_save_service`. Sin borrado (se desactiva). Migración nueva. T-009 queda dividida en T-009a, T-009b (bloqueos y vacaciones) y T-009c (horarios).
 - T-019: selector de día y hora más limpio en la reserva, el cambio por enlace y «Mover cita»: semana de 7 días con flechas (hasta 60 días), horas en 3 columnas con bordes suaves, y títulos más grandes. Sin cambios de BD.

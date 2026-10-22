@@ -244,6 +244,14 @@ isOneToOne: false
 "admin_save_service":
 { Args: { "p_active": boolean,"p_category": string,"p_duration_min": number,"p_id"?: string,"p_name": string,"p_price_from_cents": number,"p_stylist_ids": (string)[] }; Returns: string
                            },
+"admin_save_weekly_hours":
+{ Args: { "p_ranges": Json,"p_stylist_id"?: string }; Returns: number
+                           },
+"admin_schedule_conflicts":
+{ Args: { "p_ranges": Json,"p_stylist_id"?: string }; Returns: {
+              "appointment_id": string,"ends_at": string,"starts_at": string,"stylist_id": string
+            }[]
+                           },
 "availability_core":
 { Args: { "p_date": string,"p_exclude_appointment": string,"p_service_id": string,"p_stylist_id": string }; Returns: {
               "starts_at": string,"stylist_id": string
@@ -286,6 +294,11 @@ isOneToOne: false
 "reschedule_guest_appointment":
 { Args: { "p_starts_at": string,"p_stylist_id": string,"p_token": string }; Returns: {
               "ends_at": string,"id": string,"starts_at": string,"stylist_id": string
+            }[]
+                           },
+"schedule_conflicts":
+{ Args: { "p_ranges": Json,"p_stylist_id": string }; Returns: {
+              "appointment_id": string,"ends_at": string,"starts_at": string,"stylist_id": string
             }[]
                            }
           }

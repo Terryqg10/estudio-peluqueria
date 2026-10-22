@@ -247,6 +247,7 @@ pasa por un módulo en `src/lib/<proveedor>/`; nunca desde un componente.
 | 2026-10-19 | ADR-0009 | Sección 8: se concreta el mecanismo del token de gestión (256 bits, solo hash, acceso por funciones `security definer`). No cambia ningún requisito ni CA |
 | 2026-10-22 | ADR-0021 | Secciones 9 y 10: la cuenta de clienta (RF-04) accede por **enlace mágico de Supabase Auth**; el **email se guarda en `auth.users`** (Supabase) y se envía al proveedor de email (Resend en producción, Mailpit en local) para entregar el enlace, que caduca a los 15 minutos. Sesión por cookie de servidor `httpOnly`. El límite de envíos usa el hash de IP con caducidad en horas (ADR-0020). «Mis citas» solo muestra citas con `user_id` de la usuaria. No cambia ningún RF ni CA; nueva tarea T-007 |
 | 2026-10-22 | ADR-0027 | Sección 9: se añade la **nota interna de la cita** (`appointment_notes`, texto libre de hasta 500 caracteres escrito por el Admin para la estilista). Solo la lee el Admin (RLS sin acceso para clientas ni invitadas), se guarda en Supabase y se borra con la cita. Al ser texto libre puede contener datos personales. No cambia ningún RF ni CA |
+| 2026-10-22 | ADR-0029 | Se añaden los criterios **CA-38** y **CA-39** para la gestión de horarios semanales de RF-07 (ver anexo). No cambia ningún requisito ni CA existente |
 
 ### Anexo de la enmienda ADR-0011
 
@@ -258,3 +259,10 @@ pasa por un módulo en `src/lib/<proveedor>/`; nunca desde un componente.
 |---|---|---|---|---|---|
 | CA-36 | RNF-13 | Cada página pública con imágenes | Se recorren sus `<img>` entre 320 y 1280 px | Cada imagen tiene `alt` (vacío solo si es decorativa), dimensiones o `aspect-ratio`, `srcset` y `sizes`, y ninguna desborda el viewport | e2e `imagenes-responsive` |
 | CA-37 | RF-12, RNF-06 | Lista única de páginas públicas | Se ejecuta el barrido de 18 anchos | Se recorren todas las páginas de la lista, no solo `/`, y una página nueva se cubre al añadirla a la lista | `tests/responsive.spec.ts` parametrizado por rutas |
+
+### Anexo de la enmienda ADR-0029
+
+| ID | RF | Dado | Cuando | Entonces | Verificación |
+|---|---|---|---|---|---|
+| CA-38 | RF-07 | Una estilista (o el salón) con horario semanal | El Admin cambia el horario | La disponibilidad pública usa el nuevo horario (intersección salón ∩ estilista, con varios tramos por día) | test de integración `horarios` |
+| CA-39 | RF-07 | Citas futuras que quedarían fuera del nuevo horario | El Admin intenta guardarlo | Se rechaza sin cambiar nada y se listan las citas para resolverlas | test de integración `horarios` + e2e `admin-horarios` |
