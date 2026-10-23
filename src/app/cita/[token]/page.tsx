@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { formatLongDate, formatSlotTime, madridDateOf } from '@/lib/booking/dates';
 import { loadGuestAppointment } from '@/lib/booking/load-guest-appointment';
 import { STATUS_LABELS } from '@/lib/booking/status';
+import { LINK_ROW_CLASS, PageWithAside, TEXT_LINK_CLASS } from '@/components/layout/page-with-aside';
 import { ROUTES } from '@/lib/routes';
 import { formatPriceFrom } from '@/lib/services/catalog';
 import { DeleteData } from '@/components/privacy/delete-data';
@@ -19,10 +20,7 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-const LINK_CLASS =
-  'inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
-
-const CHANGE_LINK_CLASS =
+const CHANGE_TEXT_LINK_CLASS =
   'inline-flex min-h-11 items-center justify-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover';
 
 export default async function CitaPage({
@@ -37,41 +35,41 @@ export default async function CitaPage({
 
   if (!appointment && query.borrado === '1') {
     return (
-      <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+      <PageWithAside>
         <h1 className="font-display text-display font-semibold">Datos borrados</h1>
         <p role="status" className="mt-3 max-w-prose text-fg-muted">
           Hemos borrado tus datos personales. Tus citas futuras han quedado canceladas y este enlace ya no
           funciona.
         </p>
-        <div className="mt-8 flex flex-wrap gap-2">
-          <Link href={ROUTES.home} className={LINK_CLASS}>
+        <div className={`mt-8 ${LINK_ROW_CLASS}`}>
+          <Link href={ROUTES.home} className={TEXT_LINK_CLASS}>
             Volver al inicio
           </Link>
         </div>
-      </section>
+      </PageWithAside>
     );
   }
 
   if (!appointment) {
     return (
-      <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+      <PageWithAside>
         <h1 className="font-display text-display font-semibold">Enlace no válido o caducado</h1>
         <p className="mt-3 max-w-prose text-fg-muted">
           Este enlace no existe, está incompleto o ya ha caducado. Si necesitas ayuda con tu cita,
           consulta nuestro contacto.
         </p>
-        <div className="mt-8 flex flex-wrap gap-2">
-          <Link href={ROUTES.contacto} className={LINK_CLASS}>
+        <div className={`mt-8 ${LINK_ROW_CLASS}`}>
+          <Link href={ROUTES.contacto} className={TEXT_LINK_CLASS}>
             Contacto
           </Link>
-          <Link href={ROUTES.reservar} className={LINK_CLASS}>
+          <Link href={ROUTES.reservar} className={TEXT_LINK_CLASS}>
             Reservar una cita
           </Link>
-          <Link href={ROUTES.borrarDatos} className={LINK_CLASS}>
+          <Link href={ROUTES.borrarDatos} className={TEXT_LINK_CLASS}>
             Borrar mis datos
           </Link>
         </div>
-      </section>
+      </PageWithAside>
     );
   }
 
@@ -80,7 +78,7 @@ export default async function CitaPage({
   const justChanged = query.cambiada === '1' && isActive;
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+    <PageWithAside>
       <h1 className="font-display text-display font-semibold">Tu cita</h1>
       <p className="mt-3 text-fg-muted">Estos son los datos de tu cita.</p>
 
@@ -125,7 +123,7 @@ export default async function CitaPage({
         appointment.canChange ? (
           <>
             <div className="mt-8">
-              <Link href={`${ROUTES.cita}/${token}/cambiar`} className={CHANGE_LINK_CLASS}>
+              <Link href={`${ROUTES.cita}/${token}/cambiar`} className={CHANGE_TEXT_LINK_CLASS}>
                 Cambiar cita
               </Link>
             </div>
@@ -139,16 +137,16 @@ export default async function CitaPage({
         )
       ) : null}
 
-      <div className="mt-8 flex flex-wrap gap-2">
+      <div className={`mt-8 ${LINK_ROW_CLASS}`}>
         {appointment.status === 'cancelled' ? (
-          <Link href={ROUTES.reservar} className={LINK_CLASS}>
+          <Link href={ROUTES.reservar} className={TEXT_LINK_CLASS}>
             Reservar otra cita
           </Link>
         ) : null}
-        <Link href={ROUTES.home} className={LINK_CLASS}>
+        <Link href={ROUTES.home} className={TEXT_LINK_CLASS}>
           Volver al inicio
         </Link>
-        <Link href={ROUTES.contacto} className={LINK_CLASS}>
+        <Link href={ROUTES.contacto} className={TEXT_LINK_CLASS}>
           Contacto
         </Link>
       </div>
@@ -164,6 +162,6 @@ export default async function CitaPage({
           doneHref={`${ROUTES.cita}/${token}?borrado=1`}
         />
       </div>
-    </section>
+    </PageWithAside>
   );
 }

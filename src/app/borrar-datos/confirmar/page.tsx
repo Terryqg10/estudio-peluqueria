@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { TokenSchema } from '@/lib/booking/token';
+import { LINK_ROW_CLASS, PageWithAside, TEXT_LINK_CLASS } from '@/components/layout/page-with-aside';
 import { ROUTES } from '@/lib/routes';
 import { confirmGuestDeletionAction } from './actions';
 
@@ -13,8 +14,6 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-const LINK_CLASS =
-  'inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
 const BUTTON_CLASS =
   'inline-flex min-h-11 items-center justify-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover';
 
@@ -27,17 +26,17 @@ export default async function ConfirmarBorradoPage({
 
   if (query.hecho === '1') {
     return (
-      <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+      <PageWithAside>
         <h1 className="font-display text-display font-semibold">Datos borrados</h1>
         <p role="status" className="mt-3 max-w-prose text-fg-muted">
           Hemos borrado tus datos personales. Tus citas futuras han quedado canceladas y el enlace ya no funciona.
         </p>
-        <div className="mt-8 flex flex-wrap gap-2">
-          <Link href={ROUTES.home} className={LINK_CLASS}>
+        <div className={`mt-8 ${LINK_ROW_CLASS}`}>
+          <Link href={ROUTES.home} className={TEXT_LINK_CLASS}>
             Volver al inicio
           </Link>
         </div>
-      </section>
+      </PageWithAside>
     );
   }
 
@@ -46,7 +45,7 @@ export default async function ConfirmarBorradoPage({
 
   if (!token.success || query.error) {
     return (
-      <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+      <PageWithAside>
         <h1 className="font-display text-display font-semibold">
           {unavailable ? 'No hemos podido borrar tus datos' : 'Enlace no válido o caducado'}
         </h1>
@@ -55,20 +54,20 @@ export default async function ConfirmarBorradoPage({
             ? 'El servicio no está disponible ahora mismo. Inténtalo de nuevo en unos minutos.'
             : 'Este enlace no existe, ya se ha usado o ha caducado. Pide uno nuevo para borrar tus datos.'}
         </p>
-        <div className="mt-8 flex flex-wrap gap-2">
-          <Link href={ROUTES.borrarDatos} className={LINK_CLASS}>
+        <div className={`mt-8 ${LINK_ROW_CLASS}`}>
+          <Link href={ROUTES.borrarDatos} className={TEXT_LINK_CLASS}>
             Pedir un enlace nuevo
           </Link>
-          <Link href={ROUTES.home} className={LINK_CLASS}>
+          <Link href={ROUTES.home} className={TEXT_LINK_CLASS}>
             Volver al inicio
           </Link>
         </div>
-      </section>
+      </PageWithAside>
     );
   }
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+    <PageWithAside>
       <h1 className="font-display text-display font-semibold">Confirmar el borrado</h1>
       <p className="mt-3 max-w-prose text-fg-muted">
         Se borrarán tu nombre, email y teléfono de todas tus citas y las citas futuras se cancelarán. No se puede
@@ -80,11 +79,11 @@ export default async function ConfirmarBorradoPage({
           Confirmar el borrado de mis datos
         </button>
       </form>
-      <div className="mt-6">
-        <Link href={ROUTES.home} className={LINK_CLASS}>
+      <div className={`mt-6 ${LINK_ROW_CLASS}`}>
+        <Link href={ROUTES.home} className={TEXT_LINK_CLASS}>
           No, volver al inicio
         </Link>
       </div>
-    </section>
+    </PageWithAside>
   );
 }

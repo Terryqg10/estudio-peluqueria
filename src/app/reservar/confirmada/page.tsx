@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { CONFIRMATION_COOKIE } from '@/lib/booking/confirmation-cookie';
 import { formatLongDate, formatSlotTime, madridDateOf } from '@/lib/booking/dates';
 import { loadConfirmation } from '@/lib/booking/load-confirmation';
+import { LINK_ROW_CLASS, PageWithAside, TEXT_LINK_CLASS } from '@/components/layout/page-with-aside';
 import { ROUTES } from '@/lib/routes';
 import { formatPriceFrom } from '@/lib/services/catalog';
 
@@ -15,15 +16,12 @@ export const metadata: Metadata = {
 // Depende de una cookie de la persona que acaba de reservar.
 export const dynamic = 'force-dynamic';
 
-const LINK_CLASS =
-  'inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
-
 export default async function ReservaConfirmadaPage() {
   const store = await cookies();
   const confirmation = await loadConfirmation(store.get(CONFIRMATION_COOKIE)?.value);
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+    <PageWithAside>
       {confirmation ? (
         <>
           <h1 className="font-display text-display font-semibold">Reserva confirmada</h1>
@@ -67,11 +65,11 @@ export default async function ReservaConfirmadaPage() {
             </div>
           </dl>
 
-          <div className="mt-8 flex flex-wrap gap-2">
-            <Link href={ROUTES.home} className={LINK_CLASS}>
+          <div className={`mt-8 ${LINK_ROW_CLASS}`}>
+            <Link href={ROUTES.home} className={TEXT_LINK_CLASS}>
               Volver al inicio
             </Link>
-            <Link href={ROUTES.reservar} className={LINK_CLASS}>
+            <Link href={ROUTES.reservar} className={TEXT_LINK_CLASS}>
               Hacer otra reserva
             </Link>
           </div>
@@ -83,16 +81,16 @@ export default async function ReservaConfirmadaPage() {
             Este enlace solo funciona justo después de reservar y durante unos minutos. Si acabas
             de hacerlo y no ves tu reserva, consulta nuestro contacto.
           </p>
-          <div className="mt-8 flex flex-wrap gap-2">
-            <Link href={ROUTES.reservar} className={LINK_CLASS}>
+          <div className={`mt-8 ${LINK_ROW_CLASS}`}>
+            <Link href={ROUTES.reservar} className={TEXT_LINK_CLASS}>
               Reservar una cita
             </Link>
-            <Link href={ROUTES.contacto} className={LINK_CLASS}>
+            <Link href={ROUTES.contacto} className={TEXT_LINK_CLASS}>
               Contacto
             </Link>
           </div>
         </>
       )}
-    </section>
+    </PageWithAside>
   );
 }

@@ -11,6 +11,9 @@ import {
 // T-005b: reserva de invitada de extremo a extremo (CA-10, CA-25, CA-28).
 // Usa «Tratamiento hidratante» (30 min, solo Irene). Cada test usa una hora distinta y cada
 // proyecto (escritorio y móvil) las suyas, para no pisarse al ejecutarse en paralelo.
+// T-023: el teléfono de la invitada es distinto del del salón (+34 600 000 000), que ahora se ve en el pie y en la ayuda:
+// así «no se muestran datos personales» sigue comprobando algo.
+const GUEST_PHONE = '+34 611 987 654';
 const TIMES = { chromium: ['10:00', '11:00', '12:00', '13:00'], mobile: ['14:00', '15:00', '16:00', '17:00'] };
 
 function timesFor(projectName: string): string[] {
@@ -26,7 +29,7 @@ test.describe('reservar: reserva de invitada', () => {
     const [time] = timesFor(testInfo.project.name);
     try {
       await startBooking(page, time ?? '10:00');
-      await fillForm(page, email);
+      await fillForm(page, email, { phone: GUEST_PHONE });
       await submitForm(page);
 
       await expect(page).toHaveURL(/\/reservar\/confirmada$/);
@@ -40,7 +43,7 @@ test.describe('reservar: reserva de invitada', () => {
       const body = (await page.locator('body').innerText()).toLowerCase();
       expect(body).not.toContain(email);
       expect(body).not.toContain('ana garcía');
-      expect(body).not.toContain('600 000 000');
+      expect(body).not.toContain('611 987 654');
 
       // La cookie de confirmación es httpOnly y no llega a los scripts.
       const cookie = (await context.cookies()).find((c) => c.name === 'reserva_confirmada');

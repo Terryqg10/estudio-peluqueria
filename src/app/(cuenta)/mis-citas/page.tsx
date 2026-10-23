@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { loadMyAppointments, type MyAppointment } from '@/lib/account/load-my-appointments';
 import { formatLongDate, formatSlotTime, madridDateOf } from '@/lib/booking/dates';
 import { STATUS_LABELS } from '@/lib/booking/status';
+import { LINK_ROW_CLASS, PageWithAside, TEXT_LINK_CLASS } from '@/components/layout/page-with-aside';
 import { ROUTES } from '@/lib/routes';
 import { DeleteData } from '@/components/privacy/delete-data';
 import { deleteAccountAction, signOutAction } from './actions';
@@ -15,10 +16,6 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-const LINK_CLASS =
-  'inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
-const BUTTON_CLASS =
-  'inline-flex min-h-11 items-center justify-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
 const CTA_CLASS =
   'inline-flex min-h-11 items-center justify-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover';
 
@@ -59,19 +56,19 @@ export default async function MisCitasPage() {
 
   if (result.state === 'error') {
     return (
-      <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+      <PageWithAside>
         <h1 className="font-display text-display font-semibold">Mis citas</h1>
         <p role="alert" className="mt-6 rounded-card bg-accent-soft p-4 text-fg">
           No hemos podido cargar tus citas. Inténtalo de nuevo en unos minutos.
         </p>
-      </section>
+      </PageWithAside>
     );
   }
 
   const isEmpty = result.upcoming.length === 0 && result.past.length === 0;
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+    <PageWithAside>
       <h1 className="font-display text-display font-semibold">Mis citas</h1>
       {result.email ? <p className="mt-3 text-fg-muted">Has entrado como {result.email}.</p> : null}
 
@@ -111,12 +108,12 @@ export default async function MisCitasPage() {
         </>
       ) : null}
 
-      <div className="mt-10 flex flex-wrap gap-2">
-        <Link href={ROUTES.home} className={LINK_CLASS}>
+      <div className={`mt-10 ${LINK_ROW_CLASS}`}>
+        <Link href={ROUTES.home} className={TEXT_LINK_CLASS}>
           Volver al inicio
         </Link>
         <form action={signOutAction}>
-          <button type="submit" className={BUTTON_CLASS}>
+          <button type="submit" className={TEXT_LINK_CLASS}>
             Salir
           </button>
         </form>
@@ -129,6 +126,6 @@ export default async function MisCitasPage() {
         </p>
         <DeleteData kind="account" action={deleteAccountAction} doneHref={`${ROUTES.acceso}?borrado=1`} />
       </div>
-    </section>
+    </PageWithAside>
   );
 }

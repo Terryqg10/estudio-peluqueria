@@ -183,6 +183,7 @@ Toda imagen de contenido cumple, sin excepciones:
 | Precios "desde" visibles | Las webs propias del sector no publican precios | Decisión de diferenciación del informe (hueco frente a marketplaces) | Quita la llamada previa |
 | La reserva (`/reservar`) exige JavaScript | Un formulario de reserva debería degradar sin JS | La selección de hueco depende de disponibilidad en vivo (Realtime y sondeo) y de estado de cliente; un fallback estático mostraría huecos desactualizados. La spec (sección 5) ya lo admite y se avisa con `<noscript>` y enlace a contacto | Disponibilidad siempre actual y feedback inmediato. Reversible: una versión por formulario `GET` sería una tarea aparte |
 | Tira de días con desplazamiento horizontal (carrusel) | Calendario mensual | Coincide con la convención de marketplaces (Fresha, Treatwell) y rinde mejor en 320 px; el desbordamiento es deliberado (`overflow-x-auto` y `data-allow-overflow`) | Menos pasos para elegir día; ventana de 60 días ampliable con «Más fechas» |
+| Páginas de cuenta y de enlaces con una columna de apoyo a la derecha (T-023) | Formulario centrado de una sola columna, típico de las pantallas de acceso | Una columna a la izquierda dejaba media pantalla vacía en escritorio (regla «Orden y Layout Macro»). La columna de apoyo reutiliza el contacto y el horario del salón (`HelpCard`) y va después del contenido en el DOM y en móvil | Ayuda a mano justo donde falla un enlace o hay dudas; contenedor alineado con cabecera y pie. Reversible: basta con pasar `aside={null}` |
 | Sin reseñas hasta que existan verificadas | Reseñas visibles en marketplaces | No se publican reseñas inventadas | Confianza real; se añaden cuando el flujo las genere |
 
 ## 6. Estrategia de tests
@@ -273,6 +274,7 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-021 | Reservar con cuenta (RF-04): `user_id` y copia de contacto en la cita, identidad desde la sesión y formulario precargado (ADR-0034) | CA-44, CA-45 |
 | T-018 | Aviso por email a la clienta cuando el Admin mueve o cancela su cita, con el resultado visible en el panel (ADR-0035) | CA-46, CA-47 |
 | T-022 | Que los tests no dejen datos de prueba en la BD local: limpieza en origen, `db:reset:local` y `check-db-clean` (solo local) | — |
+| T-023 | Layout de las páginas estrechas en dos columnas, pie en tres columnas y enlaces de texto alineados (pulido visual, hallazgos 4, 6 y 7) | — |
 | T-013a | CI bloqueante en GitHub Actions: Supabase local en el runner, audit con lista blanca (ADR-0008 y ADR-0023) y e2e en 4 fragmentos. ADR-0025 | RNF-09 |
 | T-013b | Keep-alive semanal de Supabase (necesita el proyecto alojado y secretos de GitHub; borrador) | CA-35 |
 | T-014 | Estabilizar los tests de tiempo-real (flaky bajo carga; anotada al cerrar T-005c) | — |

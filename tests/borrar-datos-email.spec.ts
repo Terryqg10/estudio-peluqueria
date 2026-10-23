@@ -109,7 +109,8 @@ test.describe('borrar mis datos por email', () => {
 
   test('el enlace de cita no válido ofrece borrar los datos', async ({ page }) => {
     await page.goto(`/cita/${'A'.repeat(43)}`);
-    await page.getByRole('link', { name: 'Borrar mis datos' }).click();
+    // En <main>: el pie también tiene un enlace «Borrar mis datos» (T-023).
+    await page.locator('main').getByRole('link', { name: 'Borrar mis datos' }).click();
     await expect(page).toHaveURL(/\/borrar-datos$/);
   });
 });

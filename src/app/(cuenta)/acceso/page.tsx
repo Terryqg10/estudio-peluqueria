@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { isAdminSession } from '@/lib/account/require-admin';
 import { createAuthClient } from '@/lib/supabase/auth-server';
+import { LINK_ROW_CLASS, PageWithAside, TEXT_LINK_CLASS } from '@/components/layout/page-with-aside';
 import { ROUTES } from '@/lib/routes';
 import { LoginForm } from './login-form';
 
@@ -12,9 +13,6 @@ export const metadata: Metadata = {
 };
 
 export const dynamic = 'force-dynamic';
-
-const LINK_CLASS =
-  'inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
 
 export default async function AccesoPage({
   searchParams,
@@ -28,7 +26,7 @@ export default async function AccesoPage({
   if (client && data.user) redirect((await isAdminSession(client)) ? ROUTES.admin : ROUTES.misCitas);
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+    <PageWithAside>
       <h1 className="font-display text-display font-semibold">Acceder a mis citas</h1>
       {query.borrado === '1' ? (
         <p role="status" className="mt-6 rounded-card bg-accent-soft p-4 text-fg">
@@ -39,14 +37,14 @@ export default async function AccesoPage({
         Escribe tu email y te enviaremos un enlace para entrar. Sin contraseña.
       </p>
       <LoginForm />
-      <div className="mt-8 flex flex-wrap gap-2">
-        <Link href={ROUTES.reservar} className={LINK_CLASS}>
+      <div className={`mt-8 ${LINK_ROW_CLASS}`}>
+        <Link href={ROUTES.reservar} className={TEXT_LINK_CLASS}>
           Reservar una cita
         </Link>
-        <Link href={ROUTES.home} className={LINK_CLASS}>
+        <Link href={ROUTES.home} className={TEXT_LINK_CLASS}>
           Volver al inicio
         </Link>
       </div>
-    </section>
+    </PageWithAside>
   );
 }

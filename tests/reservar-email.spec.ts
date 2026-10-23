@@ -13,6 +13,9 @@ import {
 
 // T-006a: email de confirmación y enlace de la cita (CA-11, CA-30). El correo se lee de Mailpit
 // (Supabase local). Horas propias de este archivo para no pisar a las demás reservas de los e2e.
+// T-023: el teléfono de la invitada es distinto del del salón (+34 600 000 000), que ahora se ve en el pie y en la ayuda:
+// así «no se muestran datos personales» sigue comprobando algo.
+const GUEST_PHONE = '+34 611 987 654';
 const TIME = { chromium: '14:30', mobile: '15:30' };
 
 const INVALID_HEADING = 'Enlace no válido o caducado';
@@ -32,7 +35,7 @@ test.describe('email de confirmación y enlace de la cita', () => {
     const time = testInfo.project.name === 'mobile' ? TIME.mobile : TIME.chromium;
     try {
       await startBooking(page, time);
-      await fillForm(page, email, { name: 'Ana García' });
+      await fillForm(page, email, { name: 'Ana García', phone: GUEST_PHONE });
       await submitForm(page);
 
       // La confirmación informa del envío y no expone el token ni datos personales.
@@ -72,7 +75,7 @@ test.describe('email de confirmación y enlace de la cita', () => {
       const text = (await mainText(page)).toLowerCase();
       expect(text).not.toContain(email);
       expect(text).not.toContain('ana garcía');
-      expect(text).not.toContain('600 000 000');
+      expect(text).not.toContain('611 987 654');
 
       // El token de la URL no se indexa ni se filtra por la cabecera Referer.
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);

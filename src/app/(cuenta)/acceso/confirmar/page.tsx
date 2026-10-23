@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { TokenHashSchema } from '@/lib/account/schema';
+import { LINK_ROW_CLASS, PageWithAside, TEXT_LINK_CLASS } from '@/components/layout/page-with-aside';
 import { ROUTES } from '@/lib/routes';
 import { confirmLoginAction } from './actions';
 
@@ -13,8 +14,6 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-const LINK_CLASS =
-  'inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
 const BUTTON_CLASS =
   'inline-flex min-h-11 items-center justify-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover';
 
@@ -29,7 +28,7 @@ export default async function ConfirmarPage({
 
   if (!tokenHash.success || query.error) {
     return (
-      <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+      <PageWithAside>
         <h1 className="font-display text-display font-semibold">
           {unavailable ? 'No hemos podido entrar' : 'Enlace no válido o caducado'}
         </h1>
@@ -38,20 +37,20 @@ export default async function ConfirmarPage({
             ? 'El servicio no está disponible ahora mismo. Inténtalo de nuevo en unos minutos.'
             : 'Este enlace no existe, ya se ha usado o ha caducado. Pide uno nuevo para entrar.'}
         </p>
-        <div className="mt-8 flex flex-wrap gap-2">
-          <Link href={ROUTES.acceso} className={LINK_CLASS}>
+        <div className={`mt-8 ${LINK_ROW_CLASS}`}>
+          <Link href={ROUTES.acceso} className={TEXT_LINK_CLASS}>
             Pedir un enlace nuevo
           </Link>
-          <Link href={ROUTES.home} className={LINK_CLASS}>
+          <Link href={ROUTES.home} className={TEXT_LINK_CLASS}>
             Volver al inicio
           </Link>
         </div>
-      </section>
+      </PageWithAside>
     );
   }
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+    <PageWithAside>
       <h1 className="font-display text-display font-semibold">Entrar en mi cuenta</h1>
       <p className="mt-3 max-w-prose text-fg-muted">Pulsa el botón para ver tus citas.</p>
       <form action={confirmLoginAction} className="mt-8">
@@ -60,6 +59,6 @@ export default async function ConfirmarPage({
           Entrar en mi cuenta
         </button>
       </form>
-    </section>
+    </PageWithAside>
   );
 }
