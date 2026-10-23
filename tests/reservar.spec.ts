@@ -45,7 +45,7 @@ test.describe('reservar: orden y preselección', () => {
 
   test('CA-01: el botón «Reservar» de un servicio abre la reserva con ese servicio elegido', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('link', { name: 'Reservar Corte mujer' }).click();
+    await page.locator('#servicios').getByRole('link', { name: 'Reservar Corte mujer' }).click(); // la galería también tiene enlaces «Reservar …»
     await expect(page).toHaveURL(/\/reservar\?servicio=[0-9a-f-]{36}$/);
     await expect(page.getByLabel(/Corte mujer/).first()).toBeChecked();
     await expect(page.getByRole('group', { name: 'Elige estilista' })).toBeVisible();

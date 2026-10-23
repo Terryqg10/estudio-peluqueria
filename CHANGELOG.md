@@ -6,6 +6,7 @@ y versionado [SemVer](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Añadido
+- T-011: galería antes/después en la home (CA-02): filtro por técnica con enlaces, estilista y enlace a reservar cada servicio, par apilado en móvil y en columnas en escritorio. Tabla `gallery_items` con RLS. Imágenes **provisionales** (a sustituir por las generadas con IA antes de publicar, ver `docs/imagenes.md`). Migración nueva.
 - T-010: chatbot de reglas (CA-21 a CA-24): botón flotante abajo a la derecha en las páginas públicas (no en `/admin`) que abre un diálogo nativo con 4 opciones (Reservar cita, Ver precios, Horarios, Hablar con un humano por WhatsApp). Sin IA, sin red y sin guardar nada. Número de WhatsApp de marcador (VERIFICAR). Sin dependencias nuevas.
 - T-009c: horarios semanales del salón y de cada estilista en `/admin/horarios` (CA-38, CA-39, por enmienda de la spec): varios tramos por día, función de BD atómica que rechaza el cambio si deja citas futuras fuera y las lista con enlace a «Mover cita». ADR-0029. Migración nueva. Con esto queda cerrada T-009 (RF-07).
 - T-009b: bloqueos de franja y vacaciones del Admin en `/admin/bloqueos` (CA-19, CA-20): una estilista o todas, calendario mensual propio, función de BD atómica que rechaza el bloqueo si hay citas activas y las lista con enlace a «Mover cita». ADR-0028. Migración nueva.

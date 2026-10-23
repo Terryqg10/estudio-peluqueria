@@ -53,3 +53,26 @@ insert into public.stylist_schedule (stylist_id, weekday, starts, ends)
 select s.id, h.weekday, h.opens, h.closes
 from public.stylists s
 cross join public.salon_hours h;
+
+-- Galería antes/después (T-011). Imágenes PROVISIONALES (scripts/make-gallery-placeholders.mjs): se sustituyen por
+-- las generadas con IA según docs/imagenes.md (rutas, textos alternativos y `ai_generated` en esta tabla). -- VERIFICAR: ficticio
+insert into public.gallery_items (technique, service_id, stylist_id, before_path, after_path, alt_before, alt_after, ai_generated, sort_order)
+select m.technique, sv.id, st.id,
+       '/images/galeria/galeria-' || m.slug || '-' || m.n || '-antes.jpg',
+       '/images/galeria/galeria-' || m.slug || '-' || m.n || '-despues.jpg',
+       'Antes: ilustración provisional de ' || lower(m.technique),
+       'Después: ilustración provisional de ' || lower(m.technique),
+       false, -- ilustraciones provisionales, no generadas con IA: pasa a true al sustituirlas
+       m.sort_order
+from (values
+  ('Balayage',    'balayage',    1, 'Balayage',                 'Lucía Marín',   10),
+  ('Balayage',    'balayage',    2, 'Balayage',                 'Lucía Marín',   20),
+  ('Mechas',      'mechas',      1, 'Mechas',                   'Lucía Marín',   30),
+  ('Color',       'color',       1, 'Color',                    'Carmen Ortega', 40),
+  ('Corte',       'corte',       1, 'Corte mujer',              'Carmen Ortega', 50),
+  ('Corte',       'corte',       2, 'Corte mujer',              'Carmen Ortega', 60),
+  ('Peinado',     'peinado',     1, 'Peinado de evento',        'Carmen Ortega', 70),
+  ('Tratamiento', 'tratamiento', 1, 'Tratamiento de keratina',  'Irene Solís',   80)
+) as m (technique, slug, n, service_name, stylist_name, sort_order)
+join public.services sv on sv.name = m.service_name
+join public.stylists st on st.name = m.stylist_name;

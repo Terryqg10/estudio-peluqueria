@@ -1,18 +1,22 @@
 import { ContactInfo } from '@/components/contact/contact-info';
+import { GallerySection } from '@/components/home/gallery-section';
 import { Hero } from '@/components/home/hero';
 import { ServicesSection } from '@/components/home/services-section';
+import { getGallery, parseTechnique } from '@/lib/gallery/gallery';
 import { getServiceCatalog } from '@/lib/services/catalog';
 
 // El catálogo se lee en cada petición para reflejar los cambios del Admin (T-009).
 export const dynamic = 'force-dynamic';
 
-export default async function Home() {
-  const catalog = await getServiceCatalog();
+export default async function Home({ searchParams }: { searchParams: Promise<{ tecnica?: string | string[] }> }) {
+  const [catalog, gallery, query] = await Promise.all([getServiceCatalog(), getGallery(), searchParams]);
+  const technique = gallery.ok ? parseTechnique(query.tecnica, gallery.items) : null;
 
   return (
     <>
       <Hero />
       <ServicesSection catalog={catalog} />
+      <GallerySection gallery={gallery} selected={technique} />
       <section
         id="contacto"
         aria-labelledby="contacto-titulo"

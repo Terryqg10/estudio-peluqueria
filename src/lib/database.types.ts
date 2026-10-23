@@ -89,6 +89,31 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"gallery_items": {
+                  Row: {
+                    "active": boolean,"after_path": string,"ai_generated": boolean,"alt_after": string,"alt_before": string,"before_path": string,"created_at": string,"id": string,"service_id": string,"sort_order": number,"stylist_id": string,"technique": string
+                  }
+                  Insert: {
+                    "active"?: boolean,"after_path": string,"ai_generated"?: boolean,"alt_after": string,"alt_before": string,"before_path": string,"created_at"?: string,"id"?: string,"service_id": string,"sort_order"?: number,"stylist_id": string,"technique": string
+                  }
+                  Update: {
+                    "active"?: boolean,"after_path"?: string,"ai_generated"?: boolean,"alt_after"?: string,"alt_before"?: string,"before_path"?: string,"created_at"?: string,"id"?: string,"service_id"?: string,"sort_order"?: number,"stylist_id"?: string,"technique"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "gallery_items_service_id_fkey"
+      columns: ["service_id"]
+isOneToOne: false
+      referencedRelation: "services"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "gallery_items_stylist_id_fkey"
+      columns: ["stylist_id"]
+isOneToOne: false
+      referencedRelation: "stylists"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"profiles": {
                   Row: {
                     "created_at": string,"full_name": string | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["user_role"]
