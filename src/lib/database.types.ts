@@ -66,13 +66,13 @@ isOneToOne: true
                   ]
                 },"appointments": {
                   Row: {
-                    "confirmation_email_sent_at": string | null,"consent_at": string | null,"consent_version": string | null,"created_at": string,"during": unknown,"guest_email": string | null,"guest_name": string | null,"guest_phone": string | null,"id": string,"service_id": string,"status": Database["public"]['Enums']["appointment_status"],"stylist_id": string,"updated_at": string,"user_id": string | null
+                    "anonymized_at": string | null,"confirmation_email_sent_at": string | null,"consent_at": string | null,"consent_version": string | null,"created_at": string,"during": unknown,"guest_email": string | null,"guest_name": string | null,"guest_phone": string | null,"id": string,"service_id": string,"status": Database["public"]['Enums']["appointment_status"],"stylist_id": string,"updated_at": string,"user_id": string | null
                   }
                   Insert: {
-                    "confirmation_email_sent_at"?: string | null,"consent_at"?: string | null,"consent_version"?: string | null,"created_at"?: string,"during": unknown,"guest_email"?: string | null,"guest_name"?: string | null,"guest_phone"?: string | null,"id"?: string,"service_id": string,"status"?: Database["public"]['Enums']["appointment_status"],"stylist_id": string,"updated_at"?: string,"user_id"?: string | null
+                    "anonymized_at"?: string | null,"confirmation_email_sent_at"?: string | null,"consent_at"?: string | null,"consent_version"?: string | null,"created_at"?: string,"during": unknown,"guest_email"?: string | null,"guest_name"?: string | null,"guest_phone"?: string | null,"id"?: string,"service_id": string,"status"?: Database["public"]['Enums']["appointment_status"],"stylist_id": string,"updated_at"?: string,"user_id"?: string | null
                   }
                   Update: {
-                    "confirmation_email_sent_at"?: string | null,"consent_at"?: string | null,"consent_version"?: string | null,"created_at"?: string,"during"?: unknown,"guest_email"?: string | null,"guest_name"?: string | null,"guest_phone"?: string | null,"id"?: string,"service_id"?: string,"status"?: Database["public"]['Enums']["appointment_status"],"stylist_id"?: string,"updated_at"?: string,"user_id"?: string | null
+                    "anonymized_at"?: string | null,"confirmation_email_sent_at"?: string | null,"consent_at"?: string | null,"consent_version"?: string | null,"created_at"?: string,"during"?: unknown,"guest_email"?: string | null,"guest_name"?: string | null,"guest_phone"?: string | null,"id"?: string,"service_id"?: string,"status"?: Database["public"]['Enums']["appointment_status"],"stylist_id"?: string,"updated_at"?: string,"user_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -277,6 +277,14 @@ isOneToOne: false
               "appointment_id": string,"ends_at": string,"starts_at": string,"stylist_id": string
             }[]
                            },
+"anonymize_expired_data":
+{ Args: { "p_months"?: number }; Returns: {
+              "appointments_anonymized": number,"profiles_cleared": number,"rate_limits_purged": number
+            }[]
+                           },
+"anonymize_person":
+{ Args: { "p_guest_email": string,"p_user_id": string }; Returns: number
+                           },
 "availability_core":
 { Args: { "p_date": string,"p_exclude_appointment": string,"p_service_id": string,"p_stylist_id": string }; Returns: {
               "starts_at": string,"stylist_id": string
@@ -294,6 +302,12 @@ isOneToOne: false
 { Args: { "p_consent_version": string,"p_guest_email": string,"p_guest_name": string,"p_guest_phone": string,"p_ip_hash"?: string,"p_ip_window_minutes"?: number,"p_max_active_per_email"?: number,"p_max_per_ip"?: number,"p_service_id": string,"p_starts_at": string,"p_stylist_id": string }; Returns: {
               "appointment_id": string,"ends_at": string,"starts_at": string
             }[]
+                           },
+"delete_account_data":
+{ Args: { "p_user_id": string }; Returns: number
+                           },
+"delete_guest_data":
+{ Args: { "p_token": string }; Returns: number
                            },
 "get_availability":
 { Args: { "p_date": string,"p_service_id": string,"p_stylist_id"?: string }; Returns: {

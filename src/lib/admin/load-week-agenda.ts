@@ -26,6 +26,7 @@ export type WeekAgendaResult =
   | { state: 'ok'; stylists: AgendaStylist[]; appointments: AgendaAppointment[] };
 
 export const ACCOUNT_CLIENT_LABEL = 'Clienta con cuenta';
+export const ANONYMIZED_CLIENT_LABEL = 'Clienta anonimizada';
 
 // Agenda de la semana, leída con el cliente de la sesión del Admin: la RLS (`admin_select_*`) decide qué
 // filas ve. Nunca `service_role` (ADR-0022). Cualquier error de lectura es un error de toda la agenda:
@@ -40,7 +41,7 @@ export async function loadWeekAgenda(
     client
       .from('appointments')
       .select(
-        'id, stylist_id, status, during, user_id, guest_name, guest_email, guest_phone, services(name)',
+        'id, stylist_id, status, during, user_id, anonymized_at, guest_name, guest_email, guest_phone, services(name)',
       )
       .overlaps('during', `[${start},${end})`)
       .order('during', { ascending: true }),
@@ -69,7 +70,9 @@ export async function loadWeekAgenda(
       endsAt: range.end,
       status: row.status,
       serviceName: row.services?.name ?? 'Servicio',
-      clientName: row.guest_name ?? profile?.full_name ?? ACCOUNT_CLIENT_LABEL,
+      clientName: row.anonymized_at
+        ? ANONYMIZED_CLIENT_LABEL
+        : (row.guest_name ?? profile?.full_name ?? ACCOUNT_CLIENT_LABEL),
       phone: row.guest_phone ?? profile?.phone ?? null,
       email: row.guest_email ?? null,
       isGuest: !row.user_id,

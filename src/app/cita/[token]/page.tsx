@@ -5,6 +5,8 @@ import { loadGuestAppointment } from '@/lib/booking/load-guest-appointment';
 import { STATUS_LABELS } from '@/lib/booking/status';
 import { ROUTES } from '@/lib/routes';
 import { formatPriceFrom } from '@/lib/services/catalog';
+import { DeleteData } from '@/components/privacy/delete-data';
+import { deleteGuestDataAction } from './actions';
 import { CancelAppointment } from './cancel-appointment';
 
 // El token va en la URL: no se indexa, no se cachea y no se envía a terceros en la cabecera Referer
@@ -32,6 +34,23 @@ export default async function CitaPage({
 }) {
   const [{ token }, query] = await Promise.all([params, searchParams]);
   const appointment = await loadGuestAppointment(token);
+
+  if (!appointment && query.borrado === '1') {
+    return (
+      <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+        <h1 className="font-display text-display font-semibold">Datos borrados</h1>
+        <p role="status" className="mt-3 max-w-prose text-fg-muted">
+          Hemos borrado tus datos personales. Tus citas futuras han quedado canceladas y este enlace ya no
+          funciona.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-2">
+          <Link href={ROUTES.home} className={LINK_CLASS}>
+            Volver al inicio
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
   if (!appointment) {
     return (
@@ -129,6 +148,18 @@ export default async function CitaPage({
         <Link href={ROUTES.contacto} className={LINK_CLASS}>
           Contacto
         </Link>
+      </div>
+
+      <div className="mt-10 border-t border-border pt-8">
+        <h2 className="font-display text-2xl font-semibold">Tus datos</h2>
+        <p className="mt-2 max-w-prose text-fg-muted">
+          Puedes pedir que borremos tus datos personales. Es una acción definitiva.
+        </p>
+        <DeleteData
+          kind="guest"
+          action={deleteGuestDataAction.bind(null, token)}
+          doneHref={`${ROUTES.cita}/${token}?borrado=1`}
+        />
       </div>
     </section>
   );

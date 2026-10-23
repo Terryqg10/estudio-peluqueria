@@ -116,6 +116,7 @@ type NewAppointment = {
   minutes?: number;
   status?: Database['public']['Enums']['appointment_status'];
   userId?: string;
+  guestEmail?: string;
 };
 
 // Inserta con service_role (la reserva real llegará en T-005). Devuelve el error
@@ -126,7 +127,7 @@ export async function insertAppointment(a: NewAppointment) {
       ? { user_id: a.userId }
       : {
           guest_name: 'Invitada de prueba',
-          guest_email: 'invitada@test.invalid',
+          guest_email: a.guestEmail ?? 'invitada@test.invalid',
           guest_phone: '+34600000000',
         };
   const row: AppointmentInsert = {

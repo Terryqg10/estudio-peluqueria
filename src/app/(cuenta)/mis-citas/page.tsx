@@ -5,7 +5,8 @@ import { loadMyAppointments, type MyAppointment } from '@/lib/account/load-my-ap
 import { formatLongDate, formatSlotTime, madridDateOf } from '@/lib/booking/dates';
 import { STATUS_LABELS } from '@/lib/booking/status';
 import { ROUTES } from '@/lib/routes';
-import { signOutAction } from './actions';
+import { DeleteData } from '@/components/privacy/delete-data';
+import { deleteAccountAction, signOutAction } from './actions';
 
 export const metadata: Metadata = {
   title: 'Mis citas',
@@ -119,6 +120,14 @@ export default async function MisCitasPage() {
             Salir
           </button>
         </form>
+      </div>
+
+      <div className="mt-10 border-t border-border pt-8">
+        <h2 className="font-display text-2xl font-semibold">Tus datos</h2>
+        <p className="mt-2 max-w-prose text-fg-muted">
+          Puedes borrar tu cuenta y tus datos personales cuando quieras.
+        </p>
+        <DeleteData kind="account" action={deleteAccountAction} doneHref={`${ROUTES.acceso}?borrado=1`} />
       </div>
     </section>
   );

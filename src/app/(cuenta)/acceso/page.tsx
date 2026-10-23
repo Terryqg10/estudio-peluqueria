@@ -16,7 +16,12 @@ export const dynamic = 'force-dynamic';
 const LINK_CLASS =
   'inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
 
-export default async function AccesoPage() {
+export default async function AccesoPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const query = await searchParams;
   // Con sesión abierta no hace falta pedir otro enlace.
   const client = await createAuthClient();
   const { data } = client ? await client.auth.getUser() : { data: { user: null } };
@@ -25,6 +30,11 @@ export default async function AccesoPage() {
   return (
     <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
       <h1 className="font-display text-display font-semibold">Acceder a mis citas</h1>
+      {query.borrado === '1' ? (
+        <p role="status" className="mt-6 rounded-card bg-accent-soft p-4 text-fg">
+          Hemos borrado tu cuenta y tus datos personales.
+        </p>
+      ) : null}
       <p className="mt-3 max-w-prose text-fg-muted">
         Escribe tu email y te enviaremos un enlace para entrar. Sin contraseña.
       </p>

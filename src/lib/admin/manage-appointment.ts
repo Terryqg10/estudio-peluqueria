@@ -73,7 +73,7 @@ export async function loadAdminAppointment(
   const { data, error } = await client
     .from('appointments')
     .select(
-      'id, stylist_id, status, during, user_id, guest_name, guest_email, guest_phone, services(name), stylists(name)',
+      'id, stylist_id, status, during, user_id, anonymized_at, guest_name, guest_email, guest_phone, services(name), stylists(name)',
     )
     .eq('id', parsed.data)
     .maybeSingle();
@@ -108,7 +108,7 @@ export async function loadAdminAppointment(
     startsAt: range.start,
     endsAt: range.end,
     status: data.status,
-    clientName: data.guest_name ?? profileName ?? 'Clienta con cuenta',
+    clientName: data.anonymized_at ? 'Clienta anonimizada' : (data.guest_name ?? profileName ?? 'Clienta con cuenta'),
     phone: data.guest_phone ?? profilePhone,
     email: data.guest_email,
   };
