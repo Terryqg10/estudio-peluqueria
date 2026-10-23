@@ -30,6 +30,7 @@
     "verify": "node scripts/verify.mjs",
     "admin:promote": "node scripts/admin-promote.mjs",
     "retention": "node scripts/retention.mjs",
+    "demo:seed": "node scripts/demo-seed.mjs",
     "db:reset:local": "node scripts/db-reset-local.mjs",
     "check-db-clean": "node scripts/check-db-clean.mjs"
   },
