@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
@@ -232,4 +233,11 @@ export async function setRole(userId: string, role: 'admin' | 'client'): Promise
 export async function deleteProfile(userId: string): Promise<void> {
   const { error } = await adminClient().from('profiles').delete().eq('id', userId);
   if (error) throw new Error(`deleteProfile: ${error.message}`);
+}
+
+// Solicitudes de borrado por email (T-020): la BD guarda solo el SHA-256 del email en minúsculas. Se borran las de ese
+// email para no dejar restos al terminar el test (T-022; caducan a la hora, pero no antes).
+export async function deleteDeletionRequestsFor(email: string): Promise<void> {
+  const hash = `\\x${createHash('sha256').update(email.trim().toLowerCase()).digest('hex')}`;
+  await adminClient().from('deletion_requests').delete().eq('email_hash', hash);
 }

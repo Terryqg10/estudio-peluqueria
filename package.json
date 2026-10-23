@@ -29,7 +29,9 @@
     "backup": "node scripts/backup.mjs",
     "verify": "node scripts/verify.mjs",
     "admin:promote": "node scripts/admin-promote.mjs",
-    "retention": "node scripts/retention.mjs"
+    "retention": "node scripts/retention.mjs",
+    "db:reset:local": "node scripts/db-reset-local.mjs",
+    "check-db-clean": "node scripts/check-db-clean.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

@@ -104,6 +104,22 @@ En cada tabla con user_id, antes de cerrar la tarea:
 
 Vive en tests/rls.spec.ts. Es la puerta 6 de quality-gates.md.
 
+## BD local: reiniciar y comprobar restos (T-022)
+
+Los tests de integración y e2e escriben en la BD local y deben dejarla como la encontraron. Dos scripts, **solo para
+la BD local** (la URL sale de `supabase status` y se exige `127.0.0.1` o `localhost`; contra un proyecto alojado
+se niegan a actuar):
+
+- `pnpm run db:reset:local` — reinicia la BD local (migraciones + semilla). Borra todo, incluidas las cuentas de prueba.
+- `pnpm run check-db-clean` — falla y lista los restos si hay algo que no sea de la semilla (estilistas y servicios
+  fuera de `supabase/seed.sql`, citas, bloqueos, solicitudes de borrado, perfiles y usuarios). Ignora `rate_limits`
+  (caduca sola).
+
+Receta para una pasada limpia: `pnpm run db:reset:local`, luego los tests, y por último `pnpm run check-db-clean`.
+Un test que cree datos debe borrarlos en `afterAll` o `finally`, incluidas las citas que impidan borrar un
+estilista o un servicio (`on delete restrict`); `cleanup()` de `tests/integration/helpers/db.ts` ya borra las de
+los estilistas y servicios que creó el archivo.
+
 ## Apéndice: otros proveedores
 
 - Neon: node-pg-migrate o drizzle-kit. Mismo principio.

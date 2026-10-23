@@ -197,6 +197,11 @@ export async function cleanup(): Promise<void> {
   if (createdSalonHours.length) await service.from('salon_hours').delete().in('id', createdSalonHours);
   createdSalonHours.length = 0;
   if (createdAppointments.length) await service.from('appointments').delete().in('id', createdAppointments);
+  // T-022: también TODAS las citas de los estilistas y servicios creados aquí, no solo las registradas: las
+  // citas hechas con `create_booking` o anonimizadas por los tests de borrado no están en `createdAppointments`
+  // y, por `on delete restrict`, impedirían borrar el estilista o el servicio y los dejarían como resto.
+  if (createdStylists.length) await service.from('appointments').delete().in('stylist_id', createdStylists);
+  if (createdServices.length) await service.from('appointments').delete().in('service_id', createdServices);
   if (createdBlocks.length) await service.from('time_blocks').delete().in('id', createdBlocks);
   if (createdStylists.length) await service.from('stylists').delete().in('id', createdStylists);
   if (createdServices.length) await service.from('services').delete().in('id', createdServices);

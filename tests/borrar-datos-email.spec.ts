@@ -2,7 +2,12 @@ import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '@playwright/test';
 import { newEmail } from './helpers/account-flow';
 import { deleteEmailsTo, emailCountTo, waitForDeletionPath } from './helpers/mailpit';
-import { adminClient, createAppointmentWithToken, deleteAppointment } from './helpers/supabase-admin';
+import {
+  adminClient,
+  createAppointmentWithToken,
+  deleteAppointment,
+  deleteDeletionRequestsFor,
+} from './helpers/supabase-admin';
 
 // T-020: borrado de datos por email de confirmación (CA-40, CA-41, ADR-0032).
 async function row(id: string) {
@@ -54,6 +59,7 @@ test.describe('borrar mis datos por email', () => {
     } finally {
       await deleteAppointment(id);
       await deleteEmailsTo(email);
+      await deleteDeletionRequestsFor(email);
     }
   });
 
@@ -78,6 +84,7 @@ test.describe('borrar mis datos por email', () => {
     } finally {
       await deleteAppointment(id);
       await deleteEmailsTo(known);
+      await deleteDeletionRequestsFor(known);
     }
   });
 

@@ -272,6 +272,7 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-006d | Aviso por email a la invitada tras cancelar o cambiar su cita desde el enlace, sin token nuevo (ADR-0033) | CA-42, CA-43 |
 | T-021 | Reservar con cuenta (RF-04): `user_id` y copia de contacto en la cita, identidad desde la sesión y formulario precargado (ADR-0034) | CA-44, CA-45 |
 | T-018 | Aviso por email a la clienta cuando el Admin mueve o cancela su cita, con el resultado visible en el panel (ADR-0035) | CA-46, CA-47 |
+| T-022 | Que los tests no dejen datos de prueba en la BD local: limpieza en origen, `db:reset:local` y `check-db-clean` (solo local) | — |
 | T-013a | CI bloqueante en GitHub Actions: Supabase local en el runner, audit con lista blanca (ADR-0008 y ADR-0023) y e2e en 4 fragmentos. ADR-0025 | RNF-09 |
 | T-013b | Keep-alive semanal de Supabase (necesita el proyecto alojado y secretos de GitHub; borrador) | CA-35 |
 | T-014 | Estabilizar los tests de tiempo-real (flaky bajo carga; anotada al cerrar T-005c) | — |

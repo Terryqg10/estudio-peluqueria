@@ -28,8 +28,17 @@ describe('admin-servicios: admin_save_service', () => {
   });
 
   afterAll(async () => {
-    if (created.length > 0) await service.from('services').delete().in('id', created);
-    await cleanup();
+    try {
+      if (created.length > 0) {
+        // Las citas hechas con estos servicios (`on delete restrict`) hay que borrarlas antes; si no, el servicio queda
+        // como resto de la prueba (T-022). Un fallo se avisa, pero la limpieza general se ejecuta siempre.
+        await service.from('appointments').delete().in('service_id', created);
+        const removed = await service.from('services').delete().in('id', created);
+        if (removed.error) throw new Error(`afterAll: no se pudieron borrar los servicios creados: ${removed.error.message}`);
+      }
+    } finally {
+      await cleanup();
+    }
   });
 
   const save = (overrides: Partial<Record<string, unknown>> = {}) =>
