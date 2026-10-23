@@ -249,6 +249,7 @@ pasa por un módulo en `src/lib/<proveedor>/`; nunca desde un componente.
 | 2026-10-22 | ADR-0027 | Sección 9: se añade la **nota interna de la cita** (`appointment_notes`, texto libre de hasta 500 caracteres escrito por el Admin para la estilista). Solo la lee el Admin (RLS sin acceso para clientas ni invitadas), se guarda en Supabase y se borra con la cita. Al ser texto libre puede contener datos personales. No cambia ningún RF ni CA |
 | 2026-10-22 | ADR-0029 | Se añaden los criterios **CA-38** y **CA-39** para la gestión de horarios semanales de RF-07 (ver anexo). No cambia ningún requisito ni CA existente |
 | 2026-10-23 | ADR-0030 | RF-09 y sección 9: el borrado a petición y la retención se hacen por **anonimización de la cita** (se ponen a nulo nombre, email, teléfono y consentimiento, se borran el token y la nota interna, y se marca `anonymized_at`), no borrando la fila: el histórico del salón se conserva sin identificar a nadie. Las citas futuras de quien pide el borrado se **cancelan**. El borrado de cuenta elimina además la cuenta de Supabase Auth y el perfil. La retención anonimiza a quien tiene su **última** cita hace más de 24 meses (una cita reciente o futura protege el histórico) y limpia el perfil, pero **conserva la cuenta de Auth** hasta que la clienta la borre; también purga los registros de límites de más de 24 h. La invitada solo puede pedir el borrado desde su enlace mientras este sea válido (caduca al inicio de la cita). No cambia ningún RF ni CA |
+| 2026-10-23 | ADR-0032 | RF-09, RF-10 y sección 9: la invitada que **no tiene un enlace válido de su cita** (caducó al inicio de la cita o lo perdió) puede pedir el borrado con su email. Recibe un enlace de **un solo uso que caduca en 1 hora** y confirma con un botón (POST). La solicitud guarda solo hashes (SHA-256 del token y del email en minúsculas), nunca el email en claro, y se purga al caducar. La respuesta es idéntica exista o no el email y el envío está limitado por email y por IP (3 y 10 por hora; VERIFICAR con el salón). El correo se envía al proveedor de email solo si el email tiene citas. Se añaden **CA-40** y **CA-41** (ver anexo). No cambia ningún CA existente |
 
 ### Anexo de la enmienda ADR-0011
 
@@ -267,3 +268,10 @@ pasa por un módulo en `src/lib/<proveedor>/`; nunca desde un componente.
 |---|---|---|---|---|---|
 | CA-38 | RF-07 | Una estilista (o el salón) con horario semanal | El Admin cambia el horario | La disponibilidad pública usa el nuevo horario (intersección salón ∩ estilista, con varios tramos por día) | test de integración `horarios` |
 | CA-39 | RF-07 | Citas futuras que quedarían fuera del nuevo horario | El Admin intenta guardarlo | Se rechaza sin cambiar nada y se listan las citas para resolverlas | test de integración `horarios` + e2e `admin-horarios` |
+
+### Anexo de la enmienda ADR-0032
+
+| ID | RF | Dado | Cuando | Entonces | Verificación |
+|---|---|---|---|---|---|
+| CA-40 | RF-09 | Una invitada sin enlace válido de su cita | Pide el borrado con su email y confirma el enlace que recibe | Todas sus citas de invitada quedan anonimizadas (las futuras, canceladas) y el enlace no vuelve a servir | test de integración `borrado-por-email` + e2e `borrar-datos-email` |
+| CA-41 | RF-09, RF-10 | Un email con o sin citas, o con el cupo agotado | Pide el borrado | La respuesta es idéntica y solo se envía correo si hay citas y cupo; el enlace caduca a 1 h, es de un solo uso y no sirve para otro email | test de integración `borrado-por-email` + unitarios + e2e |

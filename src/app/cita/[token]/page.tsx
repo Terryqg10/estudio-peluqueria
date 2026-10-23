@@ -67,6 +67,9 @@ export default async function CitaPage({
           <Link href={ROUTES.reservar} className={LINK_CLASS}>
             Reservar una cita
           </Link>
+          <Link href={ROUTES.borrarDatos} className={LINK_CLASS}>
+            Borrar mis datos
+          </Link>
         </div>
       </section>
     );

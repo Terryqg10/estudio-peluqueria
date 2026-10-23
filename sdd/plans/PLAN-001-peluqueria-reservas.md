@@ -269,7 +269,7 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-010 | Chatbot de reglas: botón flotante, `<dialog>` nativo y árbol de 4 opciones sin red ni almacenamiento | CA-21 a CA-24 |
 | T-011 | Galería antes/después: tabla `gallery_items`, filtro por técnica y 8 pares provisionales (las definitivas, generadas con IA, se sustituyen antes de publicar) | CA-02 |
 | T-012 | Borrado de datos a petición y retención a 24 meses por anonimización (ADR-0030). CA-25, CA-28 y CA-29 ya se cerraron en T-005b y T-005c | CA-26, CA-27 |
-| T-020 | Borrado de datos para la invitada cuyo enlace ya caducó (borrador; decisión pendiente del usuario) | — |
+| T-020 | Borrado de datos de la invitada sin el enlace de su cita: formulario + email de confirmación de un solo uso (ADR-0032) | CA-40, CA-41 |
 | T-013a | CI bloqueante en GitHub Actions: Supabase local en el runner, audit con lista blanca (ADR-0008 y ADR-0023) y e2e en 4 fragmentos. ADR-0025 | RNF-09 |
 | T-013b | Keep-alive semanal de Supabase (necesita el proyecto alojado y secretos de GitHub; borrador) | CA-35 |
 | T-014 | Estabilizar los tests de tiempo-real (flaky bajo carga; anotada al cerrar T-005c) | — |

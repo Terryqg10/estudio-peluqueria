@@ -2,6 +2,7 @@ import { createEmailSender } from '@/lib/email/create-sender';
 import { getEmailEnv } from '@/lib/email/env.server';
 import { renderBookingConfirmation } from '@/lib/email/templates/booking-confirmation';
 import type { EmailSender } from '@/lib/email/types';
+import { ROUTES } from '@/lib/routes';
 import { SITE } from '@/lib/site';
 import { createServiceClient } from '@/lib/supabase/service-client';
 import type { Database } from '@/lib/database.types';
@@ -76,6 +77,7 @@ export async function sendBookingConfirmation(
       stylistName: row.stylists.name,
       startsAt: range.start,
       link,
+      deleteLink: `${appUrl}${ROUTES.borrarDatos}`,
     });
 
     const sent = await sender.send({ to: row.guest_email, ...content });

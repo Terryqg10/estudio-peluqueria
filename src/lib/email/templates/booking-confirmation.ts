@@ -8,6 +8,7 @@ export type BookingConfirmationData = {
   stylistName: string;
   startsAt: string; // ISO UTC
   link: string; // enlace personal a la cita
+  deleteLink?: string; // página para pedir el borrado de los datos (T-020)
 };
 
 // Todo lo que escribe una persona (nombre) o viene de la BD se escapa al ir en HTML.
@@ -46,6 +47,7 @@ export function renderBookingConfirmation(
     '',
     'No lo compartas: quien lo tenga puede ver tu cita.',
     '',
+    ...(data.deleteLink ? [`Si quieres que borremos tus datos: ${data.deleteLink}`, ''] : []),
     data.salonName,
   ].join('\n');
 
@@ -62,6 +64,7 @@ export function renderBookingConfirmation(
     '</ul>',
     `<p><a href="${escapeHtml(data.link)}">Ver mi cita</a></p>`,
     '<p>No compartas este enlace: quien lo tenga puede ver tu cita.</p>',
+    ...(data.deleteLink ? [`<p><a href="${escapeHtml(data.deleteLink)}">Borrar mis datos</a></p>`] : []),
     `<p>${escapeHtml(data.salonName)}</p>`,
     '</body></html>',
   ].join('\n');

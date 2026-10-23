@@ -89,6 +89,19 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"deletion_requests": {
+                  Row: {
+                    "created_at": string,"email_hash": string,"expires_at": string,"id": number,"token_hash": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"email_hash": string,"expires_at": string,"id"?: never,"token_hash": string
+                  }
+                  Update: {
+                    "created_at"?: string,"email_hash"?: string,"expires_at"?: string,"id"?: never,"token_hash"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"gallery_items": {
                   Row: {
                     "active": boolean,"after_path": string,"ai_generated": boolean,"alt_after": string,"alt_before": string,"before_path": string,"created_at": string,"id": string,"service_id": string,"sort_order": number,"stylist_id": string,"technique": string
@@ -295,6 +308,12 @@ isOneToOne: false
               "id": string,"status": Database["public"]['Enums']["appointment_status"]
             }[]
                            },
+"confirm_guest_deletion":
+{ Args: { "p_token": string }; Returns: number
+                           },
+"consume_deletion_request_quota":
+{ Args: { "p_email_hash": string,"p_ip_hash"?: string,"p_max_per_email"?: number,"p_max_per_ip"?: number,"p_window_minutes"?: number }; Returns: undefined
+                           },
 "consume_login_link_quota":
 { Args: { "p_email_hash": string,"p_ip_hash"?: string,"p_max_per_email"?: number,"p_max_per_ip"?: number,"p_window_minutes"?: number }; Returns: undefined
                            },
@@ -329,6 +348,9 @@ isOneToOne: false
                            },
 "issue_management_token":
 { Args: { "p_appointment_id": string }; Returns: string
+                           },
+"request_guest_deletion":
+{ Args: { "p_email": string }; Returns: string
                            },
 "reschedule_guest_appointment":
 { Args: { "p_starts_at": string,"p_stylist_id": string,"p_token": string }; Returns: {

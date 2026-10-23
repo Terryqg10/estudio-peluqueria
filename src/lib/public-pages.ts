@@ -9,6 +9,8 @@ export const PUBLIC_PAGES = [
   ROUTES.reservarConfirmada, // sin cookie muestra «No encontramos tu reserva»
   `${ROUTES.cita}/${'A'.repeat(43)}`, // enlace de cita no válido (la vista válida se prueba con un token real)
   ROUTES.acceso,
+  ROUTES.borrarDatos,
+  `${ROUTES.borrarDatosConfirmar}?token=${'A'.repeat(43)}`, // vista de confirmar con enlace de forma válida
   ROUTES.adminAgenda, // sin sesión redirige a /acceso
   ROUTES.adminServicios, // sin sesión redirige a /acceso
   ROUTES.adminBloqueos, // sin sesión redirige a /acceso

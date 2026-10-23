@@ -63,3 +63,22 @@ export async function waitForLoginPath(to: string, timeoutMs = 15_000): Promise<
   }
   throw new Error(`No llegó ningún enlace de acceso a ${to} en ${timeoutMs} ms`);
 }
+
+// Enlace de confirmación del borrado de datos (T-020, ADR-0032): `/borrar-datos/confirmar?token=…`.
+const DELETION_LINK_RE = /https?:\/\/[^\s"'<>]+(\/borrar-datos\/confirmar\?token=[A-Za-z0-9_-]+)/;
+
+export async function waitForDeletionPath(to: string, timeoutMs = 15_000): Promise<string> {
+  const query = encodeURIComponent(`to:${to}`);
+  const end = Date.now() + timeoutMs;
+  while (Date.now() < end) {
+    const found = (await fetch(`${base()}/api/v1/search?query=${query}`).then((r) => r.json())) as SearchResult;
+    const id = found.messages?.[0]?.ID;
+    if (id) {
+      const message = (await fetch(`${base()}/api/v1/message/${id}`).then((r) => r.json())) as MessageResult;
+      const match = DELETION_LINK_RE.exec(message.Text) ?? DELETION_LINK_RE.exec(message.HTML);
+      if (match?.[1]) return match[1];
+    }
+    await new Promise((r) => setTimeout(r, 300));
+  }
+  throw new Error(`No llegó ningún enlace de borrado a ${to} en ${timeoutMs} ms`);
+}

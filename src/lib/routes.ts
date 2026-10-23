@@ -7,6 +7,8 @@ export const ROUTES = {
   acceso: '/acceso', // enlace mágico por email (ADR-0021)
   accesoConfirmar: '/acceso/confirmar',
   misCitas: '/mis-citas',
+  borrarDatos: '/borrar-datos', // borrado de datos por email de confirmación (ADR-0032)
+  borrarDatosConfirmar: '/borrar-datos/confirmar',
   admin: '/admin', // panel Admin: sin enlazar desde la navegación pública (ADR-0022)
   adminAgenda: '/admin/agenda', // agenda semanal del Admin (T-008b)
   adminServicios: '/admin/servicios', // gestión de servicios (T-009a)
