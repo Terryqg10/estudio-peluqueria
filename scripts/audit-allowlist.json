@@ -1,97 +1,13 @@
 {
-  "_comentario": "Hallazgos de pnpm audit aceptados con caducidad (ADR-0008 y ADR-0023). Todos son devDependencies. La excepción expira al cerrar T-016: entonces este archivo debe quedar vacío (salvo lo que no tenga arreglo publicado y tenga su propio ADR). Un hallazgo high o critical que no esté aquí bloquea la CI.",
-  "caduca": "cierre de T-016",
+  "_comentario": "Hallazgos de pnpm audit aceptados con caducidad (ADR-0031, que sustituye a ADR-0008 y ADR-0023 tras T-016). Todos son devDependencies. Un hallazgo high o critical que no esté aquí bloquea la CI.",
+  "caduca": "cuando se publique una versión corregida de braces (revisar en cada actualización de eslint-config-next)",
   "hallazgos": [
-    {
-      "id": "GHSA-5gmw-xhrv-c9v3",
-      "package": "tinypool",
-      "severity": "critical",
-      "adr": "ADR-0008",
-      "title": "Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution"
-    },
-    {
-      "id": "GHSA-85c8-ppgw-ccpr",
-      "package": "tinypool",
-      "severity": "critical",
-      "adr": "ADR-0008",
-      "title": "Tinypool: Prototype Pollution Gadget to RCE in run() options"
-    },
-    {
-      "id": "GHSA-5xrq-8626-4rwp",
-      "package": "vitest",
-      "severity": "critical",
-      "adr": "ADR-0008",
-      "title": "When Vitest UI server is listening, arbitrary file can be read and executed"
-    },
     {
       "id": "GHSA-vfj7-8cjw-p6xm",
       "package": "braces",
       "severity": "high",
-      "adr": "ADR-0008",
+      "adr": "ADR-0031",
       "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns"
-    },
-    {
-      "id": "GHSA-587h-7wmj-h5pm",
-      "package": "vite",
-      "severity": "high",
-      "adr": "ADR-0023",
-      "title": "launch-editor: `fs.existsSync()` existence check can be bypassed on Windows"
-    },
-    {
-      "id": "GHSA-fx2h-pf6j-xcff",
-      "package": "vite",
-      "severity": "high",
-      "adr": "ADR-0008",
-      "title": "vite: `server.fs.deny` bypass on Windows alternate paths"
-    },
-    {
-      "id": "GHSA-82fw-gwwq-j7x9",
-      "package": "@vitest/mocker",
-      "severity": "moderate",
-      "adr": "ADR-0008",
-      "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock"
-    },
-    {
-      "id": "GHSA-67mh-4wv8-2f99",
-      "package": "esbuild",
-      "severity": "moderate",
-      "adr": "ADR-0008",
-      "title": "esbuild enables any website to send any requests to the development server and read the response"
-    },
-    {
-      "id": "GHSA-4w7w-66w2-5vf9",
-      "package": "vite",
-      "severity": "moderate",
-      "adr": "ADR-0008",
-      "title": "Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling"
-    },
-    {
-      "id": "GHSA-698v-4r3x-3vcv",
-      "package": "vite",
-      "severity": "moderate",
-      "adr": "ADR-0023",
-      "title": "launch-editor: escapeCmdArgs() omits % escaping on Windows"
-    },
-    {
-      "id": "GHSA-r825-w8mm-5pxw",
-      "package": "vite",
-      "severity": "moderate",
-      "adr": "ADR-0023",
-      "title": "launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors"
-    },
-    {
-      "id": "GHSA-v6wh-96g9-6wx3",
-      "package": "vite",
-      "severity": "moderate",
-      "adr": "ADR-0008",
-      "title": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows"
-    },
-    {
-      "id": "GHSA-82fw-gwwq-j7x9",
-      "package": "vitest",
-      "severity": "moderate",
-      "adr": "ADR-0008",
-      "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock"
     }
   ]
 }

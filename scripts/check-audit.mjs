@@ -89,7 +89,7 @@ const unknownWarn = unknown.filter((a) => !BLOCKING.has(a.severity));
 
 if (unknownBlocking.length > 0) {
   failed = true;
-  bad(`Hay ${unknownBlocking.length} hallazgo(s) high o critical NUEVOS, fuera de ADR-0008 y ADR-0023:`);
+  bad(`Hay ${unknownBlocking.length} hallazgo(s) high o critical NUEVOS, fuera de ADR-0031:`);
   for (const a of unknownBlocking) bad(`  ${a.severity.padEnd(8)} ${a.pkg}  ${a.id}  ${a.title}`);
   bad('Actualiza la dependencia o registra un ADR nuevo con caducidad y añade el id a scripts/audit-allowlist.json.');
 }
@@ -101,7 +101,7 @@ for (const h of allowlist) {
 }
 
 const covered = full.length - unknown.length;
-out(`Completo: ${full.length} hallazgo(s); ${covered} cubierto(s) por ADR-0008 y ADR-0023, ${unknown.length} fuera de la lista.`);
+out(`Completo: ${full.length} hallazgo(s); ${covered} cubierto(s) por ADR-0031, ${unknown.length} fuera de la lista.`);
 
 if (failed) process.exit(1);
 out('OK.');

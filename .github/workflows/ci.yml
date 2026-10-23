@@ -53,7 +53,7 @@ jobs:
       - name: Check palette
         run: pnpm run check-palette
 
-      # Producción: cero hallazgos. Completo: solo los de ADR-0008 y ADR-0023 (scripts/audit-allowlist.json).
+      # Producción: cero hallazgos. Completo: solo los de ADR-0031 (scripts/audit-allowlist.json).
       - name: Audit (ADR-0025)
         run: pnpm run check-audit
 

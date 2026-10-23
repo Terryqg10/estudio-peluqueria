@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 
-// scripts/check-audit.mjs (ADR-0025): aplica la regla de ADR-0008 y ADR-0023 («cualquier hallazgo nuevo, o
+// scripts/check-audit.mjs (ADR-0025): aplica la regla de ADR-0031 (antes ADR-0008 y ADR-0023) («cualquier hallazgo nuevo, o
 // cualquiera en producción, bloquea»). Se prueba con fixtures de `pnpm audit --json`, sin tocar la red.
 const SCRIPT = path.join(process.cwd(), 'scripts', 'audit-allowlist.json');
 const ALLOWLIST = JSON.parse(readFileSync(SCRIPT, 'utf8')) as {
@@ -47,13 +47,11 @@ function run(prod: string, full: string) {
 const asFake = (list: typeof KNOWN): Fake[] => list.map((h) => ({ id: h.id, pkg: h.package, severity: h.severity }));
 
 describe('scripts/audit-allowlist.json', () => {
-  it('recoge los 13 hallazgos de ADR-0008 (10) y ADR-0023 (3), sin repetir id + paquete', () => {
-    expect(KNOWN).toHaveLength(13);
-    expect(KNOWN.filter((h) => h.adr === 'ADR-0008')).toHaveLength(10);
-    expect(KNOWN.filter((h) => h.adr === 'ADR-0023')).toHaveLength(3);
-    // 13 avisos de npm, 12 GHSA: el de path traversal de Vitest afecta a `vitest` y a `@vitest/mocker`.
-    expect(new Set(KNOWN.map((h) => `${h.id}|${h.package}`)).size).toBe(13);
-    expect(new Set(KNOWN.map((h) => h.id)).size).toBe(12);
+  it('recoge solo el hallazgo de `braces` (ADR-0031, sin arreglo publicado), sin repetir id + paquete', () => {
+    // T-016 cerró la excepción de ADR-0008 y ADR-0023: queda únicamente lo que no tiene versión corregida.
+    expect(KNOWN.map((h) => h.package)).toEqual(['braces']);
+    expect(KNOWN.every((h) => h.adr === 'ADR-0031')).toBe(true);
+    expect(new Set(KNOWN.map((h) => `${h.id}|${h.package}`)).size).toBe(KNOWN.length);
     for (const h of KNOWN) expect(h.id).toMatch(/^GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}$/);
   });
 });
@@ -65,7 +63,7 @@ describe('check-audit', () => {
     const { code, out } = run(clean(), fixture('conocidos.json', asFake(KNOWN)));
     expect(code).toBe(0);
     expect(out).toContain('Producción: sin hallazgos');
-    expect(out).toContain('13 cubierto(s)');
+    expect(out).toContain('1 cubierto(s)');
   });
 
   it('FALLA ante un hallazgo en producción, aunque su id esté en la lista blanca', () => {
