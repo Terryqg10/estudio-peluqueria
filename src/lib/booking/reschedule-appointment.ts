@@ -49,8 +49,12 @@ function invalidInputError(input: unknown): 'INVALID_LINK' | 'INVALID_INPUT' {
 
 // Cambia la cita del token a otro hueco (T-006c, RF-05). La regla de las 24 h, la validez del
 // token, el horario y la carrera por el hueco los decide `reschedule_guest_appointment` (ADR-0019).
-// Nunca lanza.
-export async function rescheduleAppointment(input: unknown): Promise<RescheduleResult> {
+// Nunca lanza. `onDone` se llama con el id de la cita DESPUÉS de que la BD confirme el cambio (T-006d: el
+// aviso por email). El id no sale al cliente. Un fallo de `onDone` no cambia el resultado.
+export async function rescheduleAppointment(
+  input: unknown,
+  onDone?: (appointmentId: string) => Promise<unknown>,
+): Promise<RescheduleResult> {
   const parsed = RescheduleInputSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: invalidInputError(input) };
 
@@ -64,7 +68,16 @@ export async function rescheduleAppointment(input: unknown): Promise<RescheduleR
       p_starts_at: parsed.data.startsAt,
     });
     if (error) return { ok: false, error: KNOWN[error.message] ?? 'UNAVAILABLE' };
-    return data?.[0]?.id ? { ok: true } : { ok: false, error: 'UNAVAILABLE' };
+    const id = data?.[0]?.id;
+    if (!id) return { ok: false, error: 'UNAVAILABLE' };
+    if (onDone) {
+      try {
+        await onDone(id);
+      } catch {
+        // El aviso nunca deshace el cambio.
+      }
+    }
+    return { ok: true };
   } catch {
     return { ok: false, error: 'UNAVAILABLE' };
   }
