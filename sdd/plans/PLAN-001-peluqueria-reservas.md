@@ -276,6 +276,8 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-018 | Aviso por email a la clienta cuando el Admin mueve o cancela su cita, con el resultado visible en el panel (ADR-0035) | CA-46, CA-47 |
 | T-022 | Que los tests no dejen datos de prueba en la BD local: limpieza en origen, `db:reset:local` y `check-db-clean` (solo local) | — |
 | T-023 | Layout de las páginas estrechas en dos columnas, pie en tres columnas y enlaces de texto alineados (pulido visual, hallazgos 4, 6 y 7) | — |
+| T-024 | Panel Admin: contenedor alineado con la cabecera, navegación propia y estado vacío único (pulido visual, hallazgo 5) | — |
+| T-025 | El botón flotante del chat se apoya encima del pie en vez de flotar sobre él (pulido visual, hallazgo 8) | — |
 | T-013a | CI bloqueante en GitHub Actions: Supabase local en el runner, audit con lista blanca (ADR-0008 y ADR-0023) y e2e en 4 fragmentos. ADR-0025 | RNF-09 |
 | T-013b | Keep-alive semanal de Supabase (necesita el proyecto alojado y secretos de GitHub; borrador) | CA-35 |
 | T-014 | Estabilizar los tests de tiempo-real (flaky bajo carga; anotada al cerrar T-005c) | — |
