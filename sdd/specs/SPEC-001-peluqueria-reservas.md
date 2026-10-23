@@ -62,6 +62,7 @@ Roles: **Invitada** (sin sesión), **Clienta** (con cuenta; solo ve sus citas),
 | RF-10 | **Antiabuso.** Campo trampa (honeypot) y límite de citas activas por email y por IP en la reserva de invitadas |
 | RF-11 | **Email transaccional intercambiable.** Envío a través de un adaptador. En desarrollo usa la bandeja local (Mailpit/Inbucket); en producción, un proveedor real (Resend o SendGrid) seleccionable solo con variables de entorno |
 | RF-12 | **Estructura base de la interfaz.** Cabecera sticky con logo que enlaza a `/`, navegación con comportamiento móvil declarado, pie de página, y uso exclusivo de tokens del estilo v1 y de la paleta del proyecto |
+| RF-13 | **Demo del panel.** Un visitante puede recorrer el panel Admin con una cuenta demo de solo lectura, sin ver datos personales de otros visitantes (demo de portfolio; ADR-0036) |
 
 ## 4. Requisitos no funcionales
 
@@ -172,6 +173,7 @@ Cualquier otra transición se rechaza.
 | Hash del token de gestión | Acceso a la cita de invitada | Supabase | Hasta caducidad o fin de la cita | Se elimina con la cita o al caducar |
 | IP (para límites) | Antiabuso | Solo como hash (HMAC con sal de servidor) y con TTL corto (VERIFICAR) | Horas (los registros de más de dos ventanas de 60 min se borran) | Caducidad automática |
 | Consentimiento (fecha y versión) | Prueba de consentimiento | Supabase | Mientras exista el dato asociado | Con el dato asociado |
+| Cuenta demo (email no entregable, id de auth) | Entrada de un clic al panel en modo solo lectura (demo de portfolio) | Supabase Auth, solo si `DEMO_ENABLED=1` | Mientras exista la demo; sesión de 1 hora | Se borra la cuenta al retirar la demo |
 | Mensajes del chatbot | No se guardan | n/a | n/a | n/a |
 
 - No se usan cookies de analítica ni de terceros. Si se añadiera analítica,
@@ -253,6 +255,7 @@ pasa por un módulo en `src/lib/<proveedor>/`; nunca desde un componente.
 | 2026-10-23 | ADR-0033 | RF-05, RF-11 y sección 9: cuando la **invitada cancela o cambia su cita desde el enlace**, recibe un email con el resultado (cancelada, o el nuevo día, hora y estilista) por el mismo adaptador de email. El aviso **no emite un token nuevo** (el enlace del correo de confirmación sigue valiendo) y un fallo de envío no deshace ni cambia la operación. Nombre y email viajan al proveedor de correo (Resend en producción, Mailpit en local), como la confirmación. Se añaden **CA-42** y **CA-43** (ver anexo). Los cambios del Admin y las cuentas de clienta siguen sin aviso (T-018). No cambia ningún CA existente |
 | 2026-10-23 | ADR-0034 | RF-04, RF-10 y sección 9: la clienta con **sesión** puede **reservar con su cuenta**. La cita se guarda con su `user_id` **y una copia de nombre, email y teléfono** (como una invitada), por lo que el Admin ve su contacto con la RLS actual y la confirmación, los avisos y el límite por email funcionan igual. La identidad sale de la sesión del servidor (el email del formulario se ignora y nunca se acepta un `user_id` del navegador); sin sesión, o con sesión de Admin, se reserva como invitada. Si faltan, el perfil guarda nombre y teléfono de la primera reserva y precarga las siguientes. El borrado (T-012) y la retención ya anonimizan estas citas por `user_id`. Se añaden **CA-44** y **CA-45** (ver anexo). No cambia ningún CA existente |
 | 2026-10-23 | ADR-0035 | RF-07, RF-11 y sección 9: cuando el **Admin mueve o cancela una cita** desde el panel, la clienta recibe un email que dice que ha sido el salón (con la fecha anterior y la nueva, o la cancelación y un enlace para reservar otra). Sirve para invitadas y cuentas (ambas guardan copia de contacto, ADR-0034). El aviso no lleva token y un fallo de envío, una cita sin email o el email sin configurar no deshacen la operación: el panel dice si se pudo avisar. Nombre y email viajan al proveedor de correo, como en los demás avisos. Se añaden **CA-46** y **CA-47** (ver anexo). No cambia ningún CA existente |
+| 2026-10-24 | ADR-0036 | Se añade **RF-13** (cuenta demo de solo lectura del panel, para el portfolio) y sección 9: la cuenta demo es una cuenta fija de Supabase Auth con rol `demo`, sin escritura (la BD lo impide) y con nombre, teléfono, email y nota de las citas de visitantes **enmascarados en la BD**; se entra con un botón de un clic (solo si `DEMO_ENABLED=1`), con límite por IP (hash, ADR-0020) y sesión de 1 hora. No se guardan datos personales nuevos. Se añaden **CA-48** a **CA-51** (ver anexo). No cambia ningún CA existente |
 
 ### Anexo de la enmienda ADR-0011
 
@@ -299,3 +302,12 @@ pasa por un módulo en `src/lib/<proveedor>/`; nunca desde un componente.
 |---|---|---|---|---|---|
 | CA-46 | RF-07, RF-11 | Una cita con email de contacto (invitada o cuenta) | El Admin la mueve o la cancela | La clienta recibe un email que dice que ha sido el salón, con el nuevo día y hora (y el anterior) o la cancelación; el aviso no lleva token | test unitario `admin-notice` + e2e `admin-aviso-cambios` |
 | CA-47 | RF-07, RF-11 | El envío falla, no hay email de contacto o no está configurado | El Admin mueve o cancela | La operación se mantiene, el panel avisa de que no se pudo avisar y el fallo se registra sin datos personales; guardar solo la nota no envía nada | test unitario `admin-notice` + e2e `admin-aviso-cambios` |
+
+### Anexo de la enmienda ADR-0036
+
+| ID | RF | Dado | Cuando | Entonces | Verificación |
+|---|---|---|---|---|---|
+| CA-48 | RF-13 | Un visitante sin sesión y `DEMO_ENABLED=1` | Pulsa «Probar el panel» | Entra al panel con la cuenta demo, ve el aviso «Modo demo: solo lectura» y sus acciones de escritura deshabilitadas; sin la variable el botón no aparece y la acción responde 404 | e2e `demo-acceso` + test unitario |
+| CA-49 | RF-13 | Una sesión con rol `demo` | Intenta crear, cambiar o borrar cualquier dato del panel (por la interfaz, por las acciones de servidor o directamente por la API) | La BD lo rechaza y no cambia nada; el rol no se puede escalar a `admin` | test de integración `demo-solo-lectura` (acceso denegado en cada tabla y función `admin_*`) |
+| CA-50 | RF-13 | Citas hechas por visitantes y citas de ejemplo | La cuenta demo abre la agenda y la ficha de una cita | Las de visitantes salen con nombre, teléfono, email y nota enmascarados (la tabla base no es legible por `demo`); las de ejemplo, completas; el Admin real lo ve todo | test de integración `demo-enmascarado` + e2e `demo-acceso` |
+| CA-51 | RF-13, RF-10 | Muchas entradas seguidas desde la misma IP, o una sesión demo de más de 1 hora | Pulsa el botón / sigue navegando | Pasado el límite la entrada se rechaza con mensaje claro; la sesión caduca; solo se guarda el hash de la IP con TTL | test de integración `demo-limites` + unitarios |
