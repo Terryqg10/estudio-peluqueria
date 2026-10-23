@@ -278,6 +278,9 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-023 | Layout de las páginas estrechas en dos columnas, pie en tres columnas y enlaces de texto alineados (pulido visual, hallazgos 4, 6 y 7) | — |
 | T-024 | Panel Admin: contenedor alineado con la cabecera, navegación propia y estado vacío único (pulido visual, hallazgo 5) | — |
 | T-025 | El botón flotante del chat se apoya encima del pie en vez de flotar sobre él (pulido visual, hallazgo 8) | — |
+| T-026 | Cuenta demo (BD): rol `demo`, lectura sin escritura y enmascarado de datos personales en la BD (ADR-0036) | CA-49, CA-50 |
+| T-027 | Cuenta demo (acceso): botón «Probar el panel», sesión de 1 hora y límite por IP (ADR-0036) | CA-48, CA-51 |
+| T-028 | Cuenta demo (interfaz): aviso de modo solo lectura y acciones deshabilitadas en el panel (ADR-0036) | CA-48 |
 | T-013a | CI bloqueante en GitHub Actions: Supabase local en el runner, audit con lista blanca (ADR-0008 y ADR-0023) y e2e en 4 fragmentos. ADR-0025 | RNF-09 |
 | T-013b | Keep-alive semanal de Supabase (necesita el proyecto alojado y secretos de GitHub; borrador) | CA-35 |
 | T-014 | Estabilizar los tests de tiempo-real (flaky bajo carga; anotada al cerrar T-005c) | — |
