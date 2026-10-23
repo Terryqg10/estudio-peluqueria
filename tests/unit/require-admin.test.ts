@@ -69,7 +69,8 @@ describe('getAdminState', () => {
     expect((await getAdminState()).state).toBe('admin');
     rpc.mockResolvedValue({ data: false, error: null });
     expect((await getAdminState()).state).toBe('forbidden');
-    expect(rpc).toHaveBeenCalledTimes(2);
+    // Admin (1 consulta) + no admin: se pregunta también por la cuenta demo (2 consultas) = 3 (T-028, ADR-0036).
+    expect(rpc).toHaveBeenCalledTimes(3);
   });
 });
 

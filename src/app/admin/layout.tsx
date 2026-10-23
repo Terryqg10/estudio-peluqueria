@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { requireAdmin } from '@/lib/account/require-admin';
+import { requirePanel } from '@/lib/account/require-admin';
 import { signOutAction } from '@/app/(cuenta)/mis-citas/actions';
 import { AdminNav } from './admin-nav';
 
@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 // cada página y cada acción de servidor del panel llaman también a `requireAdmin()`.
 // Contenedor alineado con la cabecera y el pie (`max-w-6xl`) y navegación propia del panel (T-024).
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  await requireAdmin();
+  const panel = await requirePanel();
   return (
     <div className="mx-auto w-full max-w-6xl px-(--layout-gutter) pb-12 pt-6 sm:pb-16">
       <AdminNav
@@ -30,6 +30,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </form>
         }
       />
+      {panel.readOnly ? (
+        <p role="status" className="mt-6 rounded-card bg-accent-soft p-4 text-fg">
+          <strong>Modo demo: solo lectura.</strong> Puedes recorrer todo el panel, pero no guardar cambios. Los datos
+          personales de otras personas aparecen ocultos.
+        </p>
+      ) : null}
       <div className="pt-8">{children}</div>
     </div>
   );

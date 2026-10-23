@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
-import { requireAdmin } from '@/lib/account/require-admin';
+import { requirePanel } from '@/lib/account/require-admin';
 import { centsToEuros, countFutureAppointments, loadAdminServices } from '@/lib/admin/services';
 import { ROUTES } from '@/lib/routes';
+import { ReadOnlyScope } from '@/components/admin/read-only-scope';
 import { ServiceForm } from '../service-form';
 
 export const metadata: Metadata = { title: 'Servicio' };
@@ -15,7 +16,7 @@ const LINK_CLASS =
 
 // `/admin/servicios/nuevo` crea; `/admin/servicios/<uuid>` edita.
 export default async function ServicePage({ params }: { params: Promise<{ id: string }> }) {
-  const admin = await requireAdmin(); // un layout no basta (ADR-0022)
+  const admin = await requirePanel(); // un layout no basta (ADR-0022)
   const { id } = await params;
   const isNew = id === 'nuevo';
   if (!isNew && !z.string().uuid().safeParse(id).success) notFound();
@@ -46,6 +47,7 @@ export default async function ServicePage({ params }: { params: Promise<{ id: st
         </Link>
       </p>
       <h1 className="font-display text-display font-semibold">{service ? 'Editar servicio' : 'Nuevo servicio'}</h1>
+      <ReadOnlyScope readOnly={admin.readOnly}>
       <ServiceForm
         id={service?.id ?? null}
         initial={{
@@ -60,6 +62,7 @@ export default async function ServicePage({ params }: { params: Promise<{ id: st
         categories={categories}
         futureAppointments={future}
       />
+      </ReadOnlyScope>
     </section>
   );
 }

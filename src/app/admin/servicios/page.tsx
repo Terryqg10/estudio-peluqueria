@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { requireAdmin } from '@/lib/account/require-admin';
+import { requirePanel } from '@/lib/account/require-admin';
 import { loadAdminServices } from '@/lib/admin/services';
 import { ROUTES } from '@/lib/routes';
 import { formatDuration, formatPriceFrom } from '@/lib/services/catalog';
@@ -16,7 +16,7 @@ const CTA_CLASS =
 type SearchParams = Promise<{ aviso?: string }>;
 
 export default async function ServicesPage({ searchParams }: { searchParams: SearchParams }) {
-  const admin = await requireAdmin(); // un layout no basta (ADR-0022)
+  const admin = await requirePanel(); // un layout no basta (ADR-0022)
   const { aviso } = await searchParams;
   const result = await loadAdminServices(admin.client);
 
@@ -24,11 +24,13 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
     <section className="max-w-3xl">
       <h1 className="font-display text-display font-semibold">Servicios</h1>
 
-      <p className="mt-6">
-        <Link href={`${ROUTES.adminServicios}/nuevo`} className={CTA_CLASS}>
-          Nuevo servicio
-        </Link>
-      </p>
+      {admin.readOnly ? null : (
+        <p className="mt-6">
+          <Link href={`${ROUTES.adminServicios}/nuevo`} className={CTA_CLASS}>
+            Nuevo servicio
+          </Link>
+        </p>
+      )}
 
       {aviso === 'guardado' ? (
         <p role="status" className="mt-4 rounded-card bg-accent-soft p-4 font-semibold text-fg">

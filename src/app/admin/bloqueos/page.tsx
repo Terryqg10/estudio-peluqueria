@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { requireAdmin } from '@/lib/account/require-admin';
+import { requirePanel } from '@/lib/account/require-admin';
 import { loadUpcomingBlocks, type TimeBlockRow } from '@/lib/admin/time-blocks';
 import { formatLongDate, formatSlotTime, madridDateOf, todayInMadrid } from '@/lib/booking/dates';
 import { ROUTES } from '@/lib/routes';
@@ -32,7 +32,7 @@ function describe(block: TimeBlockRow): string {
 }
 
 export default async function BlocksPage({ searchParams }: { searchParams: SearchParams }) {
-  const admin = await requireAdmin(); // un layout no basta (ADR-0022)
+  const admin = await requirePanel(); // un layout no basta (ADR-0022)
   const { aviso } = await searchParams;
   const [blocks, stylists] = await Promise.all([
     loadUpcomingBlocks(admin.client),
@@ -74,12 +74,14 @@ export default async function BlocksPage({ searchParams }: { searchParams: Searc
                   <p className="text-fg-muted first-letter:uppercase">{describe(b)}</p>
                   {b.note ? <p className="mt-1 break-words text-fg-muted">{b.note}</p> : null}
                 </div>
-                <form action={removeBlockAction}>
-                  <input type="hidden" name="id" value={b.id} />
-                  <button type="submit" aria-label={`Quitar ${b.stylistName}: ${describe(b)}`} className={LINK_CLASS}>
-                    Quitar
-                  </button>
-                </form>
+                {admin.readOnly ? null : (
+                  <form action={removeBlockAction}>
+                    <input type="hidden" name="id" value={b.id} />
+                    <button type="submit" aria-label={`Quitar ${b.stylistName}: ${describe(b)}`} className={LINK_CLASS}>
+                      Quitar
+                    </button>
+                  </form>
+                )}
               </div>
             </li>
           ))}
@@ -87,7 +89,14 @@ export default async function BlocksPage({ searchParams }: { searchParams: Searc
       )}
 
       <h2 className="mt-12 font-display text-2xl font-semibold">Añadir</h2>
-      <BlockForm today={todayInMadrid()} stylists={stylists.data ?? []} />
+      {admin.readOnly ? (
+        // El calendario del formulario es una región desplazable sin controles activos si se desactiva: no se muestra.
+        <p className="mt-4 rounded-container bg-surface p-6 text-fg-muted shadow-card">
+          Desactivado en la demo: aquí el Admin añade bloqueos de franja y vacaciones.
+        </p>
+      ) : (
+        <BlockForm today={todayInMadrid()} stylists={stylists.data ?? []} />
+      )}
     </section>
   );
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { requireAdmin } from '@/lib/account/require-admin';
+import { requirePanel } from '@/lib/account/require-admin';
 import { loadWeekAgenda } from '@/lib/admin/load-week-agenda';
 import { MAX_WEEKS_AWAY, mondayOf, parseWeekQuery, weekDays, weekHref } from '@/lib/admin/week';
 import { addDays, daysBetween, formatLongDate, todayInMadrid } from '@/lib/booking/dates';
@@ -33,7 +33,7 @@ const EMAIL_NOTICES = {
 } as const;
 
 export default async function AgendaPage({ searchParams }: { searchParams: SearchParams }) {
-  const admin = await requireAdmin(); // un layout no basta (ADR-0022)
+  const admin = await requirePanel(); // un layout no basta (ADR-0022)
   const raw = await searchParams;
   const query = parseWeekQuery(raw);
   const notice =

@@ -71,6 +71,7 @@ describe('demo-limites (CA-51): entrada real contra Supabase local', () => {
     const { data } = await service.auth.admin.listUsers({ perPage: 1000 });
     const demo = data.users.find((u) => u.email === DEMO_EMAIL);
     if (demo) await service.auth.admin.deleteUser(demo.id);
+    await cleanup(); // el Admin de la segunda prueba
   });
 
   it('crea la cuenta demo en la primera entrada, abre sesión sin email y la entrada se repite', async () => {

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { requireAdmin } from '@/lib/account/require-admin';
+import { requirePanel } from '@/lib/account/require-admin';
 import {
   loadAdminAppointment,
   loadMoveSlots,
@@ -44,7 +44,7 @@ export default async function AppointmentPage({
   params: Promise<{ id: string }>;
   searchParams: SearchParams;
 }) {
-  const admin = await requireAdmin(); // un layout no basta (ADR-0022)
+  const admin = await requirePanel(); // un layout no basta (ADR-0022)
   const { id } = await params;
   const query = await searchParams;
 
@@ -63,7 +63,9 @@ export default async function AppointmentPage({
   }
 
   const active = appointment.status === 'confirmed' || appointment.status === 'pending';
-  const [stylists, initialSlots] = active
+  // La cuenta demo (solo lectura) no mueve ni cancela: no se piden huecos (las funciones del Admin la rechazan).
+  const editable = active && !admin.readOnly;
+  const [stylists, initialSlots] = editable
     ? await Promise.all([
         loadStylistOptions(admin.client, appointment.id),
         loadMoveSlots(admin.client, appointment.id, appointment.date),
@@ -93,7 +95,11 @@ export default async function AppointmentPage({
         </p>
       ) : null}
 
-      {!active ? (
+      {admin.readOnly ? (
+        <p className="mt-8 rounded-container bg-surface p-6 text-fg-muted shadow-card">
+          En la demo no se pueden mover ni cancelar citas: solo se puede mirar.
+        </p>
+      ) : !active ? (
         <p className="mt-8 rounded-container bg-surface p-6 text-fg-muted shadow-card">
           Esta cita ya no se puede modificar.
         </p>
@@ -116,7 +122,7 @@ export default async function AppointmentPage({
         />
       )}
 
-      {active ? (
+      {editable ? (
         <div className="mt-12 border-t border-border pt-8">
           <h2 className="font-display text-2xl font-semibold">Cancelar la cita</h2>
           {query.cancelar === '1' ? (

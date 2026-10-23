@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { requireAdmin } from '@/lib/account/require-admin';
+import { requirePanel } from '@/lib/account/require-admin';
 import { ROUTES } from '@/lib/routes';
 
 const SECTIONS = [
@@ -10,13 +10,27 @@ const SECTIONS = [
 ] as const;
 
 // Resumen del panel (T-008a, T-024): la navegación vive en el layout; aquí, tarjetas de cada sección.
-export default async function AdminPage() {
-  const admin = await requireAdmin();
+const NOTICES = { 'solo-lectura': 'En la demo no se puede modificar nada: el panel es de solo lectura.' } as const;
+
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ aviso?: string }> }) {
+  const { aviso } = await searchParams;
+  const notice = aviso === 'solo-lectura' ? NOTICES[aviso] : null;
+  const admin = await requirePanel();
 
   return (
     <section>
       <h1 className="font-display text-display font-semibold">Panel de administración</h1>
-      {admin.email ? <p className="mt-3 text-fg-muted">Has entrado como {admin.email}.</p> : null}
+      {admin.readOnly ? (
+        <p className="mt-3 text-fg-muted">Has entrado con la cuenta de demostración.</p>
+      ) : admin.email ? (
+        <p className="mt-3 text-fg-muted">Has entrado como {admin.email}.</p>
+      ) : null}
+
+      {notice ? (
+        <p role="status" className="mt-4 rounded-card bg-accent-soft p-4 font-semibold text-fg">
+          {notice}
+        </p>
+      ) : null}
 
       <ul className="mt-8 grid gap-4 sm:grid-cols-2">
         {SECTIONS.map((section) => (

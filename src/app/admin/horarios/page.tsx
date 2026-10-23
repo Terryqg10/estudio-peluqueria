@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { requireAdmin } from '@/lib/account/require-admin';
+import { requirePanel } from '@/lib/account/require-admin';
 import { ScopeSchema, loadSchedule, loadStylistsForSchedules } from '@/lib/admin/schedules';
 import { ROUTES } from '@/lib/routes';
+import { ReadOnlyScope } from '@/components/admin/read-only-scope';
 import { ScheduleForm } from './schedule-form';
 
 export const metadata: Metadata = { title: 'Horarios' };
@@ -16,7 +17,7 @@ const PILL_CLASS =
 type SearchParams = Promise<{ quien?: string; aviso?: string }>;
 
 export default async function SchedulesPage({ searchParams }: { searchParams: SearchParams }) {
-  const admin = await requireAdmin(); // un layout no basta (ADR-0022)
+  const admin = await requirePanel(); // un layout no basta (ADR-0022)
   const query = await searchParams;
   const scopes = await loadStylistsForSchedules(admin.client);
 
@@ -86,7 +87,9 @@ export default async function SchedulesPage({ searchParams }: { searchParams: Se
           </Link>
         </div>
       ) : (
-        <ScheduleForm key={scope} scope={scope} scopeLabel={label} initial={initial} />
+        <ReadOnlyScope readOnly={admin.readOnly}>
+          <ScheduleForm key={scope} scope={scope} scopeLabel={label} initial={initial} />
+        </ReadOnlyScope>
       )}
     </section>
   );
