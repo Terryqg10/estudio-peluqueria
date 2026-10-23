@@ -18,20 +18,27 @@ type Props = {
   data: BookingData;
   today: string; // calculado en el servidor, en Europe/Madrid
   initialServiceId: string | null;
+  // Clienta con sesión (T-021): datos del perfil para precargar el formulario. El servidor reserva con la
+  // cuenta de la sesión; esto solo rellena campos.
+  account: { email: string; name: string | null; phone: string | null } | null;
 };
 
 type Selection = { startsAt: string; stylistId: string };
 
 // Flujo de selección de hueco (RF-02, CA-05, CA-07): servicio → estilista → día → hora.
 // Llega hasta elegir un hueco; los datos de la clienta y la confirmación son T-005b.
-export function BookingFlow({ data, today, initialServiceId }: Props) {
+export function BookingFlow({ data, today, initialServiceId, account }: Props) {
   const [serviceId, setServiceId] = useState<string | null>(initialServiceId);
   const [stylistChoice, setStylistChoice] = useState<string>('any');
   const [date, setDate] = useState(today);
   const [selection, setSelection] = useState<Selection | null>(null);
   // Datos de contacto y alternativas viven aquí: si el hueco se ocupa y el formulario se oculta,
   // lo tecleado no se pierde.
-  const [contact, setContact] = useState<ContactValues>(EMPTY_CONTACT);
+  const [contact, setContact] = useState<ContactValues>(() =>
+    account
+      ? { ...EMPTY_CONTACT, email: account.email, name: account.name ?? '', phone: account.phone ?? '' }
+      : EMPTY_CONTACT,
+  );
   const [alternatives, setAlternatives] = useState<AvailabilitySlot[] | null>(null);
 
   const service = data.services.find((s) => s.id === serviceId) ?? null;
@@ -212,6 +219,7 @@ export function BookingFlow({ data, today, initialServiceId }: Props) {
                 values={contact}
                 onValuesChange={setContact}
                 onSlotUnavailable={handleSlotUnavailable}
+                emailLocked={account !== null}
               />
             </section>
           ) : null}

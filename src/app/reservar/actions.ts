@@ -7,6 +7,7 @@ import type { NextDaysResult } from '@/lib/availability/next-days';
 import type { AvailabilityResult } from '@/lib/availability/schema';
 import { getClientIpHash } from '@/lib/booking/client-ip.server';
 import { CONFIRMATION_COOKIE, confirmationCookieOptions } from '@/lib/booking/confirmation-cookie';
+import { getBookingAccount } from '@/lib/booking/booking-account';
 import { createBooking } from '@/lib/booking/create-booking';
 import type { BookingResult } from '@/lib/booking/schema';
 import { sendBookingConfirmation } from '@/lib/booking/send-confirmation';
@@ -29,7 +30,12 @@ export async function createBookingAction(input: unknown): Promise<BookingResult
   const ip = getClientIpHash(requestHeaders);
   if (!ip.ok) return { ok: false, error: 'UNAVAILABLE' };
 
-  const outcome = await createBooking(input, { ipHash: ip.ipHash });
+  // Con sesión de clienta se reserva con la cuenta (T-021); la identidad sale de la cookie, no de la entrada.
+  const account = await getBookingAccount();
+  const outcome = await createBooking(input, {
+    ipHash: ip.ipHash,
+    account: account ? { userId: account.userId, email: account.email } : null,
+  });
   if (!outcome.ok) return outcome;
   const store = await cookies();
   store.set(

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { z } from 'zod';
+import { getBookingAccount } from '@/lib/booking/booking-account';
 import { todayInMadrid } from '@/lib/booking/dates';
 import { loadBookingData } from '@/lib/booking/load-booking-data';
 import { ROUTES } from '@/lib/routes';
@@ -25,7 +26,7 @@ export default async function ReservarPage({
   const parsed = SearchSchema.safeParse({
     servicio: typeof raw.servicio === 'string' ? raw.servicio : undefined,
   });
-  const data = await loadBookingData();
+  const [data, account] = await Promise.all([loadBookingData(), getBookingAccount()]);
 
   // Un `?servicio=` inexistente o mal formado se ignora (entrada externa, RNF-02).
   const initialServiceId =
@@ -52,7 +53,12 @@ export default async function ReservarPage({
 
       <div className="mt-10">
         {data ? (
-          <BookingFlow data={data} today={todayInMadrid()} initialServiceId={initialServiceId} />
+          <BookingFlow
+            data={data}
+            today={todayInMadrid()}
+            initialServiceId={initialServiceId}
+            account={account ? { email: account.email, name: account.name, phone: account.phone } : null}
+          />
         ) : (
           <div role="alert" className="rounded-card bg-surface p-6 shadow-card">
             <p className="font-semibold">No hemos podido cargar los servicios.</p>

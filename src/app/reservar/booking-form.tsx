@@ -15,6 +15,8 @@ type Props = {
   values: ContactValues;
   onValuesChange: (values: ContactValues) => void;
   onSlotUnavailable: (alternatives: AvailabilitySlot[]) => void;
+  // Reserva con cuenta (T-021): el email es el de la cuenta y no se edita (el servidor lo fuerza igualmente).
+  emailLocked?: boolean;
 };
 
 const INPUT_CLASS =
@@ -33,6 +35,7 @@ export function BookingForm({
   values,
   onValuesChange,
   onSlotUnavailable,
+  emailLocked = false,
 }: Props) {
   const router = useRouter();
   const formId = useId();
@@ -109,6 +112,11 @@ export function BookingForm({
       <h4 id={id('titulo')} className="font-display text-xl font-semibold">
         Tus datos
       </h4>
+      {emailLocked ? (
+        <p role="status" className="text-fg-muted">
+          Reservas con tu cuenta: usamos el email de tu cuenta y puedes ver la cita en «Mis citas».
+        </p>
+      ) : null}
 
       {message ? (
         <div role="alert" className="rounded-card bg-accent-soft p-4 text-fg">
@@ -153,6 +161,7 @@ export function BookingForm({
             autoComplete="email"
             value={values.email}
             onChange={(e) => set('email', e.target.value)}
+            readOnly={emailLocked}
             aria-invalid={errors.email ? true : undefined}
             aria-describedby={errors.email ? id('email-error') : undefined}
             className={`mt-1 ${INPUT_CLASS}`}
