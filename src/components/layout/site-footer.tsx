@@ -12,7 +12,7 @@ export function SiteFooter() {
   const { address, phoneDisplay, phoneHref } = SITE.contact;
   return (
     <footer className="border-t border-border bg-surface-muted">
-      <div className="mx-auto grid w-full max-w-6xl gap-8 px-(--layout-gutter) pb-24 pt-10 sm:grid-cols-3">
+      <div className="mx-auto grid w-full max-w-6xl gap-8 px-(--layout-gutter) pb-10 pt-10 sm:grid-cols-3">
         <div>
           <p className="text-lg font-semibold text-fg">{SITE.name}</p>
           <p className="mt-1 text-fg-muted">{SITE.tagline}</p>

@@ -34,6 +34,34 @@ export function Chatbot({ whatsappNumber }: Props) {
     if (nodeId !== 'menu') replyRef.current?.focus();
   }, [nodeId]);
 
+  // El botón no flota sobre el pie (T-025): cuando el pie entra en la ventana, se apoya encima de él.
+  useEffect(() => {
+    let frame = 0;
+    function update() {
+      frame = 0;
+      const button = buttonRef.current;
+      if (!button) return;
+      const footer = document.querySelector('footer');
+      const covered = footer ? Math.max(0, window.innerHeight - footer.getBoundingClientRect().top) : 0;
+      button.style.transform = covered > 0 ? `translateY(-${covered}px)` : '';
+    }
+    function schedule() {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    }
+    update();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    // El contenido puede cambiar de alto sin scroll ni resize (carga de imágenes, listas): se recalcula también.
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(schedule);
+    observer?.observe(document.body);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      observer?.disconnect();
+    };
+  }, [pathname]);
+
   // El chat es para las clientas: no se muestra en el panel de administración.
   if (pathname === '/admin' || pathname.startsWith('/admin/')) return null;
 

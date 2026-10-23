@@ -56,6 +56,29 @@ test.describe('chat de ayuda', () => {
     await expect(dialog(page)).toBeVisible();
   });
 
+  test('chat-pie (T-025): al final de la página el botón queda encima del pie, de 320 a 1280 px', async ({ page }) => {
+    for (const width of [320, 375, 700, 1024, 1280]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/');
+      // Fuera del final, el botón está a 16 px del borde inferior.
+      const top = await fab(page).boundingBox();
+      expect(top, `${width}: arriba`).not.toBeNull();
+      if (top) expect(800 - (top.y + top.height), `${width}: arriba`).toBeCloseTo(16, 0);
+
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      await expect
+        .poll(
+          async () => {
+            const button = await fab(page).boundingBox();
+            const footer = await page.locator('footer').boundingBox();
+            return button && footer ? footer.y - (button.y + button.height) : null;
+          },
+          { message: `${width}: el botón debe quedar sobre el pie` },
+        )
+        .toBeGreaterThanOrEqual(-0.5);
+    }
+  });
+
   test('chat-arbol (CA-22): cada opción da su respuesta y siempre hay «Volver al menú»', async ({ page }) => {
     await page.goto('/');
     await fab(page).click();
