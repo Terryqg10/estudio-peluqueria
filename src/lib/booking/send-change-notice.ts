@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 import { createEmailSender } from '@/lib/email/create-sender';
 import { getEmailEnv } from '@/lib/email/env.server';
-import { renderChangeNotice, type ChangeKind } from '@/lib/email/templates/change-notice';
+import { renderChangeNotice, type ChangeKind, type ChangeOrigin } from '@/lib/email/templates/change-notice';
 import type { EmailSender } from '@/lib/email/types';
 import { ROUTES } from '@/lib/routes';
 import { SITE } from '@/lib/site';
@@ -39,14 +39,18 @@ function logFailure(appointmentId: string, kind: ChangeKind, reason: ChangeNotic
   console.error('[email] no se pudo enviar el aviso de cambio', { appointmentId, kind, reason });
 }
 
-// Avisa a la invitada de que su cita se ha cancelado o cambiado desde el enlace (T-006d, RF-05,
-// RF-11, CA-42, CA-43, ADR-0033). Se llama DESPUÉS de que la BD confirme la operación. NO emite un
-// token (invalidaría el enlace del email anterior). NUNCA lanza: si algo falla, la operación ya
-// hecha se mantiene y se devuelve el motivo.
+// Opciones del aviso (T-018): quién hizo el cambio y, en los cambios del salón, la fecha anterior.
+export type ChangeNoticeOptions = { origin?: ChangeOrigin; previousStartsAt?: string };
+
+// Avisa a la clienta de que su cita se ha cancelado o cambiado: desde el enlace (T-006d, RF-05, RF-11,
+// CA-42, CA-43, ADR-0033) o desde el panel del salón (T-018, CA-46, CA-47, ADR-0035). Se llama DESPUÉS de
+// que la BD confirme la operación. NO emite un token (invalidaría el enlace del email anterior). NUNCA
+// lanza: si algo falla, la operación ya hecha se mantiene y se devuelve el motivo.
 export async function sendChangeNotice(
   appointmentId: string,
   kind: ChangeKind,
   deps: ChangeNoticeDeps = defaultDeps(),
+  options: ChangeNoticeOptions = {},
 ): Promise<ChangeNoticeResult> {
   const fail = (reason: ChangeNoticeFailure): ChangeNoticeResult => {
     logFailure(appointmentId, kind, reason);
@@ -69,12 +73,15 @@ export async function sendChangeNotice(
 
     const content = renderChangeNotice({
       kind,
+      origin: options.origin,
+      previousStartsAt: options.previousStartsAt,
       salonName: SITE.name,
       guestName: row.guest_name,
       serviceName: row.services.name,
       stylistName: row.stylists.name,
       startsAt: range.start,
       reserveLink: `${appUrl}${ROUTES.reservar}`,
+      contactLink: `${appUrl}${ROUTES.contacto}`,
     });
 
     const sent = await sender.send({ to: row.guest_email, ...content });

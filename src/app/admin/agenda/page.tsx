@@ -13,12 +13,23 @@ export const dynamic = 'force-dynamic';
 const NAV_LINK =
   'inline-flex min-h-11 items-center justify-center rounded-control px-4 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
 
-type SearchParams = Promise<{ semana?: string | string[]; dia?: string | string[]; aviso?: string | string[] }>;
+type SearchParams = Promise<{
+  semana?: string | string[];
+  dia?: string | string[];
+  aviso?: string | string[];
+  avisada?: string | string[];
+}>;
 
 const NOTICES = {
   movida: 'Cita movida.',
   guardada: 'Cambios guardados.',
   cancelada: 'Cita cancelada.',
+} as const;
+
+// Resultado del aviso por email a la clienta tras mover o cancelar (T-018). Sin datos personales.
+const EMAIL_NOTICES = {
+  '1': 'Hemos avisado a la clienta por email.',
+  '0': 'No hemos podido avisarla por email: contacta con ella.',
 } as const;
 
 export default async function AgendaPage({ searchParams }: { searchParams: SearchParams }) {
@@ -28,6 +39,10 @@ export default async function AgendaPage({ searchParams }: { searchParams: Searc
   const notice =
     raw.aviso === 'movida' || raw.aviso === 'guardada' || raw.aviso === 'cancelada'
       ? NOTICES[raw.aviso]
+      : null;
+  const emailNotice =
+    (raw.aviso === 'movida' || raw.aviso === 'cancelada') && (raw.avisada === '1' || raw.avisada === '0')
+      ? EMAIL_NOTICES[raw.avisada]
       : null;
   const days = weekDays(query.monday);
   const today = todayInMadrid();
@@ -74,6 +89,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Searc
       {notice ? (
         <p role="status" className="mt-4 rounded-card bg-accent-soft p-4 font-semibold text-fg">
           {notice}
+          {emailNotice ? ` ${emailNotice}` : ''}
         </p>
       ) : null}
 

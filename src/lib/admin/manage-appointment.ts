@@ -2,6 +2,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import type { Database } from '@/lib/database.types';
 import { madridDateOf } from '@/lib/booking/dates';
+import { sendChangeNotice, type ChangeNoticeOptions } from '@/lib/booking/send-change-notice';
+import type { ChangeKind } from '@/lib/email/templates/change-notice';
 import { parseRange } from '@/lib/booking/range';
 import type { STATUS_LABELS } from '@/lib/booking/status';
 import { LocalDateSchema } from './week';
@@ -51,7 +53,28 @@ export type ManageError =
   | 'SLOT_TAKEN'
   | 'UNAVAILABLE';
 
-export type ManageResult = { ok: true; date: string } | { ok: false; error: ManageError };
+// `notified`: si se pudo enviar el aviso por email a la clienta (T-018). Nunca revela datos personales.
+export type ManageResult = { ok: true; date: string; notified: boolean } | { ok: false; error: ManageError };
+
+// Quien envía el aviso es inyectable para probar el orden y los fallos sin red (por defecto, el real).
+export type Notifier = (appointmentId: string, kind: ChangeKind, options: ChangeNoticeOptions) => Promise<{ ok: boolean }>;
+
+const defaultNotifier: Notifier = (id, kind, options) => sendChangeNotice(id, kind, undefined, options);
+
+// Avisa a la clienta DESPUÉS de que la BD confirme (T-018, ADR-0035). Nunca lanza: un fallo de envío no
+// deshace la operación, solo se refleja en `notified`.
+async function notify(
+  notifier: Notifier,
+  id: string,
+  kind: ChangeKind,
+  extra: Omit<ChangeNoticeOptions, 'origin'> = {},
+): Promise<boolean> {
+  try {
+    return (await notifier(id, kind, { origin: 'salon', ...extra })).ok;
+  } catch {
+    return false;
+  }
+}
 
 const KNOWN: Record<string, ManageError> = {
   FORBIDDEN: 'FORBIDDEN',
@@ -186,12 +209,17 @@ export async function saveNote(
 export async function moveAppointment(
   client: SupabaseClient<Database>,
   input: unknown,
+  notifier: Notifier = defaultNotifier,
 ): Promise<ManageResult> {
   const parsed = MoveInputSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: 'INVALID_INPUT' };
   const [stylistId, startsAt] = parsed.data.slot;
 
   try {
+    // La fecha anterior para el aviso: se lee antes de mover (con la sesión del Admin; si falla, el aviso sale sin ella).
+    const before = await client.from('appointments').select('during').eq('id', parsed.data.appointmentId).maybeSingle();
+    const previousStartsAt = parseRange(before.data?.during)?.start;
+
     const { data, error } = await client.rpc('admin_reschedule_appointment', {
       p_appointment_id: parsed.data.appointmentId,
       p_stylist_id: stylistId,
@@ -199,7 +227,9 @@ export async function moveAppointment(
     });
     if (error) return { ok: false, error: KNOWN[error.message] ?? 'UNAVAILABLE' };
     const row = data?.[0];
-    return row ? { ok: true, date: madridDateOf(row.starts_at) } : { ok: false, error: 'UNAVAILABLE' };
+    if (!row) return { ok: false, error: 'UNAVAILABLE' };
+    const notified = await notify(notifier, parsed.data.appointmentId, 'rescheduled', { previousStartsAt });
+    return { ok: true, date: madridDateOf(row.starts_at), notified };
   } catch {
     return { ok: false, error: 'UNAVAILABLE' };
   }
@@ -209,6 +239,7 @@ export async function cancelAppointmentAsAdmin(
   client: SupabaseClient<Database>,
   appointmentId: unknown,
   date: string,
+  notifier: Notifier = defaultNotifier,
 ): Promise<ManageResult> {
   const parsed = AppointmentIdSchema.safeParse(appointmentId);
   if (!parsed.success) return { ok: false, error: 'INVALID_INPUT' };
@@ -216,7 +247,8 @@ export async function cancelAppointmentAsAdmin(
   try {
     const { data, error } = await client.rpc('admin_cancel_appointment', { p_appointment_id: parsed.data });
     if (error) return { ok: false, error: KNOWN[error.message] ?? 'UNAVAILABLE' };
-    return data?.[0] ? { ok: true, date } : { ok: false, error: 'UNAVAILABLE' };
+    if (!data?.[0]) return { ok: false, error: 'UNAVAILABLE' };
+    return { ok: true, date, notified: await notify(notifier, parsed.data, 'cancelled') };
   } catch {
     return { ok: false, error: 'UNAVAILABLE' };
   }

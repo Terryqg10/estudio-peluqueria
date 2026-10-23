@@ -78,7 +78,7 @@ test.describe('editar una cita desde el panel (CA-16)', () => {
       await page.getByLabel('Notas para la estilista').fill('Alergia al amoníaco');
 
       await page.getByRole('button', { name: 'Guardar cambios' }).click();
-      await expect(page.getByRole('status')).toHaveText('Cita movida.');
+      await expect(page.getByRole('status')).toHaveText('Cita movida. Hemos avisado a la clienta por email.');
 
       // BD: la misma cita en el nuevo hueco, con su nota (solo visible para el Admin).
       const { data } = await adminClient().from('appointments').select('stylist_id, during').eq('id', appt.id).single();
@@ -156,7 +156,7 @@ test.describe('editar una cita desde el panel (CA-16)', () => {
 
       await page.getByRole('link', { name: 'Cancelar la cita' }).click();
       await page.getByRole('button', { name: 'Sí, cancelar la cita' }).click();
-      await expect(page.getByRole('status')).toHaveText('Cita cancelada.');
+      await expect(page.getByRole('status')).toHaveText('Cita cancelada. Hemos avisado a la clienta por email.');
 
       const { data } = await adminClient().from('appointments').select('status').eq('id', appt.id).single();
       expect(data?.status).toBe('cancelled');

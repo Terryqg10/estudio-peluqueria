@@ -25,8 +25,10 @@ function text(formData: FormData, key: string): string {
   return typeof value === 'string' ? value : '';
 }
 
-function agendaUrl(date: string, notice: Notice): string {
-  return `${weekHref(ROUTES.adminAgenda, mondayOf(date), date)}&aviso=${notice}`;
+// `notified` (T-018): si se avisó por email a la clienta; solo en movida y cancelada. Sin datos personales en la URL.
+function agendaUrl(date: string, notice: Notice, notified?: boolean): string {
+  const base = `${weekHref(ROUTES.adminAgenda, mondayOf(date), date)}&aviso=${notice}`;
+  return notified === undefined ? base : `${base}&avisada=${notified ? '1' : '0'}`;
 }
 
 function detailUrl(id: string, error: string): string {
@@ -34,7 +36,7 @@ function detailUrl(id: string, error: string): string {
 }
 
 function finish(result: ManageResult, id: string, notice: Notice): never {
-  if (result.ok) redirect(agendaUrl(result.date, notice));
+  if (result.ok) redirect(agendaUrl(result.date, notice, result.notified));
   redirect(detailUrl(id, result.error));
 }
 
@@ -67,16 +69,18 @@ export async function saveAppointmentAction(formData: FormData): Promise<void> {
   const slot = text(formData, 'slot');
   let date = currentDate;
   let notice: Notice = 'guardada';
+  let notified: boolean | undefined;
   if (slot !== '') {
     const moved = await moveAppointment(admin.client, { appointmentId: id, slot });
     if (!moved.ok) redirect(detailUrl(safeId, moved.error));
     date = moved.date;
     notice = 'movida';
+    notified = moved.notified;
   }
 
   const saved = await saveNote(admin.client, id, note.data);
   if (!saved.ok) redirect(detailUrl(safeId, saved.error));
-  redirect(agendaUrl(date, notice));
+  redirect(agendaUrl(date, notice, notified));
 }
 
 export async function cancelAppointmentAction(formData: FormData): Promise<void> {

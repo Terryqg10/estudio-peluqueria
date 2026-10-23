@@ -262,7 +262,6 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-008d | Rediseño de «Mover cita» (carrusel de días, horas en píldora, barra sticky) y notas para la estilista. ADR-0027 | CA-16 |
 | T-019 | Selector de día y hora más limpio: semana de 7 días con flechas y horas en 3 columnas (reserva, cambio y panel). ADR no necesario | — |
 | T-017 | Datos de contacto de las clientas con cuenta en el panel (absorbida por T-021) | CA-44 |
-| T-018 | Aviso por email cuando el Admin mueve o cancela una cita (borrador) | — |
 | T-009a | Admin: servicios (crear, editar, activar/desactivar; función de BD atómica) | CA-18 |
 | T-009b | Admin: bloqueos de franja y vacaciones; función de BD atómica que rechaza si hay citas. ADR-0028 | CA-19, CA-20 |
 | T-009c | Admin: horarios semanales del salón y de las estilistas; función de BD atómica que rechaza si deja citas fuera. ADR-0029 | CA-38, CA-39 |
@@ -272,6 +271,7 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-020 | Borrado de datos de la invitada sin el enlace de su cita: formulario + email de confirmación de un solo uso (ADR-0032) | CA-40, CA-41 |
 | T-006d | Aviso por email a la invitada tras cancelar o cambiar su cita desde el enlace, sin token nuevo (ADR-0033) | CA-42, CA-43 |
 | T-021 | Reservar con cuenta (RF-04): `user_id` y copia de contacto en la cita, identidad desde la sesión y formulario precargado (ADR-0034) | CA-44, CA-45 |
+| T-018 | Aviso por email a la clienta cuando el Admin mueve o cancela su cita, con el resultado visible en el panel (ADR-0035) | CA-46, CA-47 |
 | T-013a | CI bloqueante en GitHub Actions: Supabase local en el runner, audit con lista blanca (ADR-0008 y ADR-0023) y e2e en 4 fragmentos. ADR-0025 | RNF-09 |
 | T-013b | Keep-alive semanal de Supabase (necesita el proyecto alojado y secretos de GitHub; borrador) | CA-35 |
 | T-014 | Estabilizar los tests de tiempo-real (flaky bajo carga; anotada al cerrar T-005c) | — |

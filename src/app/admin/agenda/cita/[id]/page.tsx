@@ -125,7 +125,7 @@ export default async function AppointmentPage({
               <input type="hidden" name="dia" value={appointment.date} />
               <p className="font-semibold">¿Cancelar la cita de {appointment.clientName}?</p>
               <p className="mt-2 text-fg-muted">
-                El hueco quedará libre en la web. La clienta no recibe ningún aviso: avísala tú.
+                El hueco quedará libre en la web. Le enviaremos un email con el aviso.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <button type="submit" className={CTA_CLASS}>
