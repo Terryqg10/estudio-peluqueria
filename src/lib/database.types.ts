@@ -364,6 +364,9 @@ isOneToOne: false
 "consume_deletion_request_quota":
 { Args: { "p_email_hash": string,"p_ip_hash"?: string,"p_max_per_email"?: number,"p_max_per_ip"?: number,"p_window_minutes"?: number }; Returns: undefined
                            },
+"consume_demo_entry_quota":
+{ Args: { "p_ip_hash": string,"p_max_per_ip"?: number,"p_window_minutes"?: number }; Returns: undefined
+                           },
 "consume_login_link_quota":
 { Args: { "p_email_hash": string,"p_ip_hash"?: string,"p_max_per_email"?: number,"p_max_per_ip"?: number,"p_window_minutes"?: number }; Returns: undefined
                            },

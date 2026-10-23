@@ -55,6 +55,7 @@ Ninguna clave se pega en el repo ni en el chat (invariante I4): van a Supabase, 
    | `EMAIL_FROM` | remitente con dominio verificado | no |
    | `RESEND_API_KEY` | clave de Resend | **no** |
    | `APP_URL` | URL pública con `https://` (los enlaces de los emails salen de aquí, no de `Host`) | no |
+   | `DEMO_ENABLED` | `1` para ofrecer «Probar el panel» (demo de portfolio, ADR-0036); sin ella no hay botón ni cuenta demo | no |
 
    Generar `RATE_LIMIT_SALT` con `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
    No usar los mismos valores que en desarrollo.

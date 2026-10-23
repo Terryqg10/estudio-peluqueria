@@ -27,13 +27,17 @@ export default defineConfig({
       name: 'mobile',
       use: { ...devices['iPhone 13'] },
       // Ocupan huecos reales y dependen de WebSockets: solo en escritorio (sin .skip).
-      testIgnore: '**/reservar-tiempo-real.spec.ts',
+      // `demo-acceso` crea y borra la cuenta demo fija (única por proyecto de Supabase): en paralelo con el otro
+      // proyecto se pisarían, así que solo corre en escritorio (sin .skip).
+      testIgnore: ['**/reservar-tiempo-real.spec.ts', '**/demo-acceso.spec.ts'],
     },
   ],
   webServer: {
     command: usaProd ? `pnpm run build && pnpm run start -p ${PORT}` : `pnpm run dev -p ${PORT}`,
     url: BASE_URL,
     reuseExistingServer: !usaProd && !isCI,
+    // La demo del panel (ADR-0036) solo existe con esta variable: los e2e la prueban encendida.
+    env: { DEMO_ENABLED: '1' },
     timeout: usaProd ? 180_000 : 120_000,
     stdout: 'ignore',
     stderr: 'pipe',

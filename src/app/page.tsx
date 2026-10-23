@@ -1,4 +1,5 @@
 import { ContactInfo } from '@/components/contact/contact-info';
+import { DemoSection } from '@/components/demo/demo-section';
 import { GallerySection } from '@/components/home/gallery-section';
 import { Hero } from '@/components/home/hero';
 import { ServicesSection } from '@/components/home/services-section';
@@ -15,6 +16,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ t
   return (
     <>
       <Hero />
+      <DemoSection />
       <ServicesSection catalog={catalog} />
       <GallerySection gallery={gallery} selected={technique} />
       <section
