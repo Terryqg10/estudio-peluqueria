@@ -43,6 +43,12 @@ export type Database = {
 isOneToOne: true
       referencedRelation: "appointments"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "appointment_notes_appointment_id_fkey"
+      columns: ["appointment_id"]
+isOneToOne: true
+      referencedRelation: "panel_appointments"
+      referencedColumns: ["id"]
     }
                   ]
                 },"appointment_tokens": {
@@ -62,17 +68,23 @@ isOneToOne: true
 isOneToOne: true
       referencedRelation: "appointments"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "appointment_tokens_appointment_id_fkey"
+      columns: ["appointment_id"]
+isOneToOne: true
+      referencedRelation: "panel_appointments"
+      referencedColumns: ["id"]
     }
                   ]
                 },"appointments": {
                   Row: {
-                    "anonymized_at": string | null,"confirmation_email_sent_at": string | null,"consent_at": string | null,"consent_version": string | null,"created_at": string,"during": unknown,"guest_email": string | null,"guest_name": string | null,"guest_phone": string | null,"id": string,"service_id": string,"status": Database["public"]['Enums']["appointment_status"],"stylist_id": string,"updated_at": string,"user_id": string | null
+                    "anonymized_at": string | null,"confirmation_email_sent_at": string | null,"consent_at": string | null,"consent_version": string | null,"created_at": string,"during": unknown,"guest_email": string | null,"guest_name": string | null,"guest_phone": string | null,"id": string,"is_sample": boolean,"service_id": string,"status": Database["public"]['Enums']["appointment_status"],"stylist_id": string,"updated_at": string,"user_id": string | null
                   }
                   Insert: {
-                    "anonymized_at"?: string | null,"confirmation_email_sent_at"?: string | null,"consent_at"?: string | null,"consent_version"?: string | null,"created_at"?: string,"during": unknown,"guest_email"?: string | null,"guest_name"?: string | null,"guest_phone"?: string | null,"id"?: string,"service_id": string,"status"?: Database["public"]['Enums']["appointment_status"],"stylist_id": string,"updated_at"?: string,"user_id"?: string | null
+                    "anonymized_at"?: string | null,"confirmation_email_sent_at"?: string | null,"consent_at"?: string | null,"consent_version"?: string | null,"created_at"?: string,"during": unknown,"guest_email"?: string | null,"guest_name"?: string | null,"guest_phone"?: string | null,"id"?: string,"is_sample"?: boolean,"service_id": string,"status"?: Database["public"]['Enums']["appointment_status"],"stylist_id": string,"updated_at"?: string,"user_id"?: string | null
                   }
                   Update: {
-                    "anonymized_at"?: string | null,"confirmation_email_sent_at"?: string | null,"consent_at"?: string | null,"consent_version"?: string | null,"created_at"?: string,"during"?: unknown,"guest_email"?: string | null,"guest_name"?: string | null,"guest_phone"?: string | null,"id"?: string,"service_id"?: string,"status"?: Database["public"]['Enums']["appointment_status"],"stylist_id"?: string,"updated_at"?: string,"user_id"?: string | null
+                    "anonymized_at"?: string | null,"confirmation_email_sent_at"?: string | null,"consent_at"?: string | null,"consent_version"?: string | null,"created_at"?: string,"during"?: unknown,"guest_email"?: string | null,"guest_name"?: string | null,"guest_phone"?: string | null,"id"?: string,"is_sample"?: boolean,"service_id"?: string,"status"?: Database["public"]['Enums']["appointment_status"],"stylist_id"?: string,"updated_at"?: string,"user_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -258,7 +270,45 @@ isOneToOne: false
                 }
           }
           Views: {
-            [_ in never]: never
+            "panel_appointment_notes": {
+                  Row: {
+                    "appointment_id": string | null,"note": string | null,"updated_at": string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "appointment_notes_appointment_id_fkey"
+      columns: ["appointment_id"]
+isOneToOne: true
+      referencedRelation: "appointments"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "appointment_notes_appointment_id_fkey"
+      columns: ["appointment_id"]
+isOneToOne: true
+      referencedRelation: "panel_appointments"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"panel_appointments": {
+                  Row: {
+                    "anonymized_at": string | null,"created_at": string | null,"during": unknown,"guest_email": string | null,"guest_name": string | null,"guest_phone": string | null,"id": string | null,"is_sample": boolean | null,"profile_name": string | null,"profile_phone": string | null,"service_id": string | null,"status": Database["public"]['Enums']["appointment_status"] | null,"stylist_id": string | null,"updated_at": string | null,"user_id": string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "appointments_service_id_fkey"
+      columns: ["service_id"]
+isOneToOne: false
+      referencedRelation: "services"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "appointments_stylist_id_fkey"
+      columns: ["stylist_id"]
+isOneToOne: false
+      referencedRelation: "stylists"
+      referencedColumns: ["id"]
+    }
+                  ]
+                }
           }
           Functions: {
             "admin_appointment_availability":
@@ -346,8 +396,20 @@ isOneToOne: false
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"is_demo":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
 "issue_management_token":
 { Args: { "p_appointment_id": string }; Returns: string
+                           },
+"mask_email":
+{ Args: { "p_email": string }; Returns: string
+                           },
+"mask_name":
+{ Args: { "p_name": string }; Returns: string
+                           },
+"mask_phone":
+{ Args: { "p_phone": string }; Returns: string
                            },
 "request_guest_deletion":
 { Args: { "p_email": string }; Returns: string
@@ -364,7 +426,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "appointment_status": "pending"|"confirmed"|"completed"|"no_show"|"cancelled","time_block_kind": "vacation"|"break"|"block","user_role": "client"|"admin"
+            "appointment_status": "pending"|"confirmed"|"completed"|"no_show"|"cancelled","time_block_kind": "vacation"|"break"|"block","user_role": "client"|"admin"|"demo"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -484,7 +546,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "appointment_status": ["pending", "confirmed", "completed", "no_show", "cancelled"],"time_block_kind": ["vacation", "break", "block"],"user_role": ["client", "admin"]
+            "appointment_status": ["pending", "confirmed", "completed", "no_show", "cancelled"],"time_block_kind": ["vacation", "break", "block"],"user_role": ["client", "admin", "demo"]
           }
         }
 } as const

@@ -94,28 +94,20 @@ export async function loadAdminAppointment(
   if (!parsed.success) return null;
 
   const { data, error } = await client
-    .from('appointments')
+    .from('panel_appointments')
     .select(
-      'id, stylist_id, status, during, user_id, anonymized_at, guest_name, guest_email, guest_phone, services(name), stylists(name)',
+      'id, stylist_id, status, during, user_id, anonymized_at, guest_name, guest_email, guest_phone, profile_name, profile_phone, services(name), stylists(name)',
     )
     .eq('id', parsed.data)
     .maybeSingle();
   if (error) return 'error';
   if (!data) return null;
+  if (!data.id || !data.stylist_id || !data.status) return 'error'; // columnas de vista anulables en los tipos
   const range = parseRange(data.during);
   if (!range) return 'error';
 
-  let profileName: string | null = null;
-  let profilePhone: string | null = null;
-  if (data.user_id) {
-    const profile = await client.from('profiles').select('full_name, phone').eq('id', data.user_id).maybeSingle();
-    if (profile.error) return 'error';
-    profileName = profile.data?.full_name ?? null;
-    profilePhone = profile.data?.phone ?? null;
-  }
-
   const noteRes = await client
-    .from('appointment_notes')
+    .from('panel_appointment_notes')
     .select('note')
     .eq('appointment_id', data.id)
     .maybeSingle();
@@ -131,8 +123,8 @@ export async function loadAdminAppointment(
     startsAt: range.start,
     endsAt: range.end,
     status: data.status,
-    clientName: data.anonymized_at ? 'Clienta anonimizada' : (data.guest_name ?? profileName ?? 'Clienta con cuenta'),
-    phone: data.guest_phone ?? profilePhone,
+    clientName: data.anonymized_at ? 'Clienta anonimizada' : (data.guest_name ?? data.profile_name ?? 'Clienta con cuenta'),
+    phone: data.guest_phone ?? data.profile_phone,
     email: data.guest_email,
   };
 }
@@ -165,9 +157,9 @@ export async function loadStylistOptions(
   client: SupabaseClient<Database>,
   appointmentId: string,
 ): Promise<StylistOption[] | 'error'> {
-  const appt = await client.from('appointments').select('service_id').eq('id', appointmentId).maybeSingle();
+  const appt = await client.from('panel_appointments').select('service_id').eq('id', appointmentId).maybeSingle();
   if (appt.error) return 'error';
-  if (!appt.data) return [];
+  if (!appt.data?.service_id) return [];
 
   const offered = await client
     .from('stylist_services')

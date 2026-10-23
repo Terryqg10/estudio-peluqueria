@@ -74,6 +74,14 @@ export async function createAdmin(): Promise<TestUser> {
   return user;
 }
 
+// Cuenta de solo lectura del panel (ADR-0036, T-026).
+export async function createDemo(): Promise<TestUser> {
+  const user = await createUser('demo');
+  const { error } = await service.from('profiles').update({ role: 'demo' }).eq('id', user.id);
+  if (error) throw new Error(`createDemo: ${error.message}`);
+  return user;
+}
+
 export async function createStylist(name = 'Estilista de prueba'): Promise<string> {
   const { data, error } = await service.from('stylists').insert({ name }).select('id').single();
   if (error) throw new Error(`createStylist: ${error.message}`);
@@ -117,6 +125,9 @@ type NewAppointment = {
   status?: Database['public']['Enums']['appointment_status'];
   userId?: string;
   guestEmail?: string;
+  guestName?: string;
+  guestPhone?: string;
+  isSample?: boolean;
 };
 
 // Inserta con service_role (la reserva real llegará en T-005). Devuelve el error
@@ -126,15 +137,16 @@ export async function insertAppointment(a: NewAppointment) {
     a.userId
       ? { user_id: a.userId }
       : {
-          guest_name: 'Invitada de prueba',
+          guest_name: a.guestName ?? 'Invitada de prueba',
           guest_email: a.guestEmail ?? 'invitada@test.invalid',
-          guest_phone: '+34600000000',
+          guest_phone: a.guestPhone ?? '+34600000000',
         };
   const row: AppointmentInsert = {
     stylist_id: a.stylistId,
     service_id: a.serviceId,
     during: range(a.start, a.minutes ?? 60),
     status: a.status ?? 'confirmed',
+    is_sample: a.isSample ?? false,
     ...owner,
   };
   const result = await service.from('appointments').insert(row).select('id').single();

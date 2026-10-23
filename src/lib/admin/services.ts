@@ -145,7 +145,7 @@ export async function countFutureAppointments(
   serviceId: string,
 ): Promise<number | null> {
   const { data, error } = await client
-    .from('appointments')
+    .from('panel_appointments')
     .select('id, during')
     .eq('service_id', serviceId)
     .neq('status', 'cancelled')
