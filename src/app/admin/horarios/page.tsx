@@ -22,7 +22,7 @@ export default async function SchedulesPage({ searchParams }: { searchParams: Se
 
   if (scopes === 'error') {
     return (
-      <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+      <section className="max-w-3xl">
         <h1 className="font-display text-display font-semibold">Horarios</h1>
         <div role="alert" className="mt-6 rounded-card bg-accent-soft p-4 text-fg">
           <p>No hemos podido cargar los horarios.</p>
@@ -45,12 +45,7 @@ export default async function SchedulesPage({ searchParams }: { searchParams: Se
   const options = [{ id: 'salon', name: 'Salón' }, ...scopes.stylists];
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
-      <p>
-        <Link href={ROUTES.admin} className={LINK_CLASS}>
-          Panel
-        </Link>
-      </p>
+    <section className="max-w-3xl">
       <h1 className="font-display text-display font-semibold">Horarios</h1>
       <p className="mt-3 text-fg-muted">
         Los huecos que se ofrecen son los que caen dentro del horario del salón y del de la estilista a la vez.

@@ -59,12 +59,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Searc
   const title = `Semana del ${formatLongDate(query.monday)} al ${formatLongDate(days[6] ?? query.monday)}`;
 
   return (
-    <section className="mx-auto w-full max-w-screen-2xl px-(--layout-gutter) py-12 sm:py-16">
-      <p>
-        <Link href={ROUTES.admin} className={NAV_LINK}>
-          Panel
-        </Link>
-      </p>
+    <section>
       <h1 className="font-display text-display font-semibold">Agenda</h1>
 
       <nav aria-label="Semanas" className="mt-4 flex flex-wrap items-center gap-2">

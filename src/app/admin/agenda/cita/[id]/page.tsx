@@ -53,7 +53,7 @@ export default async function AppointmentPage({
 
   if (appointment === 'error') {
     return (
-      <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
+      <section className="max-w-3xl">
         <h1 className="font-display text-display font-semibold">Mover cita</h1>
         <p role="alert" className="mt-6 rounded-card bg-accent-soft p-4 text-fg">
           No hemos podido cargar la cita. Inténtalo de nuevo en unos minutos.
@@ -74,8 +74,8 @@ export default async function AppointmentPage({
   const backHref = weekHref(ROUTES.adminAgenda, mondayOf(appointment.date), appointment.date);
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
-      <p>
+    <section className="max-w-3xl">
+      <p className="-ml-4">
         <Link href={backHref} className={LINK_CLASS}>
           Volver a la agenda
         </Link>

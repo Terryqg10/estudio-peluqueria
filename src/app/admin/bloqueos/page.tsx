@@ -41,12 +41,7 @@ export default async function BlocksPage({ searchParams }: { searchParams: Searc
   const notice = aviso ? (NOTICES[aviso] ?? null) : null;
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
-      <p>
-        <Link href={ROUTES.admin} className={LINK_CLASS}>
-          Panel
-        </Link>
-      </p>
+    <section className="max-w-3xl">
       <h1 className="font-display text-display font-semibold">Bloqueos y vacaciones</h1>
 
       {notice ? (

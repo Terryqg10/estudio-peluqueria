@@ -17,13 +17,15 @@ function forCell(appointments: AgendaAppointment[], stylistId: string, date: str
   return appointments.filter((a) => a.stylistId === stylistId && a.date === date);
 }
 
-function Empty() {
-  return <p className="text-fg-muted">Sin citas</p>;
+// Con la semana vacía el aviso único lo da la página: aquí solo lo oyen los lectores de pantalla.
+function Empty({ quiet }: { quiet: boolean }) {
+  return <p className={quiet ? 'sr-only' : 'text-fg-muted'}>Sin citas</p>;
 }
 
 // Cuadrícula semanal (≥ 1280 px): filas = estilistas, columnas = días. En pantallas menores se oculta
 // (display: none) y se usa la vista de un día.
 function WeekGrid({ stylists, appointments, days }: Pick<Props, 'stylists' | 'appointments' | 'days'>) {
+  const quiet = appointments.length === 0;
   return (
     <table data-view="week" className="hidden w-full table-fixed border-separate border-spacing-2 xl:table">
       <caption className="sr-only">Agenda de la semana por estilista</caption>
@@ -53,7 +55,7 @@ function WeekGrid({ stylists, appointments, days }: Pick<Props, 'stylists' | 'ap
               return (
                 <td key={date} className="rounded-card bg-surface-muted p-2">
                   <div className="space-y-2">
-                    {cell.length === 0 ? <Empty /> : null}
+                    {cell.length === 0 ? <Empty quiet={quiet} /> : null}
                     {cell.map((a) => (
                       <AppointmentBlock key={a.id} appointment={a} />
                     ))}
@@ -70,6 +72,7 @@ function WeekGrid({ stylists, appointments, days }: Pick<Props, 'stylists' | 'ap
 
 // Vista de un día (< 1280 px): selector de día con enlaces reales y una sección por estilista.
 function DayView({ stylists, appointments, days, selectedDay, monday }: Props) {
+  const quiet = appointments.length === 0;
   return (
     <div data-view="day" className="xl:hidden">
       <nav aria-label="Días de la semana">
@@ -107,7 +110,7 @@ function DayView({ stylists, appointments, days, selectedDay, monday }: Props) {
             <section key={stylist.id} aria-label={stylist.name} className="rounded-container bg-surface p-4 shadow-card">
               <h3 className="font-semibold">{stylist.name}</h3>
               <div className="mt-3 space-y-2">
-                {cell.length === 0 ? <Empty /> : null}
+                {cell.length === 0 ? <Empty quiet={quiet} /> : null}
                 {cell.map((a) => (
                   <AppointmentBlock key={a.id} appointment={a} />
                 ))}

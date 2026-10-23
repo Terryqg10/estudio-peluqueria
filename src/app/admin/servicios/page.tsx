@@ -21,12 +21,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
   const result = await loadAdminServices(admin.client);
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-(--layout-gutter) py-12 sm:py-16">
-      <p>
-        <Link href={ROUTES.admin} className={LINK_CLASS}>
-          Panel
-        </Link>
-      </p>
+    <section className="max-w-3xl">
       <h1 className="font-display text-display font-semibold">Servicios</h1>
 
       <p className="mt-6">

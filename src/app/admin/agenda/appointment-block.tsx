@@ -12,7 +12,7 @@ export function AppointmentBlock({ appointment }: { appointment: AgendaAppointme
     <details
       data-appointment-id={appointment.id}
       data-status={appointment.status}
-      className="rounded-card border border-border-strong bg-surface text-left"
+      className="break-words rounded-card border border-border-strong bg-surface text-left"
     >
       <summary className="min-h-11 cursor-pointer list-none px-3 py-2">
         <span className="block font-semibold">
