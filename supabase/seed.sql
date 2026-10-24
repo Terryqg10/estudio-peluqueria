@@ -54,25 +54,38 @@ select s.id, h.weekday, h.opens, h.closes
 from public.stylists s
 cross join public.salon_hours h;
 
--- Galería antes/después (T-011). Imágenes PROVISIONALES (scripts/make-gallery-placeholders.mjs): se sustituyen por
--- las generadas con IA según docs/imagenes.md (rutas, textos alternativos y `ai_generated` en esta tabla). -- VERIFICAR: ficticio
+-- Galería antes/después (T-011, T-031). Imágenes generadas con IA (docs/imagenes.md): 7 pares WebP cuadrados de 1000×1000 px
+-- (scripts/optimize-gallery.mjs). Ficticio: no son trabajos reales. VERIFICAR
 insert into public.gallery_items (technique, service_id, stylist_id, before_path, after_path, alt_before, alt_after, ai_generated, sort_order)
 select m.technique, sv.id, st.id,
-       '/images/galeria/galeria-' || m.slug || '-' || m.n || '-antes.jpg',
-       '/images/galeria/galeria-' || m.slug || '-' || m.n || '-despues.jpg',
-       'Antes: ilustración provisional de ' || lower(m.technique),
-       'Después: ilustración provisional de ' || lower(m.technique),
-       false, -- ilustraciones provisionales, no generadas con IA: pasa a true al sustituirlas
+       '/images/galeria/galeria-' || m.slug || '-' || m.n || '-antes.webp',
+       '/images/galeria/galeria-' || m.slug || '-' || m.n || '-despues.webp',
+       m.alt_before,
+       m.alt_after,
+       true,
        m.sort_order
 from (values
-  ('Balayage',    'balayage',    1, 'Balayage',                 'Lucía Marín',   10),
-  ('Balayage',    'balayage',    2, 'Balayage',                 'Lucía Marín',   20),
-  ('Mechas',      'mechas',      1, 'Mechas',                   'Lucía Marín',   30),
-  ('Color',       'color',       1, 'Color',                    'Carmen Ortega', 40),
-  ('Corte',       'corte',       1, 'Corte mujer',              'Carmen Ortega', 50),
-  ('Corte',       'corte',       2, 'Corte mujer',              'Carmen Ortega', 60),
-  ('Peinado',     'peinado',     1, 'Peinado de evento',        'Carmen Ortega', 70),
-  ('Tratamiento', 'tratamiento', 1, 'Tratamiento de keratina',  'Irene Solís',   80)
-) as m (technique, slug, n, service_name, stylist_name, sort_order)
+  ('Balayage',    'balayage',    1, 'Balayage',                 'Lucía Marín',   10,
+   'Antes: cabello castaño oscuro, largo y de un solo tono, visto de espaldas',
+   'Después: el mismo cabello con balayage color miel y caramelo, ondulado y luminoso'),
+  ('Mechas',      'mechas',      1, 'Mechas',                   'Lucía Marín',   20,
+   'Antes: cabello castaño muy oscuro y liso, sin matices',
+   'Después: el mismo cabello con mechas rubio dorado y ondas suaves'),
+  ('Color',       'color',       1, 'Color',                    'Carmen Ortega', 30,
+   'Antes: cabello de color naranja desigual y apagado',
+   'Después: el mismo cabello con color cobrizo uniforme, brillante y ondulado'),
+  ('Corte',       'corte',       1, 'Corte mujer',              'Carmen Ortega', 40,
+   'Antes: melena larga, lisa y sin forma',
+   'Después: la misma melena con corte en capas y ondas, con movimiento'),
+  ('Corte',       'corte',       2, 'Corte mujer',              'Carmen Ortega', 50,
+   'Antes: melena larga, encrespada y con las puntas abiertas',
+   'Después: bob desfilado a la altura de la mandíbula, ligero y ondulado'),
+  ('Peinado',     'peinado',     1, 'Peinado de evento',        'Carmen Ortega', 60,
+   'Antes: cabello largo, liso y suelto',
+   'Después: el mismo cabello peinado con ondas marcadas de estilo clásico para un evento'),
+  ('Tratamiento', 'tratamiento', 1, 'Tratamiento de keratina',  'Irene Solís',   70,
+   'Antes: cabello encrespado, con volumen y sin brillo',
+   'Después: el mismo cabello liso, sedoso y brillante tras el tratamiento de keratina')
+) as m (technique, slug, n, service_name, stylist_name, sort_order, alt_before, alt_after)
 join public.services sv on sv.name = m.service_name
 join public.stylists st on st.name = m.stylist_name;

@@ -7,7 +7,7 @@ en la página de origen antes de publicar.
 | Archivo | Uso | Origen | Autor | Licencia | Fecha | Notas |
 |---|---|---|---|---|---|---|
 | `public/images/hero-inicio.jpg` | Hero de la home | [Pexels: Curly Haired Woman with Crocodile Hair Clip](https://www.pexels.com/photo/curly-haired-woman-with-crocodile-hair-clip-7755215/) | RDNE Stock project | Pexels «Free» (atribución no obligatoria; VERIFICAR en [pexels.com/license](https://www.pexels.com/license/)) | 2026-10-19 | Descargada reducida a 2000 px de ancho (`auto=compress&cs=tinysrgb&w=2000`), 2000×1333 px, 224 KB. Original 6720×4480 px |
-| `public/images/galeria/galeria-*-antes.jpg` y `-despues.jpg` (16 archivos) | Galería antes/después de la home | Generadas por `scripts/make-gallery-placeholders.mjs` | Proyecto (sin terceros) | Propia: formas y degradados, sin fotos ni material de terceros | 2026-10-22 | **Provisionales**: rotuladas «Imagen provisional». Se sustituyen por imágenes generadas con IA (ver más abajo) antes de publicar |
+| `public/images/galeria/galeria-*-antes.webp` y `-despues.webp` (14 archivos) | Galería antes/después de la home (7 pares) | Generadas con IA por el autor del proyecto (herramienta y modelo: **VERIFICAR**, anotar aquí) | Proyecto (sin terceros) | Imágenes generadas: **VERIFICAR** los términos de la herramienta usada antes de publicar | 2026-10-24 | Originales cuadrados de 2048×2048 px (fuera del repo); optimizadas con `scripts/optimize-gallery.mjs` a WebP de 1000×1000 px, 62–96 KB cada una (1,1 MB en total). Ninguna muestra el rostro. La web las marca «Imagen generada con IA» |
 
 ## Reglas
 
@@ -20,18 +20,17 @@ en la página de origen antes de publicar.
 
 ## Galería antes/después (T-011)
 
-Hoy hay **8 pares provisionales** (`public/images/galeria/galeria-<técnica>-<n>-antes.jpg` y `-despues.jpg`,
-16 KB–21 KB cada una): ilustraciones rotuladas «Imagen provisional», generadas con
-`node scripts/make-gallery-placeholders.mjs`. **No son fotos de trabajos reales y se sustituyen antes de publicar.**
+Desde T-031 hay **7 pares generados con IA** (`galeria-<técnica>-<n>-antes.webp` y `-despues.webp`, WebP cuadrado de 1000×1000 px, ≤ 120 KB cada uno). Ya no hay ilustraciones provisionales. **No son fotos de trabajos reales.**
 
-### Cómo sustituirlas por imágenes generadas con IA
+### Cómo cambiar o añadir imágenes (script de optimización)
 
-1. Genera cada par con el prompt de la tabla (misma persona, misma luz y encuadre en las dos imágenes; formato
-   4:3, ≥ 1200×900 px; ≤ 120 KB cada una tras comprimir, PLAN-001 5a).
-2. Copia los archivos a `public/images/galeria/` con el nombre `galeria-<técnica>-<n>-antes` / `-despues` y la
-   extensión real (`.jpg`, `.webp` o `.avif`).
-3. Actualiza `before_path`, `after_path`, `alt_before` y `alt_after` de esa fila en `supabase/seed.sql` (en
-   producción, en la tabla `gallery_items`) y `pnpm exec supabase db reset` en local. pon `ai_generated` en `true` (la web mostrará «Imagen generada con IA»). En la semilla está en `false` porque las provisionales no son de IA.
+1. Genera cada par con el prompt de la tabla (misma persona, misma luz y encuadre en las dos imágenes; cuadradas, ≥ 1000×1000 px,
+   sin rostro identificable). Guárdalas fuera del repo como `<nombre>-antes.jpg` y `<nombre>-despues.jpg`.
+2. Si hay pares nuevos, añádelos a `PAIRS` de `scripts/optimize-gallery.mjs` (original → `<técnica>-<n>`) y ejecuta
+   `node scripts/optimize-gallery.mjs <carpeta con los originales>`: recorta al centro, reduce a 1000×1000 px y guarda WebP
+   ≤ 120 KB en `public/images/galeria/`.
+3. Actualiza o añade la fila de `gallery_items` (rutas, `alt_before`, `alt_after` y `ai_generated = true`) en
+   `supabase/seed.sql`, y en el proyecto alojado con una consulta; en local, `pnpm run db:reset:local`.
 4. Anota aquí cada archivo definitivo (herramienta, fecha y prompt usados).
 
 Las imágenes generadas con IA se muestran en la web como «Imagen generada con IA».

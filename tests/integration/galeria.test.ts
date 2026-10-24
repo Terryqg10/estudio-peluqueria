@@ -32,14 +32,14 @@ describe('galería: gallery_items', () => {
     await cleanup();
   });
 
-  it('la semilla deja trabajos públicos de varias técnicas, con imágenes provisionales bajo /images/galeria/', async () => {
+  it('la semilla deja trabajos públicos de varias técnicas, con imágenes generadas con IA bajo /images/galeria/', async () => {
     const { data, error } = await anonClient().from('gallery_items').select('technique, before_path, after_path, ai_generated');
     expect(error).toBeNull();
     expect(new Set((data ?? []).map((r) => r.technique)).size).toBeGreaterThanOrEqual(3);
     for (const r of data ?? []) {
       expect(r.before_path.startsWith('/images/galeria/')).toBe(true);
       expect(r.after_path.startsWith('/images/galeria/')).toBe(true);
-      expect(r.ai_generated).toBe(false); // provisionales (no IA) hasta que se sustituyan
+      expect(r.ai_generated).toBe(true); // imágenes generadas con IA (T-031): la web las marca como tales
     }
   });
 

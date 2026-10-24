@@ -92,8 +92,8 @@ export function GallerySection({ gallery, selected }: Props) {
                         <Image
                           src={photo.src}
                           alt={photo.alt}
-                          width={1200}
-                          height={900}
+                          width={1000}
+                          height={1000}
                           sizes="(min-width: 1024px) 22vw, (min-width: 768px) 40vw, 100vw"
                           className="h-auto w-full rounded-card"
                         />

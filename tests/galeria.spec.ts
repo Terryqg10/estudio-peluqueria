@@ -90,8 +90,8 @@ test.describe('galería antes/después (CA-02)', () => {
       await expect(img).toHaveAttribute('alt', /.{5,}/);
       await expect(img).toHaveAttribute('srcset', /.+/);
       await expect(img).toHaveAttribute('sizes', /.+/);
-      await expect(img).toHaveAttribute('width', '1200');
-      await expect(img).toHaveAttribute('height', '900');
+      await expect(img).toHaveAttribute('width', '1000');
+      await expect(img).toHaveAttribute('height', '1000');
     }
 
     // Móvil: una imagen debajo de la otra. Escritorio: lado a lado.

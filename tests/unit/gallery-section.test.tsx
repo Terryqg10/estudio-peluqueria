@@ -72,8 +72,8 @@ describe('GallerySection (T-011, CA-02)', () => {
     expect(images).toHaveLength(6);
     for (const img of images) {
       expect(img.getAttribute('alt')).toMatch(/.{5,}/);
-      expect(img).toHaveAttribute('width', '1200');
-      expect(img).toHaveAttribute('height', '900');
+      expect(img).toHaveAttribute('width', '1000');
+      expect(img).toHaveAttribute('height', '1000');
       expect(img.getAttribute('sizes')).toBeTruthy();
     }
     expect(screen.getAllByText('Imagen generada con IA.')).toHaveLength(2);
