@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { startTransition, useActionState, useState } from 'react';
 import { TIME_OPTIONS, WEEKDAYS, type ScheduleRange } from '@/lib/admin/schedules';
 import { formatLongDate, formatSlotTime } from '@/lib/booking/dates';
+import { SELECT_BOX_CLASS, SelectBox } from '@/components/admin/select-box';
 import { ROUTES } from '@/lib/routes';
 import { saveScheduleAction, type ScheduleFormState } from './actions';
 
@@ -15,8 +16,6 @@ type Props = {
 
 type Row = { key: number; start: string; end: string };
 
-const SELECT_CLASS =
-  'min-h-11 w-full rounded-card border border-border bg-surface px-4 py-2 text-fg';
 const BUTTON_CLASS =
   'inline-flex min-h-11 items-center justify-center rounded-control px-4 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft disabled:opacity-40 disabled:hover:bg-transparent';
 
@@ -127,35 +126,39 @@ export function ScheduleForm({ scope, scopeLabel, initial }: Props) {
                         <label htmlFor={`s-${row.key}`} className="text-fg-muted">
                           Desde <span className="sr-only">({name.toLowerCase()})</span>
                         </label>
-                        <select
-                          id={`s-${row.key}`}
-                          value={row.start}
-                          onChange={(e) => update(day, row.key, { start: e.target.value })}
-                          className={`mt-1 ${SELECT_CLASS}`}
-                        >
-                          {TIME_OPTIONS.map((t) => (
-                            <option key={t} value={t}>
-                              {t}
-                            </option>
-                          ))}
-                        </select>
+                        <SelectBox>
+                          <select
+                            id={`s-${row.key}`}
+                            value={row.start}
+                            onChange={(e) => update(day, row.key, { start: e.target.value })}
+                            className={SELECT_BOX_CLASS}
+                          >
+                            {TIME_OPTIONS.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
+                            ))}
+                          </select>
+                        </SelectBox>
                       </div>
                       <div>
                         <label htmlFor={`e-${row.key}`} className="text-fg-muted">
                           Hasta <span className="sr-only">({name.toLowerCase()})</span>
                         </label>
-                        <select
-                          id={`e-${row.key}`}
-                          value={row.end}
-                          onChange={(e) => update(day, row.key, { end: e.target.value })}
-                          className={`mt-1 ${SELECT_CLASS}`}
-                        >
-                          {TIME_OPTIONS.map((t) => (
-                            <option key={t} value={t}>
-                              {t}
-                            </option>
-                          ))}
-                        </select>
+                        <SelectBox>
+                          <select
+                            id={`e-${row.key}`}
+                            value={row.end}
+                            onChange={(e) => update(day, row.key, { end: e.target.value })}
+                            className={SELECT_BOX_CLASS}
+                          >
+                            {TIME_OPTIONS.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
+                            ))}
+                          </select>
+                        </SelectBox>
                       </div>
                       <button
                         type="button"

@@ -6,7 +6,8 @@ import type { AgendaAppointment } from '@/lib/admin/load-week-agenda';
 
 // Una cita de la agenda. El detalle (teléfono, email) va en un <details>: se abre con teclado y sin
 // JavaScript. El estado se dice con texto, no solo con color.
-export function AppointmentBlock({ appointment }: { appointment: AgendaAppointment }) {
+// `compact` (rejilla semanal de ≥ 1280 px, T-033): menos relleno y texto más pequeño para que la hora no se parta en dos líneas.
+export function AppointmentBlock({ appointment, compact = false }: { appointment: AgendaAppointment; compact?: boolean }) {
   const cancelled = appointment.status === 'cancelled';
   return (
     <details
@@ -14,8 +15,8 @@ export function AppointmentBlock({ appointment }: { appointment: AgendaAppointme
       data-status={appointment.status}
       className="break-words rounded-card border border-border-strong bg-surface text-left"
     >
-      <summary className="min-h-11 cursor-pointer list-none px-3 py-2">
-        <span className="block font-semibold">
+      <summary className={`min-h-11 cursor-pointer list-none ${compact ? 'px-2 py-1.5 text-sm' : 'px-3 py-2'}`}>
+        <span className="block whitespace-nowrap font-semibold">
           {formatSlotTime(appointment.startsAt)}–{formatSlotTime(appointment.endsAt)}
         </span>
         <span className={`block ${cancelled ? 'line-through' : ''}`}>{appointment.clientName}</span>

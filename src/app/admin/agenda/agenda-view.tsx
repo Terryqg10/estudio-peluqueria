@@ -31,7 +31,7 @@ function WeekGrid({ stylists, appointments, days }: Pick<Props, 'stylists' | 'ap
       <caption className="sr-only">Agenda de la semana por estilista</caption>
       <thead>
         <tr>
-          <th scope="col" className="w-28 text-left">
+          <th scope="col" className="w-24 text-left">
             Estilista
           </th>
           {days.map((date) => {
@@ -53,11 +53,11 @@ function WeekGrid({ stylists, appointments, days }: Pick<Props, 'stylists' | 'ap
             {days.map((date) => {
               const cell = forCell(appointments, stylist.id, date);
               return (
-                <td key={date} className="rounded-card bg-surface-muted p-2">
+                <td key={date} className="rounded-card bg-surface-muted p-1.5">
                   <div className="space-y-2">
                     {cell.length === 0 ? <Empty quiet={quiet} /> : null}
                     {cell.map((a) => (
-                      <AppointmentBlock key={a.id} appointment={a} />
+                      <AppointmentBlock key={a.id} appointment={a} compact />
                     ))}
                   </div>
                 </td>

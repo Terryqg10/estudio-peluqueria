@@ -104,6 +104,35 @@ test.describe('demo del panel (T-027, T-028)', () => {
     }
   });
 
+  test('demo-pulido (T-033): chevron propio en los selects y la hora de cada cita cabe en una línea a 1280 px', async ({
+    page,
+  }) => {
+    await enterPanel(page);
+    await page.goto('/admin/horarios');
+    const select = page.locator('select').first();
+    await expect(select).toBeVisible();
+    const { appearance, paddingRight } = await select.evaluate((el) => {
+      const style = getComputedStyle(el);
+      return { appearance: style.appearance, paddingRight: parseFloat(style.paddingRight) };
+    });
+    expect(appearance).toBe('none');
+    expect(paddingRight).toBeGreaterThanOrEqual(40);
+    await expect(select.locator('xpath=following-sibling::*[local-name()="svg"]')).toHaveCount(1);
+
+    const appointment = await createAppointmentWithToken();
+    try {
+      await page.setViewportSize({ width: 1280, height: 900 });
+      const day = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).format(new Date(appointment.startsAt));
+      await page.goto(`/admin/agenda?semana=${mondayOf(day)}&dia=${day}`);
+      const time = page.locator(`[data-view="week"] [data-appointment-id="${appointment.id}"] summary span`).first();
+      await expect(time).toBeVisible();
+      const box = await time.boundingBox();
+      expect(box?.height ?? 99, 'la hora no se parte en dos líneas').toBeLessThan(26);
+    } finally {
+      await deleteAppointment(appointment.id);
+    }
+  });
+
   test('demo-panel: pasa axe y no desborda de 320 a 1280 px', async ({ page }) => {
     test.setTimeout(120_000);
     await enterPanel(page);

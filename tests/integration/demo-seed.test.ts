@@ -24,6 +24,7 @@ const samples = async () => {
 
 describe('demo-seed (T-029)', () => {
   let visitorId = '';
+  let realBlockId = '';
   let demo: TestUser;
 
   beforeAll(async () => {
@@ -33,10 +34,18 @@ describe('demo-seed (T-029)', () => {
     const visitor = await insertAppointment({ stylistId, serviceId, start: daysFromNow(40, 10), guestName: 'Visitante Real' });
     visitorId = visitor.data?.id ?? '';
     expect(visitorId).not.toBe('');
+    const real = await service
+      .from('time_blocks')
+      .insert({ stylist_id: stylistId, kind: 'block', during: '[2031-03-04T10:00:00Z,2031-03-04T11:00:00Z)', note: 'Bloqueo real de prueba' })
+      .select('id')
+      .single();
+    realBlockId = real.data?.id ?? '';
+    expect(realBlockId).not.toBe('');
   });
 
   afterAll(async () => {
     seed('--local', '--clean');
+    if (realBlockId) await service.from('time_blocks').delete().eq('id', realBlockId);
     await cleanup();
   });
 
@@ -83,11 +92,28 @@ describe('demo-seed (T-029)', () => {
     expect(asDemo.data?.[0]?.guest_name).not.toContain('•');
   });
 
+  it('crea vacaciones y un bloqueo de ejemplo, que la cuenta demo ve, y no toca un bloqueo real', async () => {
+    const run = seed('--local');
+    expect(run.status, run.stderr).toBe(0);
+    const blocks = await service.from('time_blocks').select('id, kind, note').like('note', '%(ejemplo)');
+    expect((blocks.data ?? []).map((b) => b.kind).sort()).toEqual(['block', 'vacation']);
+
+    const asDemo = await demo.client.from('time_blocks').select('id').in('id', (blocks.data ?? []).map((b) => b.id));
+    expect(asDemo.data).toHaveLength(2);
+
+    // Repetirlo no los duplica y el bloqueo real sigue ahí.
+    expect(seed('--local').status).toBe(0);
+    expect((await service.from('time_blocks').select('id').like('note', '%(ejemplo)')).data).toHaveLength(2);
+    expect((await service.from('time_blocks').select('id').eq('id', realBlockId)).data).toHaveLength(1);
+  });
+
   it('--clean borra solo las de ejemplo', async () => {
     const run = seed('--local', '--clean');
     expect(run.status, run.stderr).toBe(0);
     expect(await samples()).toEqual([]);
     const visitor = await service.from('appointments').select('id').eq('id', visitorId);
     expect(visitor.data).toHaveLength(1);
+    expect((await service.from('time_blocks').select('id').like('note', '%(ejemplo)')).data).toEqual([]);
+    expect((await service.from('time_blocks').select('id').eq('id', realBlockId)).data).toHaveLength(1);
   });
 });

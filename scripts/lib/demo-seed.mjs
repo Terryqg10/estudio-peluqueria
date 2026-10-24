@@ -3,9 +3,12 @@
 
 const TIME_ZONE = 'Europe/Madrid';
 
-// Días respecto a hoy: de 3 atrás a 10 adelante (dos semanas de agenda con algo de histórico).
-export const FIRST_DAY_OFFSET = -3;
-export const LAST_DAY_OFFSET = 10;
+// Días respecto a hoy: de 1 atrás a 13 adelante (dos semanas de agenda, casi toda por venir: T-032).
+export const FIRST_DAY_OFFSET = -1;
+export const LAST_DAY_OFFSET = 13;
+
+// Los bloqueos y vacaciones de ejemplo llevan esta marca en la nota: es lo que permite borrarlos sin tocar los reales.
+export const SAMPLE_NOTE_MARK = '(ejemplo)';
 
 const NAMES = [
   'Marta Beltrán Ruiz',
@@ -125,4 +128,37 @@ export function planSampleAppointments({ today, stylists }) {
     });
   }
   return plan;
+}
+
+// Vacaciones y un bloqueo de franja de ejemplo (T-032), para que el panel enseñe «Bloqueos y vacaciones». Puro y determinista.
+// Las vacaciones (7 días, de 16 a 22 días vista) no coinciden con ninguna cita de ejemplo (llegan hasta +13); el bloqueo (14:00–16:00
+// de un día laborable cercano) cae entre la mañana y la tarde de las citas de ejemplo.
+export function planSampleBlocks({ today, stylists }) {
+  const blocks = [];
+  const vacationStylist = stylists[1] ?? stylists[0];
+  if (vacationStylist) {
+    const from = addDays(today, 16);
+    const to = addDays(today, 22);
+    blocks.push({
+      stylistId: vacationStylist.id,
+      kind: 'vacation',
+      startsAt: madridToUtcIso(from, '00:00'),
+      endsAt: madridToUtcIso(addDays(to, 1), '00:00'),
+      note: `Vacaciones de verano ${SAMPLE_NOTE_MARK}`,
+    });
+  }
+
+  const blockStylist = stylists[0];
+  if (blockStylist) {
+    let date = addDays(today, 4);
+    while (weekdayOf(date) === 0 || weekdayOf(date) === 6) date = addDays(date, 1); // laborable (lunes a viernes)
+    blocks.push({
+      stylistId: blockStylist.id,
+      kind: 'block',
+      startsAt: madridToUtcIso(date, '14:00'),
+      endsAt: madridToUtcIso(date, '16:00'),
+      note: `Formación ${SAMPLE_NOTE_MARK}`,
+    });
+  }
+  return blocks;
 }

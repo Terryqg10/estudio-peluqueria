@@ -4,6 +4,7 @@ import {
   LAST_DAY_OFFSET,
   madridToUtcIso,
   planSampleAppointments,
+  planSampleBlocks,
   type SampleStylist,
 } from '../../scripts/lib/demo-seed.mjs';
 
@@ -14,7 +15,7 @@ const STYLISTS: SampleStylist[] = [
   { id: 's2', name: 'Carmen', services: [svc('c', 'Corte', 45), svc('p', 'Peinado', 30), svc('pe', 'Peinado de evento', 60)] },
   { id: 's3', name: 'Irene', services: [svc('k', 'Keratina', 150), svc('h', 'Hidratante', 30)] },
 ];
-const TODAY = '2026-10-26'; // lunes
+const TODAY = '2026-10-28'; // miércoles
 
 const plan = planSampleAppointments({ today: TODAY, stylists: STYLISTS });
 const startMs = (a: (typeof plan)[number]) => new Date(madridToUtcIso(a.date, a.time)).getTime();
@@ -28,10 +29,11 @@ describe('planSampleAppointments (T-029)', () => {
   it('genera citas en el rango de días previsto y ninguna en domingo', () => {
     expect(plan.length).toBeGreaterThan(20);
     const days = new Set(plan.map((a) => a.date));
-    expect(days.has('2026-10-23')).toBe(true); // 3 días atrás
-    expect(days.has('2026-11-05')).toBe(true); // 10 días adelante
-    expect(FIRST_DAY_OFFSET).toBe(-3);
-    expect(LAST_DAY_OFFSET).toBe(10);
+    expect(days.has('2026-10-27')).toBe(true); // 1 día atrás
+    expect(days.has('2026-11-10')).toBe(true); // 13 días adelante
+    expect([...days].every((d) => d >= '2026-10-27' && d <= '2026-11-10')).toBe(true);
+    expect(FIRST_DAY_OFFSET).toBe(-1);
+    expect(LAST_DAY_OFFSET).toBe(13);
     for (const a of plan) {
       const [y, m, d] = a.date.split('-').map(Number);
       expect(new Date(Date.UTC(y ?? 0, (m ?? 1) - 1, d)).getUTCDay(), a.date).not.toBe(0);
@@ -106,5 +108,45 @@ describe('madridToUtcIso', () => {
     expect(madridToUtcIso('2026-10-25', '10:00')).toBe('2026-10-25T09:00:00.000Z'); // ya en invierno
     expect(madridToUtcIso('2026-10-24', '10:00')).toBe('2026-10-24T08:00:00.000Z'); // aún en verano
     expect(madridToUtcIso('2026-03-29', '16:00')).toBe('2026-03-29T14:00:00.000Z'); // ya en verano
+  });
+});
+
+describe('planSampleBlocks (T-032)', () => {
+  const blocks = planSampleBlocks({ today: TODAY, stylists: STYLISTS });
+
+  it('es determinista y crea unas vacaciones y un bloqueo, ambos marcados como ejemplo', () => {
+    expect(planSampleBlocks({ today: TODAY, stylists: STYLISTS })).toEqual(blocks);
+    expect(blocks.map((b) => b.kind).sort()).toEqual(['block', 'vacation']);
+    for (const b of blocks) expect(b.note.endsWith('(ejemplo)')).toBe(true);
+  });
+
+  it('las vacaciones duran 7 días completos, empiezan pasados los días de las citas de ejemplo y no pisan ninguna', () => {
+    const vacation = blocks.find((b) => b.kind === 'vacation');
+    expect(vacation).toBeTruthy();
+    if (!vacation) return;
+    const days = (new Date(vacation.endsAt).getTime() - new Date(vacation.startsAt).getTime()) / 86400000;
+    expect(days).toBeGreaterThanOrEqual(6.95);
+    expect(days).toBeLessThanOrEqual(7.05);
+    const lastAppointment = Math.max(...plan.map((a) => endMs(a)));
+    expect(new Date(vacation.startsAt).getTime()).toBeGreaterThan(lastAppointment);
+  });
+
+  it('el bloqueo cae en un día laborable de 14:00 a 16:00 y no solapa ninguna cita de ejemplo de esa estilista', () => {
+    const block = blocks.find((b) => b.kind === 'block');
+    expect(block).toBeTruthy();
+    if (!block) return;
+    const start = new Date(block.startsAt).getTime();
+    const end = new Date(block.endsAt).getTime();
+    expect((end - start) / 3600000).toBe(2);
+    const day = new Date(start).getUTCDay();
+    expect(day).toBeGreaterThanOrEqual(1);
+    expect(day).toBeLessThanOrEqual(5);
+    for (const a of plan.filter((x) => x.stylistId === block.stylistId)) {
+      expect(endMs(a) <= start || startMs(a) >= end, `${a.date} ${a.time}`).toBe(true);
+    }
+  });
+
+  it('sin estilistas no genera nada', () => {
+    expect(planSampleBlocks({ today: TODAY, stylists: [] })).toEqual([]);
   });
 });

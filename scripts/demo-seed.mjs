@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Citas de ejemplo de la demo (T-029, ADR-0036). Borra las citas `is_sample` y crea otras nuevas alrededor de hoy;
-// nunca toca citas de visitantes. Necesita el catálogo (estilistas, servicios y quién hace qué) ya cargado.
+// Citas, vacaciones y bloqueos de ejemplo de la demo (T-029, T-032, ADR-0036). Borra las citas `is_sample` y los bloqueos con la marca
+// «(ejemplo)» en la nota y crea otros nuevos alrededor de hoy; nunca toca citas de visitantes ni bloqueos reales. Necesita el catálogo (estilistas, servicios y quién hace qué) ya cargado.
 // Cross-platform (Node, sin sh/bash).
 //
 //   pnpm demo:seed --local     Supabase local (lee la URL y la clave de `supabase status`)
@@ -13,7 +13,7 @@ import { spawnSync } from 'node:child_process';
 import process from 'node:process';
 import { createClient } from '@supabase/supabase-js';
 import { isLocalUrl } from './lib/local-db.mjs';
-import { madridToUtcIso, planSampleAppointments } from './lib/demo-seed.mjs';
+import { SAMPLE_NOTE_MARK, madridToUtcIso, planSampleAppointments, planSampleBlocks } from './lib/demo-seed.mjs';
 
 function out(msg) { process.stdout.write(`[demo-seed] ${msg}\n`); }
 function fail(msg) { process.stderr.write(`[demo-seed] x ${msg}\n`); process.exit(1); }
@@ -54,6 +54,9 @@ async function main() {
   const removed = await client.from('appointments').delete().eq('is_sample', true).select('id');
   if (removed.error) fail(`No se pudieron borrar las citas de ejemplo: ${removed.error.message}`);
   out(`Citas de ejemplo borradas: ${removed.data.length}`);
+  const removedBlocks = await client.from('time_blocks').delete().like('note', `%${SAMPLE_NOTE_MARK}`).select('id');
+  if (removedBlocks.error) fail(`No se pudieron borrar los bloqueos de ejemplo: ${removedBlocks.error.message}`);
+  out(`Bloqueos de ejemplo borrados: ${removedBlocks.data.length}`);
   if (clean) return;
 
   const [stylists, services, links] = await Promise.all([
@@ -107,6 +110,18 @@ async function main() {
     }
   }
   out(`Citas de ejemplo creadas: ${created} (omitidas por solape: ${skipped}), con ${notes} notas.`);
+
+  const blocks = planSampleBlocks({ today: madridToday(), stylists: stylists.data.map((st) => ({ id: st.id })) });
+  for (const block of blocks) {
+    const inserted = await client.from('time_blocks').insert({
+      stylist_id: block.stylistId,
+      kind: block.kind,
+      during: `[${block.startsAt},${block.endsAt})`,
+      note: block.note,
+    });
+    if (inserted.error) fail(`No se pudo crear un bloqueo de ejemplo: ${inserted.error.message}`);
+  }
+  out(`Bloqueos y vacaciones de ejemplo creados: ${blocks.length}.`);
 }
 
 main().catch((e) => fail(e instanceof Error ? e.message : String(e)));

@@ -62,7 +62,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Searc
     <section>
       <h1 className="font-display text-display font-semibold">Agenda</h1>
 
-      <nav aria-label="Semanas" className="mt-4 flex flex-wrap items-center gap-2">
+      <nav aria-label="Semanas" className="-ml-4 mt-4 flex flex-wrap items-center gap-2">
         {canPrev ? (
           <Link href={weekHref(ROUTES.adminAgenda, prev)} className={NAV_LINK} rel="prev">
             Semana anterior
