@@ -283,7 +283,7 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-028 | Cuenta demo (interfaz): aviso de modo solo lectura y acciones deshabilitadas en el panel (ADR-0036) | CA-48 |
 | T-029 | Datos de ejemplo de la demo: catálogo ficticio en el Supabase alojado y citas de ejemplo regenerables (`pnpm demo:seed`) | — |
 | T-013a | CI bloqueante en GitHub Actions: Supabase local en el runner, audit con lista blanca (ADR-0008 y ADR-0023) y e2e en 4 fragmentos. ADR-0025 | RNF-09 |
-| T-013b | Keep-alive semanal de Supabase (necesita el proyecto alojado y secretos de GitHub; borrador) | CA-35 |
+| T-013b | Keep-alive de Supabase diario (3 lecturas de la Data API con la clave pública, GitHub Secrets; ADR-0037) | CA-35 |
 | T-014 | Estabilizar los tests de tiempo-real (flaky bajo carga; anotada al cerrar T-005c) | — |
 | T-015 | Deadlock de `create_booking` y la reprogramación bajo reservas simultáneas al mismo hueco (defecto; borrador) | CA-08 |
 | T-016 | Mantenimiento: actualizar Vitest y Vite y cerrar la excepción de `pnpm audit` (ADR-0008 y ADR-0023); antes de publicar | — |

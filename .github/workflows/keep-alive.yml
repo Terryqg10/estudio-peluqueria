@@ -1,0 +1,33 @@
+name: Keep-alive de Supabase
+
+# T-013b (ADR-0037, RNF-10, CA-35). El plan gratuito de Supabase pausa los proyectos sin actividad de base de datos en una
+# semana: cada día se hacen 3 lecturas reales de la Data API con la clave pública. La URL y la clave pública viven en
+# GitHub Secrets (SUPABASE_URL, SUPABASE_ANON_KEY); nunca en el repo. Si falla, el workflow falla y GitHub avisa.
+# Nota: GitHub desactiva los workflows programados de un repositorio público tras 60 días sin actividad (VERIFICAR).
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  keep-alive:
+    name: Lecturas de actividad
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Keep-alive
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: node scripts/keep-alive.mjs
