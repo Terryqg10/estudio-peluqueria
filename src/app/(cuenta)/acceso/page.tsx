@@ -5,6 +5,7 @@ import { isAdminSession } from '@/lib/account/require-admin';
 import { createAuthClient } from '@/lib/supabase/auth-server';
 import { LINK_ROW_CLASS, PageWithAside, TEXT_LINK_CLASS } from '@/components/layout/page-with-aside';
 import { ROUTES } from '@/lib/routes';
+import { DemoNotice } from '@/components/demo/demo-notice';
 import { LoginForm } from './login-form';
 
 export const metadata: Metadata = {
@@ -36,6 +37,7 @@ export default async function AccesoPage({
       <p className="mt-3 max-w-prose text-fg-muted">
         Escribe tu email y te enviaremos un enlace para entrar. Sin contraseña.
       </p>
+      <DemoNotice className="mt-6 max-w-prose" />
       <LoginForm />
       <div className={`mt-8 ${LINK_ROW_CLASS}`}>
         <Link href={ROUTES.reservar} className={TEXT_LINK_CLASS}>

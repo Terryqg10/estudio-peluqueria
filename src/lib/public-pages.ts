@@ -10,6 +10,8 @@ export const PUBLIC_PAGES = [
   `${ROUTES.cita}/${'A'.repeat(43)}`, // enlace de cita no válido (la vista válida se prueba con un token real)
   ROUTES.acceso,
   ROUTES.borrarDatos,
+  ROUTES.avisoLegal, // aviso de demostración (ADR-0038)
+  ROUTES.privacidad, // privacidad de la demo (ADR-0038)
   `${ROUTES.borrarDatosConfirmar}?token=${'A'.repeat(43)}`, // vista de confirmar con enlace de forma válida
   ROUTES.adminAgenda, // sin sesión redirige a /acceso
   ROUTES.adminServicios, // sin sesión redirige a /acceso

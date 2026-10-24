@@ -1,6 +1,7 @@
 'use client';
 
 import { useId, useRef, useState, type FormEvent } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { AvailabilitySlot } from '@/lib/availability/schema';
 import { CONSENT_TEXT } from '@/lib/booking/consent';
@@ -230,6 +231,13 @@ export function BookingForm({
           />
           <span>{CONSENT_TEXT}</span>
         </label>
+        <p className="mt-2 text-fg-muted">
+          Es una demo: usa datos ficticios.{' '}
+          <Link href={ROUTES.privacidad} className="font-semibold text-accent-text">
+            Qué guarda esta demo
+          </Link>
+          .
+        </p>
         {errors.consent ? (
           <p id={id('consent-error')} className="mt-1 text-danger">
             {errors.consent}

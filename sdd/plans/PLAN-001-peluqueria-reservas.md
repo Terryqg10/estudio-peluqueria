@@ -282,6 +282,7 @@ Propuesta de orden (cada una es atómica y se crea con `/new-task`):
 | T-027 | Cuenta demo (acceso): botón «Probar el panel», sesión de 1 hora y límite por IP (ADR-0036) | CA-48, CA-51 |
 | T-028 | Cuenta demo (interfaz): aviso de modo solo lectura y acciones deshabilitadas en el panel (ADR-0036) | CA-48 |
 | T-029 | Datos de ejemplo de la demo: catálogo ficticio en el Supabase alojado y citas de ejemplo regenerables (`pnpm demo:seed`) | — |
+| T-030 | Páginas de demostración y privacidad, y avisos de datos ficticios (ADR-0038) | CA-52, CA-53 |
 | T-013a | CI bloqueante en GitHub Actions: Supabase local en el runner, audit con lista blanca (ADR-0008 y ADR-0023) y e2e en 4 fragmentos. ADR-0025 | RNF-09 |
 | T-013b | Keep-alive de Supabase diario (3 lecturas de la Data API con la clave pública, GitHub Secrets; ADR-0037) | CA-35 |
 | T-014 | Estabilizar los tests de tiempo-real (flaky bajo carga; anotada al cerrar T-005c) | — |

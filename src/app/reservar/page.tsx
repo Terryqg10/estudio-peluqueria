@@ -5,6 +5,7 @@ import { getBookingAccount } from '@/lib/booking/booking-account';
 import { todayInMadrid } from '@/lib/booking/dates';
 import { loadBookingData } from '@/lib/booking/load-booking-data';
 import { ROUTES } from '@/lib/routes';
+import { DemoNotice } from '@/components/demo/demo-notice';
 import { BookingFlow } from './booking-flow';
 
 export const metadata: Metadata = {
@@ -40,6 +41,7 @@ export default async function ReservarPage({
       <p className="mt-3 max-w-prose text-fg-muted">
         Elige servicio, estilista, día y hora. Las horas son las libres ahora mismo.
       </p>
+      <DemoNotice className="mt-6 max-w-prose" />
 
       <noscript>
         <p className="mt-6 rounded-card bg-surface p-5 shadow-card">

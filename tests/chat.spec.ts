@@ -38,18 +38,23 @@ test.describe('chat de ayuda', () => {
     await page.setViewportSize({ width: 375, height: 800 });
     await page.goto('/');
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    const overlaps = await page.evaluate(() => {
-      const button = document.querySelector('button[aria-label="Abrir chat de ayuda"]');
-      if (!button) return ['sin botón'];
-      const b = button.getBoundingClientRect();
-      return Array.from(document.querySelectorAll('footer a, footer p'))
-        .filter((el) => {
-          const r = el.getBoundingClientRect();
-          return r.width > 0 && r.left < b.right && r.right > b.left && r.top < b.bottom && r.bottom > b.top;
-        })
-        .map((el) => el.textContent ?? '');
-    });
-    expect(overlaps).toEqual([]);
+    // El botón sube sobre el pie al recibir el evento de scroll (T-025): se espera a que se asiente, no se mide en el mismo
+    // instante del desplazamiento.
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const button = document.querySelector('button[aria-label="Abrir chat de ayuda"]');
+          if (!button) return ['sin botón'];
+          const b = button.getBoundingClientRect();
+          return Array.from(document.querySelectorAll('footer a, footer p'))
+            .filter((el) => {
+              const r = el.getBoundingClientRect();
+              return r.width > 0 && r.left < b.right && r.right > b.left && r.top < b.bottom && r.bottom > b.top;
+            })
+            .map((el) => el.textContent ?? '');
+        }),
+      )
+      .toEqual([]);
 
     // Abre un diálogo.
     await fab(page).click();

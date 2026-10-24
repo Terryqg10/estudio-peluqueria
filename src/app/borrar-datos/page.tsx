@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LINK_ROW_CLASS, PageWithAside, TEXT_LINK_CLASS } from '@/components/layout/page-with-aside';
 import { ROUTES } from '@/lib/routes';
+import { DemoNotice } from '@/components/demo/demo-notice';
 import { DeletionForm } from './deletion-form';
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function BorrarDatosPage() {
         Escribe el email con el que reservaste y te enviaremos un enlace para confirmar el borrado de tus datos
         personales. Si tienes una cuenta, puedes borrarla desde «Mis citas».
       </p>
+      <DemoNotice className="mt-6 max-w-prose" />
       <DeletionForm />
       <div className={`mt-8 ${LINK_ROW_CLASS}`}>
         <Link href={ROUTES.misCitas} className={TEXT_LINK_CLASS}>

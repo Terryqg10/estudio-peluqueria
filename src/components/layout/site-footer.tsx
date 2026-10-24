@@ -7,7 +7,7 @@ const FOOTER_LINK =
   'inline-flex min-h-11 items-center text-fg transition-colors duration-(--duration-fast) hover:text-accent-text';
 
 // Pie en tres columnas desde `sm` (T-023): marca y contacto, navegación y datos personales. Solo enlaza páginas que
-// existen: el aviso legal y la política de privacidad se añadirán cuando haya texto legal (VERIFICAR).
+// existen. Desde T-030 (ADR-0038) enlaza el aviso de demostración y la privacidad, y dice que es un proyecto de portfolio.
 export function SiteFooter() {
   const { address, phoneDisplay, phoneHref } = SITE.contact;
   return (
@@ -41,8 +41,21 @@ export function SiteFooter() {
                 Borrar mis datos
               </Link>
             </li>
+            <li>
+              <Link href={ROUTES.privacidad} className={FOOTER_LINK}>
+                Privacidad
+              </Link>
+            </li>
+            <li>
+              <Link href={ROUTES.avisoLegal} className={FOOTER_LINK}>
+                Aviso de demostración
+              </Link>
+            </li>
           </ul>
         </nav>
+      </div>
+      <div className="mx-auto w-full max-w-6xl px-(--layout-gutter)">
+        <p className="border-t border-border py-4 text-fg-muted">{SITE.demo.footerNotice}</p>
       </div>
     </footer>
   );
