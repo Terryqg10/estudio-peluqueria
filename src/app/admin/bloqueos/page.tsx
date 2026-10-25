@@ -1,28 +1,23 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { requirePanel } from "@/lib/account/require-admin";
-import { AdminTwoColumns, SummaryCard } from "@/components/admin/two-columns";
-import { loadUpcomingBlocks, type TimeBlockRow } from "@/lib/admin/time-blocks";
-import {
-  formatLongDate,
-  formatSlotTime,
-  madridDateOf,
-  todayInMadrid,
-} from "@/lib/booking/dates";
-import { ROUTES } from "@/lib/routes";
-import { removeBlockAction } from "./actions";
-import { BlockForm } from "./block-form";
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { requirePanel } from '@/lib/account/require-admin';
+import { AdminTwoColumns, SummaryCard } from '@/components/admin/two-columns';
+import { loadUpcomingBlocks, type TimeBlockRow } from '@/lib/admin/time-blocks';
+import { formatLongDate, formatSlotTime, madridDateOf, todayInMadrid } from '@/lib/booking/dates';
+import { ROUTES } from '@/lib/routes';
+import { removeBlockAction } from './actions';
+import { BlockForm } from './block-form';
 
-export const metadata: Metadata = { title: "Bloqueos y vacaciones" };
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: 'Bloqueos y vacaciones' };
+export const dynamic = 'force-dynamic';
 
 const LINK_CLASS =
-  "inline-flex min-h-11 items-center justify-center rounded-control px-4 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft";
+  'inline-flex min-h-11 items-center justify-center rounded-control px-4 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
 
 const NOTICES: Record<string, string> = {
-  creado: "Bloqueo creado.",
-  quitado: "Bloqueo quitado.",
-  error: "No hemos podido quitar el bloqueo. Inténtalo de nuevo.",
+  creado: 'Bloqueo creado.',
+  quitado: 'Bloqueo quitado.',
+  error: 'No hemos podido quitar el bloqueo. Inténtalo de nuevo.',
 };
 
 type SearchParams = Promise<{ aviso?: string }>;
@@ -30,72 +25,51 @@ type SearchParams = Promise<{ aviso?: string }>;
 // «Del lunes 3 al viernes 7», «lunes 3 · 14:00–16:00»…
 function describe(block: TimeBlockRow): string {
   const first = madridDateOf(block.startsAt);
-  const last = madridDateOf(
-    new Date(new Date(block.endsAt).getTime() - 1).toISOString(),
-  );
-  if (block.kind === "vacation") {
-    return first === last
-      ? formatLongDate(first)
-      : `Del ${formatLongDate(first)} al ${formatLongDate(last)}`;
+  const last = madridDateOf(new Date(new Date(block.endsAt).getTime() - 1).toISOString());
+  if (block.kind === 'vacation') {
+    return first === last ? formatLongDate(first) : `Del ${formatLongDate(first)} al ${formatLongDate(last)}`;
   }
   return `${formatLongDate(first)} · ${formatSlotTime(block.startsAt)}–${formatSlotTime(block.endsAt)}`;
 }
 
-export default async function BlocksPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
+export default async function BlocksPage({ searchParams }: { searchParams: SearchParams }) {
   const admin = await requirePanel(); // un layout no basta (ADR-0022)
   const { aviso } = await searchParams;
   const [blocks, stylists] = await Promise.all([
     loadUpcomingBlocks(admin.client),
-    admin.client
-      .from("stylists")
-      .select("id, name")
-      .eq("active", true)
-      .order("name", { ascending: true }),
+    admin.client.from('stylists').select('id, name').eq('active', true).order('name', { ascending: true }),
   ]);
   const notice = aviso ? (NOTICES[aviso] ?? null) : null;
 
-  const vacations =
-    blocks === "error" ? 0 : blocks.filter((b) => b.kind === "vacation").length;
-  const slots = blocks === "error" ? 0 : blocks.length - vacations;
+  const vacations = blocks === 'error' ? 0 : blocks.filter((b) => b.kind === 'vacation').length;
+  const slots = blocks === 'error' ? 0 : blocks.length - vacations;
 
   return (
     <AdminTwoColumns
       aside={
-        blocks === "error" ? null : (
+        blocks === 'error' ? null : (
           <SummaryCard
             title="Resumen"
             items={[
-              { label: "Vacaciones próximas", value: String(vacations) },
-              { label: "Bloqueos de franja próximos", value: String(slots) },
+              { label: 'Vacaciones próximas', value: String(vacations) },
+              { label: 'Bloqueos de franja próximos', value: String(slots) },
             ]}
           />
         )
       }
     >
       <section className="max-w-3xl">
-        <h1 className="font-display text-display font-semibold">
-          Bloqueos y vacaciones
-        </h1>
+        <h1 className="font-display text-display font-semibold">Bloqueos y vacaciones</h1>
 
         {notice ? (
-          <p
-            role="status"
-            className="mt-4 rounded-card bg-accent-soft p-4 font-semibold text-fg"
-          >
+          <p role="status" className="mt-4 rounded-card bg-accent-soft p-4 font-semibold text-fg">
             {notice}
           </p>
         ) : null}
 
         <h2 className="mt-10 font-display text-2xl font-semibold">Próximos</h2>
-        {blocks === "error" ? (
-          <div
-            role="alert"
-            className="mt-4 rounded-card bg-accent-soft p-4 text-fg"
-          >
+        {blocks === 'error' ? (
+          <div role="alert" className="mt-4 rounded-card bg-accent-soft p-4 text-fg">
             <p>No hemos podido cargar los bloqueos.</p>
             <Link href={ROUTES.adminBloqueos} className={`${LINK_CLASS} mt-2`}>
               Reintentar
@@ -108,23 +82,14 @@ export default async function BlocksPage({
         ) : (
           <ul className="mt-4 space-y-3">
             {blocks.map((b) => (
-              <li
-                key={b.id}
-                data-block-id={b.id}
-                className="rounded-container bg-surface p-5 shadow-card"
-              >
+              <li key={b.id} data-block-id={b.id} className="rounded-container bg-surface p-5 shadow-card">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-semibold">
-                      {b.kind === "vacation" ? "Vacaciones" : "Bloqueo"} ·{" "}
-                      {b.stylistName}
+                      {b.kind === 'vacation' ? 'Vacaciones' : 'Bloqueo'} · {b.stylistName}
                     </p>
-                    <p className="text-fg-muted first-letter:uppercase">
-                      {describe(b)}
-                    </p>
-                    {b.note ? (
-                      <p className="mt-1 break-words text-fg-muted">{b.note}</p>
-                    ) : null}
+                    <p className="text-fg-muted first-letter:uppercase">{describe(b)}</p>
+                    {b.note ? <p className="mt-1 break-words text-fg-muted">{b.note}</p> : null}
                   </div>
                   {admin.readOnly ? null : (
                     <form action={removeBlockAction}>
@@ -148,8 +113,7 @@ export default async function BlocksPage({
         {admin.readOnly ? (
           // El calendario del formulario es una región desplazable sin controles activos si se desactiva: no se muestra.
           <p className="mt-4 rounded-container bg-surface p-6 text-fg-muted shadow-card">
-            Desactivado en la demo: aquí el Admin añade bloqueos de franja y
-            vacaciones.
+            Desactivado en la demo: aquí el Admin añade bloqueos de franja y vacaciones.
           </p>
         ) : (
           <BlockForm today={todayInMadrid()} stylists={stylists.data ?? []} />

@@ -1,11 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
-import {
-  filterByTechnique,
-  techniquesOf,
-  type GalleryResult,
-} from "@/lib/gallery/gallery";
-import { ROUTES } from "@/lib/routes";
+import Image from 'next/image';
+import Link from 'next/link';
+import { filterByTechnique, techniquesOf, type GalleryResult } from '@/lib/gallery/gallery';
+import { ROUTES } from '@/lib/routes';
 
 type Props = {
   gallery: GalleryResult;
@@ -13,7 +9,7 @@ type Props = {
 };
 
 const CHIP_CLASS =
-  "inline-flex min-h-11 items-center justify-center rounded-control border px-5 transition-colors duration-(--duration-fast)";
+  'inline-flex min-h-11 items-center justify-center rounded-control border px-5 transition-colors duration-(--duration-fast)';
 
 // Los filtros son enlaces (`/?tecnica=…#galeria`): funcionan sin JavaScript y se pueden compartir.
 function chipHref(technique: string | null): string {
@@ -38,19 +34,12 @@ export function GallerySection({ gallery, selected }: Props) {
       <h2 id="galeria-titulo" className="font-display text-3xl font-semibold">
         Nuestros trabajos
       </h2>
-      <p className="mt-2 max-w-prose text-fg-muted">
-        Antes y después de algunos de nuestros servicios.
-      </p>
+      <p className="mt-2 max-w-prose text-fg-muted">Antes y después de algunos de nuestros servicios.</p>
 
       {!gallery.ok ? (
-        <div
-          role="alert"
-          className="mt-8 rounded-card bg-surface p-6 shadow-card"
-        >
+        <div role="alert" className="mt-8 rounded-card bg-surface p-6 shadow-card">
           <p className="font-semibold">No hemos podido cargar la galería.</p>
-          <p className="mt-1 text-fg-muted">
-            Inténtalo de nuevo en unos minutos.
-          </p>
+          <p className="mt-1 text-fg-muted">Inténtalo de nuevo en unos minutos.</p>
           <div className="mt-4">
             <a
               href={`${ROUTES.home}#galeria`}
@@ -61,9 +50,7 @@ export function GallerySection({ gallery, selected }: Props) {
           </div>
         </div>
       ) : items.length === 0 ? (
-        <p className="mt-8 rounded-card bg-surface p-6 text-fg-muted shadow-card">
-          Pronto añadiremos trabajos.
-        </p>
+        <p className="mt-8 rounded-card bg-surface p-6 text-fg-muted shadow-card">Pronto añadiremos trabajos.</p>
       ) : (
         <>
           <nav aria-label="Filtrar la galería por técnica" className="mt-6">
@@ -71,19 +58,19 @@ export function GallerySection({ gallery, selected }: Props) {
               {[null, ...techniques].map((technique) => {
                 const isSelected = technique === selected;
                 return (
-                  <li key={technique ?? "todas"}>
+                  <li key={technique ?? 'todas'}>
                     <Link
                       href={chipHref(technique)}
                       scroll={false}
-                      aria-current={isSelected ? "true" : undefined}
-                      data-technique-filter={technique ?? "todas"}
+                      aria-current={isSelected ? 'true' : undefined}
+                      data-technique-filter={technique ?? 'todas'}
                       className={`${CHIP_CLASS} ${
                         isSelected
-                          ? "border-accent bg-accent text-accent-fg"
-                          : "border-border bg-surface text-fg hover:bg-surface-muted"
+                          ? 'border-accent bg-accent text-accent-fg'
+                          : 'border-border bg-surface text-fg hover:bg-surface-muted'
                       }`}
                     >
-                      {technique ?? "Todas"}
+                      {technique ?? 'Todas'}
                     </Link>
                   </li>
                 );
@@ -101,20 +88,18 @@ export function GallerySection({ gallery, selected }: Props) {
                 className="lg:col-span-2 lg:last:odd:col-start-2"
               >
                 <article className="rounded-container bg-surface p-5 shadow-card">
-                  <h3 className="font-display text-2xl font-semibold">
-                    {item.technique}
-                  </h3>
+                  <h3 className="font-display text-2xl font-semibold">{item.technique}</h3>
                   <p className="text-fg-muted">Con {item.stylistName}</p>
 
                   <div className="mt-4 grid gap-4 md:grid-cols-2">
                     {[
                       {
-                        label: "Antes",
+                        label: 'Antes',
                         src: item.beforePath,
                         alt: item.altBefore,
                       },
                       {
-                        label: "Después",
+                        label: 'Después',
                         src: item.afterPath,
                         alt: item.altAfter,
                       },
@@ -128,18 +113,12 @@ export function GallerySection({ gallery, selected }: Props) {
                           sizes="(min-width: 1024px) 22vw, (min-width: 768px) 40vw, 100vw"
                           className="h-auto w-full rounded-card"
                         />
-                        <figcaption className="mt-1 text-fg-muted">
-                          {photo.label}
-                        </figcaption>
+                        <figcaption className="mt-1 text-fg-muted">{photo.label}</figcaption>
                       </figure>
                     ))}
                   </div>
 
-                  {item.aiGenerated ? (
-                    <p className="mt-3 text-fg-muted">
-                      Imagen generada con IA.
-                    </p>
-                  ) : null}
+                  {item.aiGenerated ? <p className="mt-3 text-fg-muted">Imagen generada con IA.</p> : null}
 
                   <div className="mt-4">
                     <Link
