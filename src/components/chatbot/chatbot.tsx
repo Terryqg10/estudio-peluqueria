@@ -19,6 +19,10 @@ const OPTION_CLASS =
 const GHOST_CLASS =
   'inline-flex min-h-11 w-full items-center justify-center rounded-control px-5 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft';
 
+// Desplazamiento mínimo para contar como «bajar» o «subir», y altura hasta la que el botón no se oculta (T-036).
+const SCROLL_STEP_PX = 6;
+const HIDE_AFTER_PX = 80;
+
 // Chat de reglas (RF-08, T-010): botón flotante y diálogo nativo modal. No guarda ni envía nada: solo recorre el
 // árbol de `CHAT_TREE`. Esc y el clic fuera cierran, y el foco vuelve al botón.
 export function Chatbot({ whatsappNumber }: Props) {
@@ -35,8 +39,12 @@ export function Chatbot({ whatsappNumber }: Props) {
   }, [nodeId]);
 
   // El botón no flota sobre el pie (T-025): cuando el pie entra en la ventana, se apoya encima de él.
+  // En móvil (T-036) tampoco tapa el texto mientras se lee: se oculta al bajar y reaparece al subir, al llegar arriba
+  // o al pie, y al recibir el foco. Oculto solo es opacidad y no recibir clics: sigue en el árbol y en el orden de Tab.
   useEffect(() => {
     let frame = 0;
+    let lastY = window.scrollY;
+    const mobile = typeof window.matchMedia === 'function' ? window.matchMedia('(max-width: 1023.98px)') : null;
     function update() {
       frame = 0;
       const button = buttonRef.current;
@@ -44,6 +52,15 @@ export function Chatbot({ whatsappNumber }: Props) {
       const footer = document.querySelector('footer');
       const covered = footer ? Math.max(0, window.innerHeight - footer.getBoundingClientRect().top) : 0;
       button.style.transform = covered > 0 ? `translateY(-${covered}px)` : '';
+
+      const y = window.scrollY;
+      const delta = y - lastY;
+      let hidden = button.dataset.hidden === 'true';
+      if (!mobile?.matches || covered > 0 || y <= HIDE_AFTER_PX) hidden = false;
+      else if (delta > SCROLL_STEP_PX) hidden = true;
+      else if (delta < -SCROLL_STEP_PX) hidden = false;
+      if (Math.abs(delta) > SCROLL_STEP_PX) lastY = y;
+      button.dataset.hidden = String(hidden);
     }
     function schedule() {
       if (!frame) frame = window.requestAnimationFrame(update);
@@ -85,9 +102,21 @@ export function Chatbot({ whatsappNumber }: Props) {
         aria-label="Abrir chat de ayuda"
         aria-haspopup="dialog"
         onClick={open}
-        className="fixed bottom-4 right-4 z-40 inline-flex size-14 items-center justify-center rounded-full bg-accent text-accent-fg shadow-card transition-colors duration-(--duration-fast) hover:bg-accent-hover"
+        onFocus={(event) => {
+          event.currentTarget.dataset.hidden = 'false';
+        }}
+        className="fixed bottom-4 right-4 z-40 inline-flex size-14 items-center justify-center rounded-full bg-accent text-accent-fg shadow-card transition-[background-color,opacity,translate] duration-(--duration-fast) hover:bg-accent-hover data-[hidden=true]:pointer-events-none data-[hidden=true]:translate-y-4 data-[hidden=true]:opacity-0"
       >
-        <svg aria-hidden="true" viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          className="size-6"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z" />
         </svg>
       </button>

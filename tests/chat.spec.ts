@@ -8,6 +8,8 @@ import { MENU_OPTIONS } from '../src/lib/chatbot/tree';
 // componente (`tests/unit/chatbot.test.tsx`); aquí, el comportamiento en el navegador real.
 const FAB = { name: 'Abrir chat de ayuda' };
 
+// `mouse.wheel` no existe en WebKit móvil: se desplaza con el propio navegador (dispara el mismo evento de scroll).
+const scrollBy = (page: Page, dy: number) => page.evaluate((n) => window.scrollBy(0, n), dy);
 const fab = (page: Page) => page.getByRole('button', FAB);
 const dialog = (page: Page) => page.getByRole('dialog', { name: 'Chat de ayuda' });
 
@@ -155,7 +157,10 @@ test.describe('chat de ayuda', () => {
     const origin = new URL(page.url()).origin;
 
     const cookiesBefore = await page.context().cookies();
-    const storageBefore = await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length }));
+    const storageBefore = await page.evaluate(() => ({
+      local: localStorage.length,
+      session: sessionStorage.length,
+    }));
 
     const requests: string[] = [];
     page.on('request', (request) => {
@@ -172,14 +177,76 @@ test.describe('chat de ayuda', () => {
 
     for (const width of [320, 768, 1280]) {
       await page.setViewportSize({ width, height: 800 });
-      const results = await new AxeBuilder({ page }).include('dialog').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
-      expect(results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical'), `axe a ${width}px`).toEqual([]);
+      const results = await new AxeBuilder({ page })
+        .include('dialog')
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze();
+      expect(
+        results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical'),
+        `axe a ${width}px`,
+      ).toEqual([]);
     }
 
     await page.keyboard.press('Escape');
     expect(requests).toEqual([]);
     expect(await page.context().cookies()).toEqual(cookiesBefore);
-    expect(await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length }))).toEqual(storageBefore);
+    expect(
+      await page.evaluate(() => ({
+        local: localStorage.length,
+        session: sessionStorage.length,
+      })),
+    ).toEqual(storageBefore);
+  });
+
+  // T-036: en móvil el botón se oculta al bajar y reaparece al subir, al recibir el foco o al llegar arriba; en escritorio no se oculta.
+  test('chat-ocultar (T-036, CA-21): en móvil se oculta al bajar y reaparece al subir y con el foco; en escritorio no', async ({
+    page,
+  }) => {
+    const hidden = () => fab(page).getAttribute('data-hidden');
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto('/');
+    await expect(fab(page)).toBeVisible();
+    // `data-hidden` lo escribe el componente al hidratarse: se espera antes de desplazar. Visible al cargar (CA-21).
+    await expect(fab(page)).toHaveAttribute('data-hidden', 'false');
+
+    await scrollBy(page, 700);
+    await expect.poll(hidden).toBe('true');
+    await expect(fab(page)).toHaveCSS('opacity', '0');
+    await expect(fab(page)).toHaveCSS('pointer-events', 'none');
+
+    await scrollBy(page, -200);
+    await expect.poll(hidden).toBe('false');
+    await expect(fab(page)).toHaveCSS('opacity', '1');
+
+    // Oculto, el botón sigue en el orden de Tab y al recibir el foco se muestra.
+    await scrollBy(page, 500);
+    await expect.poll(hidden).toBe('true');
+    await fab(page).focus();
+    await expect.poll(hidden).toBe('false');
+
+    // Arriba del todo siempre se ve.
+    await scrollBy(page, 500);
+    await expect.poll(hidden).toBe('true');
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect.poll(hidden).toBe('false');
+
+    // Escritorio: nunca se oculta.
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await scrollBy(page, 700);
+    await page.waitForTimeout(300);
+    await expect(fab(page)).not.toHaveAttribute('data-hidden', 'true');
+  });
+
+  test('chat-ocultar: con prefers-reduced-motion no hay transición (alternativa estática)', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto('/');
+    await expect(fab(page)).toHaveAttribute('data-hidden', 'false'); // hidratado
+    await scrollBy(page, 700);
+    await expect.poll(() => fab(page).getAttribute('data-hidden')).toBe('true');
+    const duration = await fab(page).evaluate((el) => getComputedStyle(el).transitionDuration);
+    // Los tokens dejan `--duration-fast` en 0,01 ms: la transición es imperceptible (estado estático).
+    expect(duration.split(',').every((d) => parseFloat(d) < 0.001)).toBe(true);
   });
 
   test('no aparece en el panel de administración', async ({ page }) => {
