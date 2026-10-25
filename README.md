@@ -75,7 +75,7 @@ Las variables de producción (Supabase, Resend y la demo) están en [`docs/publi
 
 ## Estado
 
-Funcionalmente completo: 33 tareas cerradas con su review y evidencia (480 tests unitarios, 255 de integración y 1130 e2e a 24 de octubre de 2026).
+Funcionalmente completo: 44 tareas cerradas con su review y evidencia y 31 decisiones documentadas (ADR) (480 tests unitarios, 255 de integración y 1130 e2e a 24 de octubre de 2026).
 Es una demo: el salón, sus datos, las citas y las imágenes de la galería son ficticios. Las páginas
 [Aviso de demostración](https://estudio-peluqueria.vercel.app/aviso-legal) y [Privacidad](https://estudio-peluqueria.vercel.app/privacidad)
 describen lo que guarda. No es asesoramiento legal.
