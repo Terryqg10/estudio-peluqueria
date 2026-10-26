@@ -150,8 +150,28 @@ jobs:
       - name: Export Supabase env
         run: node scripts/ci-supabase-env.mjs
 
+      # Los navegadores se cachean por versión de Playwright (T-039). Sin acierto de caché se descargan; con acierto solo se
+      # instalan las dependencias del sistema. Un tope corto hace que un cuelgue de la descarga falle en minutos, no a los 45.
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(pnpm exec playwright --version | cut -d' ' -f2)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 15
         run: pnpm exec playwright install --with-deps chromium webkit
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        timeout-minutes: 15
+        run: pnpm exec playwright install-deps chromium webkit
 
       # Playwright construye y arranca la web (webServer de playwright.config.ts).
       - name: End-to-end tests
