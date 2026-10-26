@@ -9,7 +9,7 @@ type Props = {
 };
 
 const CHIP_CLASS =
-  'inline-flex min-h-11 items-center justify-center rounded-control border px-5 transition-colors duration-(--duration-fast)';
+  'inline-flex min-h-11 items-center justify-center rounded-control border px-5 transition-colors duration-(--duration-fast) ease-(--ease-soft)';
 
 // Los filtros son enlaces (`/?tecnica=…#galeria`): funcionan sin JavaScript y se pueden compartir.
 function chipHref(technique: string | null): string {
@@ -31,10 +31,10 @@ export function GallerySection({ gallery, selected }: Props) {
       aria-labelledby="galeria-titulo"
       className="mx-auto w-full max-w-6xl scroll-mt-24 px-(--layout-gutter) py-12 sm:py-16"
     >
-      <h2 id="galeria-titulo" className="font-display text-3xl font-semibold">
+      <h2 id="galeria-titulo" className="font-display text-3xl font-semibold tracking-tight leading-tight">
         Nuestros trabajos
       </h2>
-      <p className="mt-2 max-w-prose text-fg-muted">Antes y después de algunos de nuestros servicios.</p>
+      <p className="mt-2 max-w-prose leading-relaxed text-fg-muted">Antes y después de algunos de nuestros servicios.</p>
 
       {!gallery.ok ? (
         <div role="alert" className="mt-8 rounded-card bg-surface p-6 shadow-card">
@@ -43,7 +43,7 @@ export function GallerySection({ gallery, selected }: Props) {
           <div className="mt-4">
             <a
               href={`${ROUTES.home}#galeria`}
-              className="inline-flex min-h-11 items-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover"
+              className="inline-flex min-h-11 items-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-[background-color,scale] duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-hover active:scale-(--press-scale)"
             >
               Reintentar
             </a>
@@ -87,8 +87,8 @@ export function GallerySection({ gallery, selected }: Props) {
                 data-technique={item.technique}
                 className="lg:col-span-2 lg:last:odd:col-start-2"
               >
-                <article className="rounded-container bg-surface p-5 shadow-card">
-                  <h3 className="font-display text-2xl font-semibold">{item.technique}</h3>
+                <article className="rounded-container bg-surface p-5 shadow-card transition-transform duration-(--duration-base) ease-(--ease-soft) hover:translate-y-(--lift-y) hover:scale-(--lift-scale)">
+                  <h3 className="font-display text-2xl font-semibold tracking-tight leading-tight">{item.technique}</h3>
                   <p className="text-fg-muted">Con {item.stylistName}</p>
 
                   <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -123,7 +123,7 @@ export function GallerySection({ gallery, selected }: Props) {
                   <div className="mt-4">
                     <Link
                       href={`${ROUTES.reservar}?servicio=${item.serviceId}`}
-                      className="inline-flex min-h-11 items-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover"
+                      className="inline-flex min-h-11 items-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-[background-color,scale] duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-hover active:scale-(--press-scale)"
                     >
                       Reservar {item.serviceName}
                     </Link>

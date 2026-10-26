@@ -26,16 +26,16 @@ export function Hero() {
         <p className="text-accent-text">{SITE.tagline}</p>
         <h1
           id="hero-titulo"
-          className="mt-3 font-display text-display font-semibold"
+          className="mt-3 font-display text-display font-semibold tracking-tight"
         >
           Tu cabello, en las mejores manos
         </h1>
-        <p className="mt-6 max-w-prose text-lg text-fg-muted">
+        <p className="mt-6 max-w-prose text-lg leading-relaxed text-fg-muted">
           Precios claros y reserva online con la disponibilidad real de cada estilista.
         </p>
         <a
           href="#servicios"
-          className="mt-8 inline-flex min-h-11 items-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover"
+          className="mt-8 inline-flex min-h-11 items-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-[background-color,scale] duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-hover active:scale-(--press-scale)"
         >
           Ver servicios
         </a>

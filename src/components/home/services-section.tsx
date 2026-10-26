@@ -11,10 +11,10 @@ export function ServicesSection({ catalog }: { catalog: CatalogResult }) {
       aria-labelledby="servicios-titulo"
       className="mx-auto w-full max-w-6xl scroll-mt-24 px-(--layout-gutter) py-12 sm:py-16"
     >
-      <h2 id="servicios-titulo" className="font-display text-3xl font-semibold">
+      <h2 id="servicios-titulo" className="font-display text-3xl font-semibold tracking-tight leading-tight">
         Servicios y precios
       </h2>
-      <p className="mt-2 max-w-prose text-fg-muted">
+      <p className="mt-2 max-w-prose leading-relaxed text-fg-muted">
         Precios orientativos «desde» y duración estimada de cada servicio.
       </p>
 
@@ -27,13 +27,13 @@ export function ServicesSection({ catalog }: { catalog: CatalogResult }) {
           <div className="mt-4 flex flex-wrap gap-2">
             <a
               href={ROUTES.home}
-              className="inline-flex min-h-11 items-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover"
+              className="inline-flex min-h-11 items-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-[background-color,scale] duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-hover active:scale-(--press-scale)"
             >
               Reintentar
             </a>
             <Link
               href={ROUTES.contacto}
-              className="inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) hover:bg-accent-soft"
+              className="inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-soft"
             >
               Contacto
             </Link>
@@ -44,7 +44,7 @@ export function ServicesSection({ catalog }: { catalog: CatalogResult }) {
           <p className="font-semibold">Aún no hay servicios disponibles.</p>
           <Link
             href={ROUTES.contacto}
-            className="mt-3 inline-flex min-h-11 items-center text-accent-text transition-colors duration-(--duration-fast) hover:text-accent-hover"
+            className="mt-3 inline-flex min-h-11 items-center text-accent-text transition-colors duration-(--duration-fast) ease-(--ease-soft) hover:text-accent-hover"
           >
             Consulta nuestro contacto
           </Link>
@@ -53,11 +53,11 @@ export function ServicesSection({ catalog }: { catalog: CatalogResult }) {
         <div className="mt-8 space-y-10">
           {catalog.groups.map((group) => (
             <div key={group.category}>
-              <h3 className="text-xl font-semibold">{group.category}</h3>
+              <h3 className="text-xl font-semibold tracking-tight leading-tight">{group.category}</h3>
               <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {group.services.map((service) => (
-                  <li key={service.id} className="rounded-card bg-surface p-5 shadow-card">
-                    <h4 className="text-lg font-semibold">{service.name}</h4>
+                  <li key={service.id} className="rounded-card bg-surface p-5 shadow-card transition-transform duration-(--duration-base) ease-(--ease-soft) hover:translate-y-(--lift-y) hover:scale-(--lift-scale)">
+                    <h4 className="text-lg font-semibold tracking-tight leading-tight">{service.name}</h4>
                     <p className="mt-1 text-fg-muted">{formatDuration(service.duration_min)}</p>
                     <p className="mt-3 text-lg font-semibold text-accent-text">
                       {formatPriceFrom(service.price_from_cents)}
@@ -65,7 +65,7 @@ export function ServicesSection({ catalog }: { catalog: CatalogResult }) {
                     <Link
                       href={{ pathname: ROUTES.reservar, query: { servicio: service.id } }}
                       aria-label={`Reservar ${service.name}`}
-                      className="mt-4 inline-flex min-h-11 items-center rounded-control bg-accent px-5 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover"
+                      className="mt-4 inline-flex min-h-11 items-center rounded-control bg-accent px-5 font-semibold text-accent-fg transition-[background-color,scale] duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-hover active:scale-(--press-scale)"
                     >
                       Reservar
                     </Link>

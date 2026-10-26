@@ -12,10 +12,10 @@ export function DemoSection() {
     >
       <div className="grid gap-6 rounded-container bg-accent-soft p-6 sm:p-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
         <div>
-          <h2 id="demo-titulo" className="font-display text-2xl font-semibold">
+          <h2 id="demo-titulo" className="font-display text-2xl font-semibold tracking-tight leading-tight">
             Proyecto de portfolio: prueba el panel del salón
           </h2>
-          <p className="mt-2 max-w-prose text-fg">
+          <p className="mt-2 max-w-prose leading-relaxed text-fg">
             Entra con un clic al panel de administración en modo solo lectura: agenda, servicios, bloqueos y horarios. Los
             datos personales de otras personas aparecen ocultos y no se puede modificar nada.
           </p>

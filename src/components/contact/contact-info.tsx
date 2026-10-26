@@ -11,7 +11,7 @@ export function ContactInfo() {
         <dd className="mt-1 text-lg">
           <a
             href={phoneHref}
-            className="inline-flex min-h-11 items-center text-accent-text transition-colors duration-(--duration-fast) hover:text-accent-hover"
+            className="inline-flex min-h-11 items-center text-accent-text transition-colors duration-(--duration-fast) ease-(--ease-soft) hover:text-accent-hover"
           >
             {phoneDisplay}
           </a>

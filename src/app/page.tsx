@@ -24,7 +24,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ t
         aria-labelledby="contacto-titulo"
         className="mx-auto w-full max-w-6xl scroll-mt-24 px-(--layout-gutter) py-12 sm:py-16"
       >
-        <h2 id="contacto-titulo" className="font-display text-3xl font-semibold">
+        <h2 id="contacto-titulo" className="font-display text-3xl font-semibold tracking-tight leading-tight">
           Visítanos
         </h2>
         <div className="mt-8">
