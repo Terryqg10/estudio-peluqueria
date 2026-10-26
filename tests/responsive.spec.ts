@@ -10,7 +10,16 @@ async function prepareState(page: Page, route: string): Promise<void> {
   const days = page.locator('button[data-date]');
   for (let i = 1; i < 7; i++) {
     await days.nth(i).click();
-    if ((await page.locator('button[data-starts-at]').count()) > 0) break;
+    // Las horas se cargan tras el clic: contar de inmediato leía 0 con la máquina cargada y se saltaba un día con horas (T-037).
+    const loaded = await page
+      .locator('button[data-starts-at]')
+      .first()
+      .waitFor({ state: 'visible', timeout: 5_000 })
+      .then(
+        () => true,
+        () => false,
+      );
+    if (loaded) break;
   }
   await page.locator('button[data-starts-at]').first().click();
   await expect(page.getByRole('region', { name: 'Tu cita' })).toBeVisible();

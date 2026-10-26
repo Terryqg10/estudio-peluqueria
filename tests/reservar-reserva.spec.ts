@@ -140,10 +140,8 @@ test.describe('reservar: reserva de invitada', () => {
     }
   });
 
-  test('el honeypot es invisible y no se puede alcanzar con el teclado ni con lectores de pantalla', async ({
-    page,
-  }, testInfo) => {
-    await startBooking(page, testInfo.project.name === 'mobile' ? '18:30' : '19:00');
+  test('el honeypot es invisible y no se puede alcanzar con el teclado ni con lectores de pantalla', async ({ page }) => {
+    await startBooking(page, '18:30'); // no crea cita; 19:00 y 19:30 son de otros ficheros
     const honeypot = page.locator('input[name="website"]');
     await expect(honeypot).toHaveAttribute('tabindex', '-1');
     await expect(honeypot).toHaveAttribute('autocomplete', 'off');

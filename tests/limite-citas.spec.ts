@@ -12,8 +12,8 @@ import {
 
 // T-005c: límite de citas activas por email en la reserva (CA-29, RF-10, ADR-0020). El límite por
 // IP está apagado fuera de producción (todos los e2e comparten IP) y se prueba en integración.
-// Horas propias (19:00 / 19:30) para no pisar a las demás reservas de los e2e.
-const TIME = { chromium: '19:00', mobile: '19:30' };
+// Horas propias para no pisar a las demás reservas de los e2e (T-037): `reservar-tiempo-real` reserva a las 19:00 en chromium.
+const TIME = { chromium: '19:30', mobile: '10:30' };
 
 const LIMIT_MESSAGE = 'Ya tienes el máximo de citas activas con este email';
 

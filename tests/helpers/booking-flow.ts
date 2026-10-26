@@ -16,11 +16,21 @@ export async function startBooking(page: Page, time: string): Promise<string> {
   return startsAt;
 }
 
+// La disponibilidad se actualiza en vivo con las reservas de otros tests y puede re-renderizar el formulario justo al marcar
+// (T-037): se reintenta hasta que la casilla queda marcada, en vez de fallar con «Clicking the checkbox did not change its state».
+export async function acceptPrivacy(page: Page): Promise<void> {
+  const box = page.getByRole('checkbox');
+  await expect(async () => {
+    await box.check({ timeout: 2_000 });
+    await expect(box).toBeChecked({ timeout: 1_000 });
+  }).toPass({ timeout: 15_000 });
+}
+
 export async function fillForm(page: Page, email: string, over: { name?: string; phone?: string } = {}) {
   await page.getByLabel('Nombre', { exact: true }).fill(over.name ?? 'Ana García');
   await page.getByLabel('Email', { exact: true }).fill(email);
   await page.getByLabel('Teléfono', { exact: true }).fill(over.phone ?? '+34 600 000 000');
-  await page.getByRole('checkbox').check();
+  await acceptPrivacy(page);
 }
 
 export const submit = (page: Page) => page.getByRole('button', { name: 'Confirmar reserva' });

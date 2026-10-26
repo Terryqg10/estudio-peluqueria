@@ -97,7 +97,7 @@ test.describe('legales de la demo (T-030)', () => {
   test('legales-demo (CA-53): el formulario de reserva enlaza la privacidad junto al consentimiento sin cambiar su texto', async ({
     page,
   }) => {
-    await startBooking(page, '11:00');
+    await startBooking(page, '18:30') // no crea cita;
     const consent = page.getByRole('checkbox');
     await expect(consent).toBeVisible();
     await expect(page.getByText('Acepto que el salón guarde mi nombre, email y teléfono para gestionar esta cita.')).toBeVisible();

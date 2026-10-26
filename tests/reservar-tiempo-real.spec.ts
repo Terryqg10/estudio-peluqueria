@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { pickDay, workday } from './helpers/booking-days';
-import { submitForm } from './helpers/booking-flow';
+import { acceptPrivacy, submitForm } from './helpers/booking-flow';
 import { randomUUID } from 'node:crypto';
 import {
   appointmentsByEmail,
@@ -95,7 +95,7 @@ test.describe('reservar: hueco ocupado al confirmar (CA-08)', () => {
       await page.getByLabel('Nombre', { exact: true }).fill('Ana García');
       await page.getByLabel('Email', { exact: true }).fill(email);
       await page.getByLabel('Teléfono', { exact: true }).fill('600 000 000');
-      await page.getByRole('checkbox').check();
+      await acceptPrivacy(page);
 
       // Otra persona se queda con el hueco justo antes de confirmar.
       otherId = await bookSlot(stylistId, serviceId, startsAt, 30);

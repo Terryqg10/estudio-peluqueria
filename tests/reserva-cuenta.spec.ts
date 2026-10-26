@@ -2,14 +2,17 @@ import { randomUUID } from 'node:crypto';
 import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '@playwright/test';
 import { cleanup, newEmail, signIn } from './helpers/account-flow';
-import { startBooking, submitForm } from './helpers/booking-flow';
+import { acceptPrivacy, startBooking, submitForm } from './helpers/booking-flow';
 import { adminClient, appointmentsByEmail, deleteAppointmentsByEmail, userIdByEmail } from './helpers/supabase-admin';
 import { deleteEmailsTo, waitForEmail } from './helpers/mailpit';
 
 // T-021: reservar con cuenta (RF-04, CA-44, CA-45, ADR-0034). Una hora propia por proyecto.
-// Cada test que reserva usa su propia hora: corren en paralelo con la misma estilista.
-const TIME = { chromium: '17:30', mobile: '17:45' };
-const TIME_GUEST = { chromium: '16:30', mobile: '16:45' };
+// Cada test que reserva usa su propia hora: corren en paralelo con la misma estilista y el mismo día, y «Tratamiento
+// hidratante» dura 30 min, así que las horas de dos proyectos tienen que estar a 30 min o más (T-037). Horas ocupadas
+// por los demás ficheros ese día: reservar-reserva 10, 11, 12, 13 (chromium) y 14, 15, 16, 17 (mobile); reservar-email
+// 14:30 y 15:30; limite-citas 19:30 (chromium) y 10:30 (mobile); reservar-tiempo-real 19:00 (chromium).
+const TIME = { chromium: '17:30', mobile: '12:30' };
+const TIME_GUEST = { chromium: '16:30', mobile: '13:30' };
 
 test.describe('reservar con cuenta', () => {
   test('CA-44: con sesión el formulario trae el email de la cuenta fijo, se reserva con ella y la cita sale en «Mis citas»', async ({
@@ -34,7 +37,7 @@ test.describe('reservar con cuenta', () => {
 
       await page.getByLabel('Nombre', { exact: true }).fill('Lucía Prado');
       await page.getByLabel('Teléfono', { exact: true }).fill('+34 611 222 333');
-      await page.getByRole('checkbox').check();
+      await acceptPrivacy(page);
       await submitForm(page);
       await expect(page).toHaveURL(/\/reservar\/confirmada$/);
 
@@ -96,7 +99,7 @@ test.describe('reservar con cuenta', () => {
       await page.getByLabel('Nombre', { exact: true }).fill('Ana García');
       await emailField.fill(email);
       await page.getByLabel('Teléfono', { exact: true }).fill('+34 600 000 000');
-      await page.getByRole('checkbox').check();
+      await acceptPrivacy(page);
       await submitForm(page);
       await expect(page).toHaveURL(/\/reservar\/confirmada$/);
 
