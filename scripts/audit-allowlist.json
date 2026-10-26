@@ -1,5 +1,13 @@
 {
   "_comentario": "Hallazgos de pnpm audit aceptados con caducidad (ADR-0031, que sustituye a ADR-0008 y ADR-0023 tras T-016). Todos son devDependencies. Un hallazgo high o critical que no esté aquí bloquea la CI.",
   "caduca": "cuando se publique una versión corregida de braces (revisar en cada actualización de eslint-config-next)",
-  "hallazgos": []
+  "hallazgos": [
+    {
+      "id": "GHSA-vfj7-8cjw-p6xm",
+      "package": "braces",
+      "severity": "high",
+      "adr": "ADR-0031",
+      "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns"
+    }
+  ]
 }
