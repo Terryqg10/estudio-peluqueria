@@ -101,11 +101,36 @@ ${body}
   return { hanging, lying };
 }
 
+// Hebras horizontales sin costuras (160×40) para la regla horaria de /reservar: solo la forma (negro con opacidad); el color lo pone
+// el token del componente al usarlas como máscara.
+function hebras() {
+  const rand = rng(424242);
+  const paths = [];
+  for (let i = 0; i < 16; i += 1) {
+    const y = 2 + (i / 15) * 36 + (rand() - 0.5) * 1.5;
+    const amp = 0.8 + rand() * 2.2;
+    const cycles = 1 + Math.floor(rand() * 2); // 1 o 2 ondas por baldosa: empalma por los lados
+    const phase = rand() * Math.PI * 2;
+    const points = [];
+    for (let x = 0; x <= 160; x += 10) {
+      points.push(`${x} ${n(y + Math.sin((x / 160) * Math.PI * 2 * cycles + phase) * amp)}`);
+    }
+    paths.push(
+      `<polyline points="${points.join(' ')}" stroke="black" stroke-width="${n(1.1 + rand() * 1.3)}" stroke-linecap="round" stroke-linejoin="round" opacity="${n(0.55 + rand() * 0.45)}"/>`,
+    );
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 40" width="160" height="40" preserveAspectRatio="none" fill="none">
+${paths.join('\n')}
+</svg>
+`;
+}
+
 await fs.mkdir(OUT, { recursive: true });
+await fs.writeFile(path.join(OUT, 'hebras.svg'), hebras(), 'utf8');
 for (let i = 0; i < SHADES.length; i += 1) {
   const { hanging, lying } = swatch(i);
   await fs.writeFile(path.join(OUT, `muestra-${i + 1}.svg`), hanging, 'utf8');
   await fs.writeFile(path.join(OUT, `muestra-${i + 1}-h.svg`), lying, 'utf8');
 }
-process.stdout.write(`[gen-swatches] ${SHADES.length * 2} muestras en public/images/carta/
+process.stdout.write(`[gen-swatches] ${SHADES.length * 2} muestras y hebras.svg en public/images/carta/
 `);

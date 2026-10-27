@@ -74,3 +74,33 @@
     transform: rotate(0deg);
   }
 }
+
+/* La regla horaria de una estilista (T-042): lo libre se dibuja como mechones (hebras.svg, tinta como máscara) de la longitud del
+   servicio. Solo tokens; la forma de las hebras es contenido (imagen), el color es del token. */
+@layer components {
+  .day-ruler {
+    position: relative;
+    height: 2.5rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-tile);
+    background: var(--color-surface);
+  }
+
+  .day-ruler__band {
+    position: absolute;
+    top: 0.25rem;
+    bottom: 0.25rem;
+    background-color: var(--color-fg-muted);
+    mask-image: url('/images/carta/hebras.svg');
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    opacity: 0.45;
+  }
+
+  .day-ruler__band[data-on='true'] {
+    z-index: 1;
+    background-color: var(--color-accent);
+    opacity: 1;
+  }
+}

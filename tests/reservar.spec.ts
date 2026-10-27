@@ -14,33 +14,39 @@ test.describe('reservar: orden y preselección', () => {
 
     // Antes de elegir servicio solo existe el primer paso.
     await expect(page.getByRole('group', { name: 'Elige tu servicio' })).toBeVisible();
-    await expect(page.getByRole('group', { name: 'Elige estilista' })).toHaveCount(0);
+    await expect(page.getByRole('group', { name: 'Carmen Ortega' })).toHaveCount(0);
     await expect(page.getByRole('heading', { name: 'Elige día y hora' })).toHaveCount(0);
     await expect(page.getByText('Elige un servicio para ver las estilistas y los horarios.')).toBeVisible();
 
     await chooseService(page, 'Corte mujer');
-    await expect(page.getByRole('group', { name: 'Elige estilista' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Elige día y hora' })).toBeVisible();
 
-    // Orden visual y de DOM: servicio → estilista → día.
+    // T-042 (ADR-0040): la estilista se elige al pulsar su hora, en su fila de la jornada (ya no hay un paso separado).
+    // Orden visual y de DOM: servicio → día y hora (con la fila de cada estilista).
+    const stylistRow = page.getByRole('group', { name: 'Carmen Ortega' });
+    await expect(stylistRow).toBeVisible();
     const y = async (locator: ReturnType<Page['locator']>) => (await locator.boundingBox())?.y ?? -1;
     const service = await y(page.getByRole('group', { name: 'Elige tu servicio' }));
-    const stylist = await y(page.getByRole('group', { name: 'Elige estilista' }));
     const day = await y(page.getByRole('heading', { name: 'Elige día y hora' }));
-    expect(service).toBeLessThan(stylist);
-    expect(stylist).toBeLessThan(day);
+    const row = await y(stylistRow);
+    expect(service).toBeLessThan(day);
+    expect(day).toBeLessThan(row);
   });
 
-  test('«Cualquiera disponible» es la opción por defecto y solo salen las estilistas del servicio', async ({
-    page,
-  }) => {
+  test('solo salen las filas de las estilistas del servicio y «Todas» es el filtro por defecto', async ({ page }) => {
     await page.goto('/reservar');
     await chooseService(page, 'Balayage'); // solo la hace Lucía
-    await expect(page.getByLabel(/Cualquiera disponible/)).toBeChecked();
-    const stylists = page.getByRole('group', { name: 'Elige estilista' });
-    await expect(stylists.getByRole('radio')).toHaveCount(2); // cualquiera + Lucía
-    await expect(stylists.getByText('Lucía Marín')).toBeVisible();
-    await expect(stylists.getByText('Irene Solís')).toHaveCount(0);
+    await expect(page.getByRole('group', { name: 'Lucía Marín' })).toBeVisible();
+    await expect(page.getByRole('group', { name: 'Irene Solís' })).toHaveCount(0);
+    // Con una sola estilista no hace falta filtro.
+    await expect(page.getByRole('group', { name: 'Estilista', exact: true })).toHaveCount(0);
+
+    await page.goto('/reservar'); // la página se desplaza sola hasta el día al elegir servicio: se empieza de nuevo
+    await chooseService(page, 'Corte mujer'); // la hacen varias
+    const filter = page.getByRole('group', { name: 'Estilista', exact: true });
+    await expect(filter).toBeVisible();
+    await expect(filter.getByLabel('Todas')).toBeChecked();
+    expect(await filter.getByRole('radio').count()).toBeGreaterThanOrEqual(3); // todas + al menos dos estilistas
   });
 
   test('CA-01: el botón «Reservar» de un servicio abre la reserva con ese servicio elegido', async ({ page }) => {
@@ -48,13 +54,13 @@ test.describe('reservar: orden y preselección', () => {
     await page.locator('#servicios').getByRole('link', { name: 'Reservar Corte mujer' }).click(); // la galería también tiene enlaces «Reservar …»
     await expect(page).toHaveURL(/\/reservar\?servicio=[0-9a-f-]{36}$/);
     await expect(page.getByLabel(/Corte mujer/).first()).toBeChecked();
-    await expect(page.getByRole('group', { name: 'Elige estilista' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Elige día y hora' })).toBeVisible();
   });
 
   test('un ?servicio= inválido se ignora', async ({ page }) => {
     await page.goto('/reservar?servicio=no-es-un-uuid');
     await expect(page.getByRole('heading', { level: 1, name: 'Reserva tu cita' })).toBeVisible();
-    await expect(page.getByRole('group', { name: 'Elige estilista' })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Elige día y hora' })).toHaveCount(0);
   });
 
   test('IMP-01: el botón «Reservar» de la cabecera es visible a 390 px y tras hacer scroll', async ({ page }) => {
@@ -83,11 +89,13 @@ test.describe('reservar: huecos', () => {
 
     const summary = page.getByRole('region', { name: 'Tu cita' });
     await expect(summary).toBeVisible();
-    await expect(summary.getByText('Balayage')).toBeVisible();
-    await expect(summary.getByText('Lucía Marín')).toBeVisible();
-    await expect(summary.getByText(time, { exact: true })).toBeVisible();
+    await expect(summary).toContainText('Balayage');
+    await expect(summary).toContainText('Lucía Marín');
+    await expect(summary).toContainText(time);
     // La fecha larga no usa «capitalize» (daría «26 De Octubre»): solo la inicial va en mayúscula.
-    const longDate = summary.getByText(/ de (enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)/i).first();
+    const longDate = summary
+      .getByText(/ de (enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)/i)
+      .first();
     await expect(longDate).not.toHaveCSS('text-transform', 'capitalize');
     await expect(first).toHaveAttribute('aria-pressed', 'true');
   });
@@ -107,7 +115,9 @@ test.describe('reservar: huecos', () => {
     await expect(page.locator('button[data-starts-at]').first()).toBeVisible();
   });
 
-  test('el selector muestra una semana (7 días) y las flechas llegan hasta la ventana de reserva (60 días)', async ({ page }) => {
+  test('el selector muestra una semana (7 días) y las flechas llegan hasta la ventana de reserva (60 días)', async ({
+    page,
+  }) => {
     await page.goto('/reservar');
     await chooseService(page, 'Corte mujer');
     const days = page.locator('button[data-date]');
@@ -132,19 +142,25 @@ test.describe('reservar: huecos', () => {
     await expect(days).toHaveCount(7);
   });
 
-  test('las horas van en tres columnas y agrupadas en mañana o tarde', async ({ page }) => {
+  // T-042 (ADR-0040) sustituye a «tres columnas y mañana o tarde»: cada estilista tiene su fila con su regla horaria (decorativa)
+  // y sus horas en orden, con botones de al menos 44 px.
+  test('las horas van en la fila de su estilista, en orden y con área táctil de 44 px', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 800 });
     await page.goto('/reservar');
     await chooseService(page, 'Balayage');
     await pickDay(page, workday());
-    await expect(page.locator('button[data-starts-at]').first()).toBeVisible();
 
-    const columns = await page
+    const row = page.getByRole('group', { name: 'Lucía Marín' });
+    await expect(row.locator('button[data-starts-at]').first()).toBeVisible();
+    await expect(row.locator('.day-ruler')).toHaveCount(1);
+    await expect(row.locator('.day-ruler').locator('xpath=..')).toHaveAttribute('aria-hidden', 'true');
+
+    const starts = await row
       .locator('button[data-starts-at]')
-      .first()
-      .evaluate((el) => getComputedStyle(el.closest('ul') as HTMLElement).gridTemplateColumns.split(' ').length);
-    expect(columns).toBe(3);
-    // Otros tests ocupan huecos de ese día: se exige al menos un grupo, no los dos.
-    await expect(page.getByRole('heading', { name: /^(Mañana|Tarde)$/ }).first()).toBeVisible();
+      .evaluateAll((els) => els.map((el) => el.getAttribute('data-starts-at') ?? ''));
+    expect(starts.length).toBeGreaterThan(0);
+    expect(starts).toEqual([...starts].sort());
+    const box = await row.locator('button[data-starts-at]').first().boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
   });
 });

@@ -9,14 +9,15 @@ type Props = {
 };
 
 const OPTION_CLASS =
-  'flex min-h-11 cursor-pointer flex-col gap-1 rounded-card border border-border-strong bg-surface p-4 transition-colors duration-(--duration-fast) hover:bg-surface-muted has-checked:border-accent has-checked:bg-accent-soft has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent';
+  'inline-flex min-h-11 cursor-pointer items-center rounded-control border border-border-strong bg-surface px-4 transition-colors duration-(--duration-fast) ease-(--ease-soft) hover:bg-surface-muted has-checked:border-fg has-checked:bg-fg has-checked:text-bg has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent';
 
-// Segundo paso: estilista. «Cualquiera disponible» es la opción por defecto.
+// Filtro de estilista (T-042): la estilista se elige al pulsar su hora en su fila; estos botones solo acotan la jornada a una sola.
+// «Todas» (antes «Cualquiera disponible») muestra la jornada de cada estilista que hace el servicio.
 export function StylistPicker({ stylists, selectedId, onSelect }: Props) {
   return (
-    <fieldset>
-      <legend className="font-display text-2xl font-semibold">Elige estilista</legend>
-      <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <fieldset className="min-w-0 border-0 p-0">
+      <legend className="sr-only">Estilista</legend>
+      <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
         <li>
           <label className={OPTION_CLASS}>
             <input
@@ -27,8 +28,7 @@ export function StylistPicker({ stylists, selectedId, onSelect }: Props) {
               onChange={() => onSelect('any')}
               className="sr-only"
             />
-            <span className="font-semibold">Cualquiera disponible</span>
-            <span className="text-fg-muted">Más horas para elegir</span>
+            <span className="font-semibold">Todas</span>
           </label>
         </li>
         {stylists.map((stylist) => (
@@ -43,7 +43,6 @@ export function StylistPicker({ stylists, selectedId, onSelect }: Props) {
                 className="sr-only"
               />
               <span className="font-semibold">{stylist.name}</span>
-              {stylist.specialty ? <span className="text-fg-muted">{stylist.specialty}</span> : null}
             </label>
           </li>
         ))}

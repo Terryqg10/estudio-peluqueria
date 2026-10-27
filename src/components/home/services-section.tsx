@@ -72,14 +72,14 @@ export function ServicesSection({ catalog }: { catalog: CatalogResult }) {
                       key={service.id}
                       className="group grid grid-cols-[9rem_minmax(0,1fr)] items-center gap-x-4 gap-y-2 border-b border-border py-5 sm:grid-cols-[13rem_minmax(0,1fr)_auto_auto] sm:gap-x-6"
                     >
-                      <div className="relative row-span-2 sm:row-span-1">
+                      <div className="relative row-span-2 transition-transform duration-(--duration-base) ease-(--ease-soft) group-hover:translate-x-(--swatch-slide) sm:row-span-1">
                         {/* eslint-disable-next-line @next/next/no-img-element -- SVG propio, decorativo, con tamaño reservado */}
                         <img
                           src={`/images/carta/muestra-${swatch}-h.svg`}
                           alt=""
                           width={440}
                           height={120}
-                          className="block h-auto w-full transition-transform duration-(--duration-base) ease-(--ease-soft) group-hover:translate-x-(--swatch-slide)"
+                          className="block h-auto w-full"
                         />
                         <span
                           aria-hidden="true"

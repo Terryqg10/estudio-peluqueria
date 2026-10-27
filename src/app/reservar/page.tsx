@@ -37,14 +37,14 @@ export default async function ReservarPage({
 
   return (
     <section className="mx-auto w-full max-w-6xl px-(--layout-gutter) py-12 sm:py-16">
-      <h1 className="font-display text-display font-semibold">Reserva tu cita</h1>
-      <p className="mt-3 max-w-prose text-fg-muted">
+      <h1 className="font-display text-display font-semibold tracking-tight">Reserva tu cita</h1>
+      <p className="mt-3 max-w-prose leading-relaxed text-fg-muted">
         Elige servicio, estilista, día y hora. Las horas son las libres ahora mismo.
       </p>
       <DemoNotice className="mt-6 max-w-prose" />
 
       <noscript>
-        <p className="mt-6 rounded-card bg-surface p-5 shadow-card">
+        <p className="mt-6 border-y border-border-strong py-5">
           Para reservar necesitas activar JavaScript. Mientras tanto puedes llamarnos desde{' '}
           <Link href={ROUTES.contacto} className="text-accent-text">
             Contacto
@@ -62,7 +62,7 @@ export default async function ReservarPage({
             account={account ? { email: account.email, name: account.name, phone: account.phone } : null}
           />
         ) : (
-          <div role="alert" className="rounded-card bg-surface p-6 shadow-card">
+          <div role="alert" className="border-y border-border-strong py-6">
             <p className="font-semibold">No hemos podido cargar los servicios.</p>
             <p className="mt-1 text-fg-muted">
               Inténtalo de nuevo en unos minutos o consulta nuestros datos de contacto.
@@ -70,7 +70,7 @@ export default async function ReservarPage({
             <div className="mt-4 flex flex-wrap gap-2">
               <a
                 href={ROUTES.reservar}
-                className="inline-flex min-h-11 items-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover"
+                className="inline-flex min-h-11 items-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-hover"
               >
                 Reintentar
               </a>
