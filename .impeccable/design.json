@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-27T00:11:53.342Z",
+  "generatedAt": "2026-10-27T11:32:05.626Z",
   "title": "Design System: Atelier Malva",
   "extensions": {
     "colorMeta": {
@@ -241,7 +241,7 @@
       {
         "name": "shadow-card",
         "value": "0 0 0 1px rgb(20 23 28 / 0.06), 0 2px 6px rgb(20 23 28 / 0.05)",
-        "purpose": "Mensajes de estado de la galería; el resto es plano."
+        "purpose": "Mensajes de estado de la galería; el resto, incluida la confirmación, es plano."
       },
       {
         "name": "shadow-lift",
@@ -348,6 +348,46 @@
       "description": "Lista de definición con filete firme superior y teléfono como enlace táctil.",
       "html": "<dl class=\"ds-contact\"><dt>Teléfono</dt><dd><a href=\"#\">600 000 000</a></dd></dl>",
       "css": ".ds-contact{margin:0;padding-top:20px;border-top:1px solid var(--color-border-strong);font-family:Geist,system-ui,sans-serif;}.ds-contact dt{color:var(--color-fg-muted);}.ds-contact dd{margin:4px 0 0;font-size:1.125rem;}.ds-contact a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;color:var(--color-fg);text-decoration:none;}.ds-contact a:hover{color:var(--color-accent-text);}.ds-contact a:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px;}"
+    },
+    {
+      "name": "Selectable Service Row",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Fila de servicio elegible en /reservar: radio nativo oculto, regla inferior de 2px en cobre al elegir.",
+      "html": "<label class=\"ds-sel\"><span>Coloración raíz<small>1 h 30 min</small></span><strong>Desde 55 €</strong></label>",
+      "css": ".ds-sel{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px;min-height:44px;padding:20px 0;border-bottom:1px solid var(--color-border);font-family:Geist,system-ui,sans-serif;color:var(--color-fg);cursor:pointer;transition:background-color 160ms cubic-bezier(0.2,0.8,0.2,1);}.ds-sel:hover{background:var(--color-surface-muted);}.ds-sel small{display:block;color:var(--color-fg-muted);}.ds-sel strong{font-variant-numeric:tabular-nums;}"
+    },
+    {
+      "name": "Stylist Filter",
+      "kind": "chip",
+      "refersTo": "",
+      "description": "Radios como botones; el elegido va en tinta, no en cobre.",
+      "html": "<span class=\"ds-sf\">Todas</span> <span class=\"ds-sf ds-sf-on\">Marta</span>",
+      "css": ".ds-sf{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid var(--color-border-strong);border-radius:6px;background:var(--color-surface);font-family:Geist,system-ui,sans-serif;color:var(--color-fg);}.ds-sf-on{background:var(--color-fg);color:var(--color-chart-card);}"
+    },
+    {
+      "name": "Hour Button",
+      "kind": "button",
+      "refersTo": "",
+      "description": "Hora libre en cuadrícula de cuartos; elegida en cobre con aria-pressed.",
+      "html": "<button class=\"ds-hour\">10:30</button> <button class=\"ds-hour ds-hour-on\" aria-pressed=\"true\">11:00</button>",
+      "css": ".ds-hour{min-height:44px;min-width:64px;padding:0 12px;border:1px solid var(--color-border-strong);border-radius:6px;background:var(--color-surface);font-family:Geist,system-ui,sans-serif;color:var(--color-fg);font-variant-numeric:tabular-nums;cursor:pointer;transition:background-color 160ms cubic-bezier(0.2,0.8,0.2,1),scale 160ms cubic-bezier(0.2,0.8,0.2,1);}.ds-hour:hover{background:var(--color-surface-muted);}.ds-hour:active{scale:0.98;}.ds-hour-on{background:var(--color-accent);border-color:var(--color-accent);color:var(--color-accent-fg);}.ds-hour:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px;}"
+    },
+    {
+      "name": "Appointment Sheet",
+      "kind": "card",
+      "refersTo": "",
+      "description": "Ficha «Tu cita» (/reservar) y de la confirmación: borde firme, esquinas rectas, muestra tumbada y lista de definición.",
+      "html": "<section class=\"ds-cita\"><dl><dt>Servicio</dt><dd>Coloración raíz</dd><dt>Hora</dt><dd>11:00</dd></dl></section>",
+      "css": ".ds-cita{padding:20px;border:1px solid var(--color-border-strong);background:var(--color-surface);font-family:Geist,system-ui,sans-serif;color:var(--color-fg);}.ds-cita dt{color:var(--color-fg-muted);}.ds-cita dd{margin:0 0 12px;font-weight:600;font-variant-numeric:tabular-nums;}"
+    },
+    {
+      "name": "Status Notice",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Aviso de estado de la confirmación: filetes arriba y abajo, sin caja; en error, filetes en danger.",
+      "html": "<p class=\"ds-notice\">Te hemos enviado un email con el enlace personal de tu cita.</p>",
+      "css": ".ds-notice{margin:0;padding:16px 0;border-top:1px solid var(--color-border-strong);border-bottom:1px solid var(--color-border-strong);font-family:Geist,system-ui,sans-serif;color:var(--color-fg);}"
     }
   ],
   "narrative": {
@@ -379,6 +419,11 @@
         "name": "The Flat Card Rule",
         "body": "En reposo no hay sombras ni tarjetas flotantes: las listas son filas con línea de separación. La elevación llega solo como respuesta a una muestra elegida.",
         "section": "elevation"
+      },
+      {
+        "name": "The Sheet Rule",
+        "body": "La cita (elegida o confirmada) se imprime como ficha: borde firme de 1px, esquinas rectas, muestra tumbada y lista de definición; los avisos van entre filetes, no en cajas.",
+        "section": "components"
       }
     ],
     "dos": [
