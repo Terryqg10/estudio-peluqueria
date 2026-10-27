@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Fraunces, Geist } from 'next/font/google';
+import { Bricolage_Grotesque, Geist } from 'next/font/google';
 import { SiteHeader } from '@/components/layout/site-header';
 import { Chatbot } from '@/components/chatbot/chatbot';
 import { SiteFooter } from '@/components/layout/site-footer';
@@ -7,8 +7,8 @@ import { SITE } from '@/lib/site';
 import './globals.css';
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-brand' });
-// Titulares (ADR-0012): Fraunces variable, autoalojada por next/font.
-const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-heading', display: 'swap' });
+// Titulares (ADR-0040, sustituye a Fraunces de ADR-0012): Bricolage Grotesque variable, autoalojada por next/font.
+const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-heading', display: 'swap' });
 
 export const metadata: Metadata = {
   title: { default: `${SITE.name} — ${SITE.tagline}`, template: `%s · ${SITE.name}` },
@@ -19,7 +19,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={`${geist.variable} ${fraunces.variable}`}>
+    <html lang="es" className={`${geist.variable} ${bricolage.variable}`}>
       <body className="flex min-h-dvh flex-col bg-bg font-sans text-fg antialiased">
         <a
           href="#contenido"

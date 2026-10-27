@@ -105,7 +105,7 @@ export function Chatbot({ whatsappNumber }: Props) {
         onFocus={(event) => {
           event.currentTarget.dataset.hidden = 'false';
         }}
-        className="fixed bottom-4 right-4 z-40 inline-flex size-14 items-center justify-center rounded-full bg-accent text-accent-fg shadow-card transition-[background-color,opacity,translate] duration-(--duration-fast) hover:bg-accent-hover data-[hidden=true]:pointer-events-none data-[hidden=true]:translate-y-4 data-[hidden=true]:opacity-0"
+        className="fixed bottom-4 right-4 z-40 inline-flex size-14 items-center justify-center rounded-full bg-fg text-bg shadow-card transition-[background-color,opacity,translate] duration-(--duration-fast) hover:bg-fg-muted data-[hidden=true]:pointer-events-none data-[hidden=true]:translate-y-4 data-[hidden=true]:opacity-0"
       >
         <svg
           aria-hidden="true"

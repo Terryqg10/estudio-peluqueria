@@ -2,17 +2,18 @@
 id: PLAN-001-peluqueria-reservas
 spec: SPEC-001-peluqueria-reservas
 rigor_level: L
-style: v1-soft-commerce@0.5.0
+style: v5-color-chart@0.1.0
 palette:
-  source: sector
+  source: proyecto
   mode: claro
-  seed: "#A8456A"
-  approved_by: user
-  checked: "check-palette OK, 2026-10-19 (14 tokens, 20 pares)"
+  seed: "#B5401C"
+  approved_by: pending
+  checked: "check-palette OK, 2026-10-27 (14 tokens, 20 pares)"
+  previous: "v1-soft-commerce@0.5.0 con semilla #A8456A (2026-10-19), sustituido por ADR-0040"
 deploy: vercel
 status: aprobada
 created: 2026-10-19
-updated: 2026-10-19
+updated: 2026-10-27
 ---
 
 # PLAN-001 — Web de peluquería de mujer con reserva en tiempo real y chatbot de reglas

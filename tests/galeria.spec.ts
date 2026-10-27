@@ -77,7 +77,8 @@ test.describe('galería antes/después (CA-02)', () => {
     await context.close();
   });
 
-  test('cada par lleva alt, srcset y sizes; se apila en móvil y va en dos columnas desde md', async ({ page }) => {
+  // T-041 (ADR-0040): el par antes/después va siempre lado a lado (en móvil, dentro de la tira de trabajos).
+  test('cada par lleva alt, srcset y sizes y va lado a lado en móvil y en escritorio', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 800 });
     await page.goto('/?tecnica=Balayage#galeria');
     const card = items(page).first();
@@ -92,38 +93,39 @@ test.describe('galería antes/después (CA-02)', () => {
       await expect(img).toHaveAttribute('height', '1000');
     }
 
-    // Móvil: una imagen debajo de la otra. Escritorio: lado a lado.
-    await card.scrollIntoViewIfNeeded();
-    const mobile = [await imgs.nth(0).boundingBox(), await imgs.nth(1).boundingBox()];
-    expect(mobile[1]?.y ?? 0).toBeGreaterThan((mobile[0]?.y ?? 0) + (mobile[0]?.height ?? 0) - 1);
-
-    await page.setViewportSize({ width: 1280, height: 900 });
-    const desktop = [await imgs.nth(0).boundingBox(), await imgs.nth(1).boundingBox()];
-    expect(Math.abs((desktop[1]?.y ?? 0) - (desktop[0]?.y ?? 0))).toBeLessThan(2);
-    expect(desktop[1]?.x ?? 0).toBeGreaterThan((desktop[0]?.x ?? 0) + (desktop[0]?.width ?? 0) - 1);
+    for (const width of [375, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await card.scrollIntoViewIfNeeded();
+      const pair = [await imgs.nth(0).boundingBox(), await imgs.nth(1).boundingBox()];
+      expect(Math.abs((pair[1]?.y ?? 0) - (pair[0]?.y ?? 0)), `a ${width} px`).toBeLessThan(2);
+      expect(pair[1]?.x ?? 0, `a ${width} px`).toBeGreaterThan((pair[0]?.x ?? 0) + (pair[0]?.width ?? 0) - 1);
+    }
   });
 
-  // T-035: si el número de trabajos visibles es impar, la última tarjeta queda centrada en su fila (a 1280 px), con y sin filtro.
-  test('galeria-ultima-centrada: la tarjeta que queda sola se centra en escritorio', async ({ page }) => {
+  // T-041 (ADR-0040) sustituye a `galeria-ultima-centrada` (T-035): en escritorio cada trabajo es una fila completa, así que ninguno
+  // queda huérfano, con y sin filtro; en móvil los trabajos forman una tira con scroll-snap (desbordamiento deliberado).
+  test('galeria-filas: en escritorio cada trabajo ocupa su fila; en móvil forman una tira desplazable', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto('/');
-    const filters = await page
-      .locator('a[data-technique-filter]')
-      .evaluateAll((els) => els.map((el) => el.getAttribute('data-technique-filter') ?? ''));
-    let odd = 0;
-    for (const filter of filters) {
-      await page.locator(`a[data-technique-filter="${filter}"]`).click();
-      await expect(page.locator(`a[data-technique-filter="${filter}"]`)).toHaveAttribute('aria-current', 'true');
-      const count = await items(page).count();
-      if (count % 2 === 0) continue;
-      odd++;
-      const list = await page.locator('ul:has(> li[data-gallery-item])').boundingBox();
-      const last = await items(page).last().boundingBox();
-      expect(list && last).toBeTruthy();
-      const listCenter = (list?.x ?? 0) + (list?.width ?? 0) / 2;
-      const lastCenter = (last?.x ?? 0) + (last?.width ?? 0) / 2;
-      expect(Math.abs(listCenter - lastCenter)).toBeLessThan(2);
+    const region = page.getByRole('region', { name: 'Trabajos antes y después' });
+    const box = await region.boundingBox();
+    expect(box).toBeTruthy();
+    const count = await items(page).count();
+    expect(count).toBeGreaterThanOrEqual(6);
+    for (let i = 0; i < count; i++) {
+      const row = await items(page).nth(i).boundingBox();
+      expect(row?.x, `fila ${i}`).toBeCloseTo(box?.x ?? 0, 0);
+      expect(row?.width, `fila ${i}`).toBeCloseTo(box?.width ?? 0, 0);
     }
-    expect(odd).toBeGreaterThan(0); // la comprobación se ejerció al menos una vez
+
+    await page.setViewportSize({ width: 375, height: 800 });
+    const strip = await region.evaluate((el) => ({
+      scrolls: el.scrollWidth > el.clientWidth,
+      focusable: el.tabIndex === 0,
+    }));
+    expect(strip.scrolls, 'la tira se desplaza en móvil').toBe(true);
+    expect(strip.focusable, 'la tira es alcanzable con teclado').toBe(true);
   });
 });

@@ -41,3 +41,10 @@ backups/
 
 # Informes de Lighthouse (se regeneran; ~1 MB cada uno)
 sdd/reviews/evidencias/**/lighthouse-*.json
+
+# Impeccable (efimero; el contexto estable es PRODUCT.md y DESIGN.md)
+.impeccable/questions/
+.impeccable/review/
+.impeccable/mocks/
+.impeccable/build/
+.impeccable/config.local.json

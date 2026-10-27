@@ -5,7 +5,7 @@ import { ROUTES } from '@/lib/routes';
 import { MobileMenu } from '@/components/layout/mobile-menu';
 
 const CTA_CLASS =
-  'inline-flex min-h-11 items-center rounded-control bg-accent px-4 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover';
+  'inline-flex min-h-11 items-center rounded-control bg-fg px-4 font-semibold text-bg transition-colors duration-(--duration-fast) ease-(--ease-soft) hover:bg-fg-muted';
 
 export function SiteHeader() {
   return (

@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-27T00:11:53.342Z",
+  "title": "Design System: Atelier Malva",
+  "extensions": {
+    "colorMeta": {
+      "chart-card": {
+        "role": "neutral",
+        "displayName": "Cartulina fría",
+        "canonical": "#eef0f3",
+        "tonalRamp": [
+          "#303031",
+          "#666768",
+          "#9c9ea0",
+          "#d3d5d7",
+          "#f0f2f4",
+          "#f4f5f7",
+          "#f8f9fa",
+          "#fcfcfd"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Blanco papel",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#333333",
+          "#6d6d6d",
+          "#a8a8a8",
+          "#e2e2e2",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff"
+        ]
+      },
+      "surface-muted": {
+        "role": "neutral",
+        "displayName": "Gris de muestra",
+        "canonical": "#e3e6eb",
+        "tonalRamp": [
+          "#2d2e2f",
+          "#616365",
+          "#95979a",
+          "#c9ccd0",
+          "#e6e9ed",
+          "#edeff2",
+          "#f3f4f6",
+          "#f9fafb"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Línea suave",
+        "canonical": "#d2d7de",
+        "tonalRamp": [
+          "#2a2b2c",
+          "#5a5c5f",
+          "#8a8d92",
+          "#babec5",
+          "#d7dce2",
+          "#e1e5e9",
+          "#eceef1",
+          "#f6f7f8"
+        ]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Contorno firme",
+        "canonical": "#737b87",
+        "tonalRamp": [
+          "#17191b",
+          "#31353a",
+          "#4c5159",
+          "#666d78",
+          "#838a95",
+          "#a3a8b0",
+          "#c3c6cc",
+          "#e3e5e7"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#14171c",
+        "tonalRamp": [
+          "#040506",
+          "#090a0c",
+          "#0d0f12",
+          "#121419",
+          "#2f3236",
+          "#65676a",
+          "#9a9c9e",
+          "#d0d1d2"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Tinta apagada",
+        "canonical": "#4a525d",
+        "tonalRamp": [
+          "#0f1013",
+          "#202328",
+          "#31363d",
+          "#424952",
+          "#5f6670",
+          "#888d95",
+          "#b1b5ba",
+          "#dbdcdf"
+        ]
+      },
+      "copper": {
+        "role": "primary",
+        "displayName": "Cobre de acción",
+        "canonical": "#b5401c",
+        "tonalRamp": [
+          "#240d06",
+          "#4e1b0c",
+          "#772a12",
+          "#a03919",
+          "#bd5636",
+          "#ce816a",
+          "#dfad9e",
+          "#f0d9d2"
+        ]
+      },
+      "copper-hover": {
+        "role": "primary",
+        "displayName": "Cobre profundo",
+        "canonical": "#962f12",
+        "tonalRamp": [
+          "#1e0904",
+          "#401408",
+          "#631f0c",
+          "#852a10",
+          "#a2472d",
+          "#ba7663",
+          "#d2a699",
+          "#ead5d0"
+        ]
+      },
+      "copper-ink": {
+        "role": "primary",
+        "displayName": "Tinta sobre cobre",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#333333",
+          "#6d6d6d",
+          "#a8a8a8",
+          "#e2e2e2",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff"
+        ]
+      },
+      "copper-soft": {
+        "role": "primary",
+        "displayName": "Cobre suave",
+        "canonical": "#f7e3da",
+        "tonalRamp": [
+          "#312d2c",
+          "#6a615d",
+          "#a2958f",
+          "#dbc9c1",
+          "#f8e6de",
+          "#faede7",
+          "#fcf3ef",
+          "#fdf9f8"
+        ]
+      },
+      "copper-text": {
+        "role": "primary",
+        "displayName": "Texto cobre",
+        "canonical": "#a33a18",
+        "tonalRamp": [
+          "#210c05",
+          "#46190a",
+          "#6b2610",
+          "#903315",
+          "#ae5132",
+          "#c37e67",
+          "#d8ab9c",
+          "#edd8d1"
+        ]
+      },
+      "danger": {
+        "role": "semantic",
+        "displayName": "Peligro",
+        "canonical": "#b42318",
+        "tonalRamp": [
+          "#240705",
+          "#4d0f0a",
+          "#761710",
+          "#9f1f15",
+          "#bd3c32",
+          "#ce6e67",
+          "#dfa19c",
+          "#f0d3d1"
+        ]
+      },
+      "success": {
+        "role": "semantic",
+        "displayName": "Éxito",
+        "canonical": "#067647",
+        "tonalRamp": [
+          "#01180e",
+          "#03331e",
+          "#044e2f",
+          "#05693f",
+          "#22865c",
+          "#5ba586",
+          "#94c4b0",
+          "#cde4da"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Solo el h1 del hero (Bricolage Grotesque 600)."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "h2 de sección."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Grupo y nombre de servicio."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto y duraciones en Geist."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Número tabular impreso sobre la pinza de la muestra."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-card",
+        "value": "0 0 0 1px rgb(20 23 28 / 0.06), 0 2px 6px rgb(20 23 28 / 0.05)",
+        "purpose": "Mensajes de estado de la galería; el resto es plano."
+      },
+      {
+        "name": "shadow-lift",
+        "value": "0 0 0 1px rgb(20 23 28 / 0.08), 0 12px 24px rgb(20 23 28 / 0.14)",
+        "purpose": "Reservada a la muestra elegida."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-soft",
+        "value": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+        "purpose": "Easing seco de todas las transiciones."
+      },
+      {
+        "name": "duration-fast",
+        "value": "160ms",
+        "purpose": "Hover y pulsación de botones."
+      },
+      {
+        "name": "duration-base",
+        "value": "260ms",
+        "purpose": "Muestra que sube o se desliza."
+      },
+      {
+        "name": "duration-slow",
+        "value": "380ms",
+        "purpose": "Apertura del abanico (escalonada 45ms)."
+      },
+      {
+        "name": "swatch-pull",
+        "value": "-1rem",
+        "purpose": "Cuánto sale la muestra de la carta en hover o foco."
+      },
+      {
+        "name": "press-scale",
+        "value": "0.98",
+        "purpose": "Pulsación de botones. Con prefers-reduced-motion todo se anula."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal de la Home («Probar el panel»); el único cobre del primer viewport.",
+      "html": "<button class=\"ds-btn-primary\">Probar el panel</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 24px;border-radius:6px;font:600 1rem Geist,system-ui,sans-serif;cursor:pointer;transition:background-color 160ms cubic-bezier(0.2,0.8,0.2,1),scale 160ms cubic-bezier(0.2,0.8,0.2,1);background:var(--color-accent);color:var(--color-accent-fg);border:0;}.ds-btn-primary:hover{background:var(--color-accent-hover);}.ds-btn-primary:active{scale:0.98;}.ds-btn-primary:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px;}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "«Ver servicios» y «Reservar»: contorno firme, sin relleno.",
+      "html": "<a href=\"#\" class=\"ds-btn-secondary\">Ver servicios</a>",
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 24px;border-radius:6px;font:600 1rem Geist,system-ui,sans-serif;cursor:pointer;transition:background-color 160ms cubic-bezier(0.2,0.8,0.2,1),scale 160ms cubic-bezier(0.2,0.8,0.2,1);background:transparent;color:var(--color-fg);border:1px solid var(--color-border-strong);text-decoration:none;}.ds-btn-secondary:hover{background:var(--color-surface-muted);}.ds-btn-secondary:active{scale:0.98;}.ds-btn-secondary:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px;}"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "",
+      "description": "Filtro de galería por técnica; seleccionado en cobre con aria-current.",
+      "html": "<a href=\"#\" class=\"ds-chip\">Todas</a> <a href=\"#\" class=\"ds-chip ds-chip-on\" aria-current=\"true\">Balayage</a>",
+      "css": ".ds-chip{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-fg);text-decoration:none;transition:background-color 160ms cubic-bezier(0.2,0.8,0.2,1);}.ds-chip:hover{background:var(--color-surface-muted);}.ds-chip-on{background:var(--color-accent);border-color:var(--color-accent);color:var(--color-accent-fg);}.ds-chip:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px;}"
+    },
+    {
+      "name": "Service Row",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Fila de la carta de servicios: número tabular, nombre, duración y precio «desde» a la derecha.",
+      "html": "<div class=\"ds-row\"><span class=\"ds-row-n\">03</span><div><h4>Coloración raíz</h4><p>1 h 30 min</p></div><strong>Desde 55 €</strong><a href=\"#\" class=\"ds-row-btn\">Reservar</a></div>",
+      "css": ".ds-row{display:grid;grid-template-columns:3rem minmax(0,1fr) auto auto;align-items:center;gap:16px;padding:20px 0;border-bottom:1px solid var(--color-border);font-family:Geist,system-ui,sans-serif;color:var(--color-fg);}.ds-row-n{font-size:0.75rem;font-weight:600;font-variant-numeric:tabular-nums;}.ds-row h4{margin:0;font-size:1.125rem;font-weight:600;letter-spacing:-0.025em;line-height:1.25;}.ds-row p{margin:4px 0 0;color:var(--color-fg-muted);}.ds-row strong{font-size:1.125rem;font-variant-numeric:tabular-nums;}.ds-row-btn{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border:1px solid var(--color-border-strong);border-radius:6px;color:var(--color-fg);font-weight:600;text-decoration:none;}.ds-row-btn:hover{background:var(--color-surface-muted);}.ds-row-btn:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px;}"
+    },
+    {
+      "name": "Muestra 0 Block",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Invitación al panel de demostración: filetes firmes arriba y abajo, botón primario.",
+      "html": "<section class=\"ds-demo\"><div><h2>Muestra 0: prueba el panel del salón</h2><p>Proyecto de portfolio. Panel en solo lectura.</p></div><button class=\"ds-demo-btn\">Probar el panel</button></section>",
+      "css": ".ds-demo{display:grid;gap:16px;padding:20px 0;border-top:1px solid var(--color-border-strong);border-bottom:1px solid var(--color-border-strong);font-family:Geist,system-ui,sans-serif;color:var(--color-fg);}.ds-demo h2{margin:0;font:600 1.25rem/1.25 'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-0.025em;}.ds-demo p{margin:4px 0 0;color:var(--color-fg-muted);line-height:1.625;}.ds-demo-btn{justify-self:start;min-height:44px;padding:0 24px;border:0;border-radius:6px;background:var(--color-accent);color:var(--color-accent-fg);font-weight:600;cursor:pointer;}.ds-demo-btn:hover{background:var(--color-accent-hover);}.ds-demo-btn:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px;}"
+    },
+    {
+      "name": "Contact List",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Lista de definición con filete firme superior y teléfono como enlace táctil.",
+      "html": "<dl class=\"ds-contact\"><dt>Teléfono</dt><dd><a href=\"#\">600 000 000</a></dd></dl>",
+      "css": ".ds-contact{margin:0;padding-top:20px;border-top:1px solid var(--color-border-strong);font-family:Geist,system-ui,sans-serif;}.ds-contact dt{color:var(--color-fg-muted);}.ds-contact dd{margin:4px 0 0;font-size:1.125rem;}.ds-contact a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;color:var(--color-fg);text-decoration:none;}.ds-contact a:hover{color:var(--color-accent-text);}.ds-contact a:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "La carta de color",
+    "overview": "El sistema es la carta de tintes de un salón profesional: una cartulina gris neutra y fría para que el color de las muestras se lea verdadero, con las muestras de mechón colgadas de un anillo. Los servicios son filas de esa carta, con su muestra tumbada, número tabular, duración y precio «desde». Precio, número y acción se leen tan nítidos como la muestra: contornos firmes, esquinas cortas, elevación casi plana.\n\nLa voz es seca y precisa, de oficio, no de decoración. Hay un único acento cobre, reservado a lo que se puede hacer ahora. El color de pelo es contenido (SVG), nunca un token ni un valor en un componente.",
+    "keyCharacteristics": [
+      "Cartulina fría y blanco surface; un solo acento cobre.",
+      "Listas con líneas divisorias en vez de tarjetas; precio a la derecha en cifras tabulares.",
+      "Abanico de ocho muestras decorativo que se abre al cargar y saca la muestra en hover.",
+      "Movimiento seco con transform y opacity; con prefers-reduced-motion el abanico queda quieto y abierto."
+    ],
+    "rules": [
+      {
+        "name": "The One Copper Rule",
+        "body": "El cobre marca lo que se puede hacer ahora. En el primer viewport solo «Probar el panel» va en cobre; «Ver servicios» y «Reservar» son secundarios con contorno firme.",
+        "section": "colors"
+      },
+      {
+        "name": "The Content Color Rule",
+        "body": "Los colores de pelo viven dentro de los SVG como contenido. En componentes y CSS solo hay nombres de token: nada de hex, rgb() ni hsl().",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Precios y números de carta llevan tabular-nums.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Card Rule",
+        "body": "En reposo no hay sombras ni tarjetas flotantes: las listas son filas con línea de separación. La elevación llega solo como respuesta a una muestra elegida.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do usar solo nombres de token (`bg-accent`, `text-fg-muted`, `border-border-strong`); los colores de pelo van dentro de los SVG como contenido.",
+      "Do dejar el cobre para la acción principal y el foco; el resto de acciones, secundarias con contorno firme.",
+      "Do componer los servicios como filas con línea de separación y precio alineado a la derecha.",
+      "Do usar solo `transform` y `opacity` en el movimiento, con las duraciones de `--duration-*`, y que `prefers-reduced-motion` deje el abanico quieto y abierto.",
+      "Do mantener la altura táctil de 44px y el texto de al menos 12px."
+    ],
+    "donts": [
+      "Don't usar píldoras ni sombras difusas grandes.",
+      "Don't usar degradados decorativos ni cobre decorativo fuera de la acción principal y el foco.",
+      "Don't dibujar mechones con valores de color fijos en componentes: las muestras son SVG con su origen documentado.",
+      "Don't volver a la disposición del sector (foto en caja con texto al lado, rosa o crema con serif)."
+    ]
+  }
+}

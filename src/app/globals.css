@@ -1,20 +1,76 @@
 @import "tailwindcss";
-@import "../../design/styles/v1-soft-commerce/tokens.css";
+@import "../../design/styles/v5-color-chart/tokens.css";
 @import "../../palette.css";
 
 /* La ruta del primer @import cambia según el estilo del proyecto:
-     v1-soft-commerce, v2-immersive-3d, v3-editorial-dark, v4-dense-workspace.
+     v1-soft-commerce, v2-immersive-3d, v3-editorial-dark, v4-dense-workspace o v5-color-chart (del proyecto, ADR-0040).
    Al instanciar con Copier se deja la del estilo elegido; ver
    design/styles/index.md y sdd/plans/PLAN-xxx.md. */
 
-/* Fuente de titulares (ADR-0012). No toca los tokens de v1. */
+/* Fuente de titulares: Bricolage Grotesque (ADR-0040, sustituye a Fraunces de ADR-0012). */
 @theme {
-  --font-display: var(--font-heading), ui-serif, Georgia, serif;
+  --font-display: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
+  }
+}
+
+/* La carta de color (ADR-0040, T-041): abanico de muestras colgado de un anillo. Solo tokens de v5-color-chart. */
+@layer components {
+  .swatch-fan {
+    position: relative;
+    width: 100%;
+    max-width: 46rem;
+    margin-inline: auto;
+    aspect-ratio: 100 / 86;
+    container-type: inline-size;
+  }
+
+  .swatch-fan__ring {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    translate: -50% -35%;
+    border: 3px solid var(--color-border-strong);
+    border-radius: 9999px;
+    background: var(--color-bg);
+  }
+
+  .swatch-fan__item {
+    position: absolute;
+    left: 50%;
+    top: 0.25rem;
+    width: min(var(--swatch-width), 22cqi);
+    margin-left: calc(min(var(--swatch-width), 22cqi) / -2);
+    animation: swatch-open var(--duration-slow) var(--ease-soft) both;
+    animation-delay: calc(var(--i) * 45ms);
+    transform-origin: 50% 0;
+    translate: calc((var(--i) - 3.5) * var(--swatch-spread)) 0;
+    transform: rotate(calc((var(--i) - 3.5) * var(--swatch-fan-angle)));
+    transition: transform var(--duration-base) var(--ease-soft);
+  }
+
+  .swatch-fan__item:hover,
+  .swatch-fan__item:focus-within {
+    transform: rotate(calc((var(--i) - 3.5) * var(--swatch-fan-angle))) translateY(calc(var(--swatch-pull) * -1));
+  }
+
+  .swatch-fan__item img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* El abanico se abre al cargar (alternativa táctil al cursor); con prefers-reduced-motion las duraciones son 0,01 ms y queda abierto. */
+@keyframes swatch-open {
+  from {
+    transform: rotate(0deg);
   }
 }

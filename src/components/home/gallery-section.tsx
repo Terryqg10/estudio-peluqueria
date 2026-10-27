@@ -78,60 +78,70 @@ export function GallerySection({ gallery, selected }: Props) {
             </ul>
           </nav>
 
-          {/* Rejilla de 4 columnas con tarjetas de 2: si el número de trabajos es impar, la última se centra (T-035). */}
-          <ul className="mt-8 grid gap-8 lg:grid-cols-4">
-            {visible.map((item) => (
-              <li
-                key={item.id}
-                data-gallery-item
-                data-technique={item.technique}
-                className="lg:col-span-2 lg:last:odd:col-start-2"
-              >
-                <article className="rounded-container bg-surface p-5 shadow-card transition-transform duration-(--duration-base) ease-(--ease-soft) hover:translate-y-(--lift-y) hover:scale-(--lift-scale)">
-                  <h3 className="font-display text-2xl font-semibold tracking-tight leading-tight">{item.technique}</h3>
-                  <p className="text-fg-muted">Con {item.stylistName}</p>
+          {/* Carta de trabajos (T-041, ADR-0040): en escritorio, una fila por trabajo (texto a la izquierda, antes y después a la derecha),
+              sin tarjetas ni rejilla, así que no queda ninguno huérfano; en móvil, tira con scroll-snap (desbordamiento deliberado). */}
+          <div
+            role="region"
+            aria-label="Trabajos antes y después"
+            tabIndex={0}
+            data-allow-overflow
+            className="mt-8 overflow-x-auto md:overflow-visible"
+          >
+            <ul className="m-0 flex list-none snap-x snap-mandatory gap-4 p-0 md:block">
+              {visible.map((item) => (
+                <li
+                  key={item.id}
+                  data-gallery-item
+                  data-technique={item.technique}
+                  className="shrink-0 basis-5/6 snap-center rounded-card border border-border bg-surface p-4 md:border-0 md:border-b md:bg-transparent md:px-0 md:py-6 md:first:border-t"
+                >
+                  <article className="group md:grid md:grid-cols-[minmax(0,1fr)_auto] md:gap-x-8">
+                    <div className="md:col-start-1 md:row-start-1">
+                      <h3 className="font-display text-2xl font-semibold tracking-tight leading-tight">{item.technique}</h3>
+                      <p className="text-fg-muted">Con {item.stylistName}</p>
+                    </div>
 
-                  <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    {[
-                      {
-                        label: 'Antes',
-                        src: item.beforePath,
-                        alt: item.altBefore,
-                      },
-                      {
-                        label: 'Después',
-                        src: item.afterPath,
-                        alt: item.altAfter,
-                      },
-                    ].map((photo) => (
-                      <figure key={photo.label}>
-                        <Image
-                          src={photo.src}
-                          alt={photo.alt}
-                          width={1000}
-                          height={1000}
-                          sizes="(min-width: 1024px) 22vw, (min-width: 768px) 40vw, 100vw"
-                          className="h-auto w-full rounded-card"
-                        />
-                        <figcaption className="mt-1 text-fg-muted">{photo.label}</figcaption>
-                      </figure>
-                    ))}
-                  </div>
+                    <div className="mt-4 grid grid-cols-2 gap-3 md:col-start-2 md:row-span-2 md:row-start-1 md:mt-0 md:w-(--layout-pair-width)">
+                      {[
+                        {
+                          label: 'Antes',
+                          src: item.beforePath,
+                          alt: item.altBefore,
+                        },
+                        {
+                          label: 'Después',
+                          src: item.afterPath,
+                          alt: item.altAfter,
+                        },
+                      ].map((photo) => (
+                        <figure key={photo.label}>
+                          <Image
+                            src={photo.src}
+                            alt={photo.alt}
+                            width={1000}
+                            height={1000}
+                            sizes="(min-width: 768px) 208px, 40vw"
+                            className="h-auto w-full rounded-card"
+                          />
+                          <figcaption className="mt-1 text-fg-muted">{photo.label}</figcaption>
+                        </figure>
+                      ))}
+                    </div>
 
-                  {item.aiGenerated ? <p className="mt-3 text-fg-muted">Imagen generada con IA.</p> : null}
-
-                  <div className="mt-4">
-                    <Link
-                      href={`${ROUTES.reservar}?servicio=${item.serviceId}`}
-                      className="inline-flex min-h-11 items-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-[background-color,scale] duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-hover active:scale-(--press-scale)"
-                    >
-                      Reservar {item.serviceName}
-                    </Link>
-                  </div>
-                </article>
-              </li>
-            ))}
-          </ul>
+                    <div className="mt-4 md:col-start-1 md:row-start-2 md:mt-0 md:self-end">
+                      {item.aiGenerated ? <p className="text-fg-muted">Imagen generada con IA.</p> : null}
+                      <Link
+                        href={`${ROUTES.reservar}?servicio=${item.serviceId}`}
+                        className="mt-3 inline-flex min-h-11 items-center rounded-control border border-border-strong px-6 font-semibold text-fg transition-[background-color,scale] duration-(--duration-fast) ease-(--ease-soft) hover:bg-surface-muted active:scale-(--press-scale)"
+                      >
+                        Reservar {item.serviceName}
+                      </Link>
+                    </div>
+                  </article>
+                </li>
+              ))}
+            </ul>
+          </div>
         </>
       )}
     </section>

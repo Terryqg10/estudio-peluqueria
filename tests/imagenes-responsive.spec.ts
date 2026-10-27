@@ -14,6 +14,7 @@ type ImgInfo = {
   fetchPriority: string | null;
   right: number;
   left: number;
+  inAllowedOverflow: boolean;
 };
 
 test.describe('imágenes responsive', () => {
@@ -39,15 +40,23 @@ test.describe('imágenes responsive', () => {
               fetchPriority: img.getAttribute('fetchpriority'),
               right: rect.right,
               left: rect.left,
+              inAllowedOverflow: !!img.closest('[data-allow-overflow]'),
             };
           }),
         );
 
         for (const img of images) {
           expect(img.alt, `alt en ${img.src}`).not.toBeNull();
-          expect(img.hasSrcset, `srcset en ${img.src}`).toBe(true);
-          expect(img.hasSizes, `sizes en ${img.src}`).toBe(true);
+          // ADR-0040: las muestras de la carta son SVG decorativos (alt vacío): no son imágenes de contenido ni tienen versiones por
+          // resolución, así que no se les exige srcset ni sizes; sí dimensiones y que no desborden.
+          const decorativeVector = img.alt === '' && /\.svg(\?|$)/.test(img.src);
+          if (!decorativeVector) {
+            expect(img.hasSrcset, `srcset en ${img.src}`).toBe(true);
+            expect(img.hasSizes, `sizes en ${img.src}`).toBe(true);
+          }
           expect(img.hasDimensions || img.aspectReserved, `dimensiones o aspect-ratio en ${img.src}`).toBe(true);
+          // Excepción explícita (puerta 7): una tira con scroll deliberado (`data-allow-overflow`) puede tener imágenes fuera de la ventana.
+          if (img.inAllowedOverflow) continue;
           expect(img.right, `${img.src} se sale por la derecha a ${width}px`).toBeLessThanOrEqual(width + 1);
           expect(img.left, `${img.src} se sale por la izquierda a ${width}px`).toBeGreaterThanOrEqual(-1);
         }
@@ -59,11 +68,21 @@ test.describe('imágenes responsive', () => {
     }
   }
 
-  test('la home tiene su imagen de hero con alt descriptivo', async ({ page }) => {
+  // ADR-0040 (T-041): el hero ya no es una foto sino la carta de muestras; es decorativa (aria-hidden, alt vacío) y reserva su tamaño.
+  // La información está en el texto del hero y en la carta de servicios.
+  test('la home tiene su carta decorativa en el hero, oculta a lectores de pantalla y con tamaño reservado', async ({
+    page,
+  }) => {
     await page.goto('/');
-    const hero = page.locator('main img').first();
-    await expect(hero).toHaveAttribute('alt', /.{15,}/);
-    await expect(hero).toHaveAttribute('fetchpriority', 'high');
-    await expect(hero).toHaveAttribute('loading', 'eager');
+    const fan = page.locator('.swatch-fan');
+    await expect(fan).toHaveAttribute('aria-hidden', 'true');
+    const imgs = fan.locator('img');
+    expect(await imgs.count()).toBeGreaterThanOrEqual(6);
+    for (let i = 0; i < (await imgs.count()); i++) {
+      const img = imgs.nth(i);
+      await expect(img).toHaveAttribute('alt', '');
+      await expect(img).toHaveAttribute('width', /\d+/);
+      await expect(img).toHaveAttribute('height', /\d+/);
+    }
   });
 });

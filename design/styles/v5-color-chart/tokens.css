@@ -1,0 +1,76 @@
+/*
+ * v5-color-chart — tokens.css  (v0.1.0, borrador; estilo del PROYECTO, no del OS)
+ *
+ * SOLO TOKENS ESTRUCTURALES: forma, elevación, tipografía, movimiento y
+ * layout. NO define colores (los declara palette.css con el contrato de 14
+ * tokens). Mantiene los nombres de v1-soft-commerce para que los componentes
+ * existentes lo hereden sin cambios, y añade los propios de la carta (--swatch-*).
+ *
+ * Uso en globals.css del proyecto:
+ *   @import "tailwindcss";
+ *   @import "../../design/styles/v5-color-chart/tokens.css";
+ *   @import "../../palette.css";
+ */
+
+@theme static {
+  /* Forma: muestras troqueladas, esquinas cortas (nada de píldoras) */
+  --radius-container: 0.75rem;
+  --radius-card: 0.5rem;
+  --radius-tile: 0.375rem;
+  --radius-control: 0.375rem;
+
+  /* Elevación: la cartulina casi no flota; la muestra elegida sí */
+  --shadow-card: 0 0 0 1px rgb(20 23 28 / 0.06), 0 2px 6px rgb(20 23 28 / 0.05);
+  --shadow-lift: 0 0 0 1px rgb(20 23 28 / 0.08), 0 12px 24px rgb(20 23 28 / 0.14);
+
+  /* Tipografía: titulares de grotesca con carácter, cifras tabulares para la numeración */
+  --font-sans: var(--font-brand), ui-sans-serif, system-ui, sans-serif;
+  --text-display: clamp(2.25rem, 5.4vw, 3.75rem);
+  --text-display--line-height: 1.02;
+  --text-min: 0.75rem;
+
+  /* Movimiento: secos y precisos, como una muestra que se saca de la carta */
+  --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --duration-fast: 160ms;
+  --duration-base: 260ms;
+  --duration-slow: 380ms;
+  --lift-y: -3px;
+  --lift-scale: 1.01;
+  --press-scale: 0.98;
+
+  /* La carta: abanico de muestras */
+  --swatch-fan-angle: 8deg;     /* apertura entre muestras contiguas */
+  --swatch-pull: -1rem;         /* cuánto sale la muestra al pasar el cursor */
+  --swatch-width: clamp(5rem, 19vw, 11rem);
+  --swatch-slide: 1rem;         /* cuánto se desliza la muestra tumbada al pasar por su fila */
+  --swatch-spread: 0.4rem;      /* separación horizontal entre pinzas en el anillo */
+
+  /* Layout */
+  --layout-container: 72rem;
+  --layout-pair-width: 26rem;   /* par antes/después de la fila de un trabajo en escritorio */
+  --layout-prose-max: 65ch;
+  --layout-gutter: clamp(1rem, 4vw, 1.5rem);
+  --filter-sidebar-width: 16rem;
+  --nav-height: 4rem;
+  --tabbar-height: 4.5rem;
+  --hero-height: auto;
+
+  /* Breakpoints (contrato del OS) */
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0.01ms;
+    --duration-base: 0.01ms;
+    --duration-slow: 0.01ms;
+    --lift-y: 0px;
+    --lift-scale: 1;
+    --press-scale: 1;
+    --swatch-pull: 0rem;
+    --swatch-slide: 0rem;
+  }
+}

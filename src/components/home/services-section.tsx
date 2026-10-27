@@ -2,9 +2,21 @@ import Link from 'next/link';
 import { ROUTES } from '@/lib/routes';
 import { formatDuration, formatPriceFrom, type CatalogResult } from '@/lib/services/catalog';
 
-// Servicios (RF-01, CA-01 parcial): categoría, precio «desde» y duración.
-// El botón «Reservar» por servicio llega con T-005, cuando exista /reservar.
+// La carta de servicios (RF-01, CA-01 parcial; ADR-0040, T-041): cada servicio es una fila de la carta con su muestra tumbada (pinza a la
+// izquierda con el número impreso), nombre, duración y precio «desde» alineado a la derecha. El número es el orden de la carta (no un
+// nivel de color real) y las muestras se reparten por posición. Sin tarjetas: líneas de separación.
+const SWATCH_COUNT = 8;
+
+// El cobre es de la acción principal de la Home («Probar el panel»); «Reservar» es secundario.
+const SECONDARY_CLASS =
+  'inline-flex min-h-11 items-center rounded-control border border-border-strong px-5 font-semibold text-fg transition-[background-color,scale] duration-(--duration-fast) ease-(--ease-soft) hover:bg-surface-muted active:scale-(--press-scale)';
+const LINK_CLASS =
+  'inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-soft';
+
 export function ServicesSection({ catalog }: { catalog: CatalogResult }) {
+  // Orden de la carta: el de aparición del catálogo (la BD ya ordena por sort_order).
+  const order = catalog.ok ? catalog.groups.flatMap((group) => group.services.map((service) => service.id)) : [];
+
   return (
     <section
       id="servicios"
@@ -19,28 +31,22 @@ export function ServicesSection({ catalog }: { catalog: CatalogResult }) {
       </p>
 
       {!catalog.ok ? (
-        <div role="alert" className="mt-8 rounded-card bg-surface p-6 shadow-card">
+        <div role="alert" className="mt-8 border-y border-border-strong py-6">
           <p className="font-semibold">No hemos podido cargar los servicios.</p>
-          <p className="mt-1 text-fg-muted">
+          <p className="mt-1 leading-relaxed text-fg-muted">
             Inténtalo de nuevo en unos minutos o consulta nuestros datos de contacto.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <a
-              href={ROUTES.home}
-              className="inline-flex min-h-11 items-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-[background-color,scale] duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-hover active:scale-(--press-scale)"
-            >
+            <a href={ROUTES.home} className={SECONDARY_CLASS}>
               Reintentar
             </a>
-            <Link
-              href={ROUTES.contacto}
-              className="inline-flex min-h-11 items-center rounded-control px-6 text-accent-text transition-colors duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-soft"
-            >
+            <Link href={ROUTES.contacto} className={LINK_CLASS}>
               Contacto
             </Link>
           </div>
         </div>
       ) : catalog.groups.length === 0 ? (
-        <div className="mt-8 rounded-card bg-surface p-6 shadow-card">
+        <div className="mt-8 border-y border-border-strong py-6">
           <p className="font-semibold">Aún no hay servicios disponibles.</p>
           <Link
             href={ROUTES.contacto}
@@ -53,24 +59,52 @@ export function ServicesSection({ catalog }: { catalog: CatalogResult }) {
         <div className="mt-8 space-y-10">
           {catalog.groups.map((group) => (
             <div key={group.category}>
-              <h3 className="text-xl font-semibold tracking-tight leading-tight">{group.category}</h3>
-              <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {group.services.map((service) => (
-                  <li key={service.id} className="rounded-card bg-surface p-5 shadow-card transition-transform duration-(--duration-base) ease-(--ease-soft) hover:translate-y-(--lift-y) hover:scale-(--lift-scale)">
-                    <h4 className="text-lg font-semibold tracking-tight leading-tight">{service.name}</h4>
-                    <p className="mt-1 text-fg-muted">{formatDuration(service.duration_min)}</p>
-                    <p className="mt-3 text-lg font-semibold text-accent-text">
-                      {formatPriceFrom(service.price_from_cents)}
-                    </p>
-                    <Link
-                      href={{ pathname: ROUTES.reservar, query: { servicio: service.id } }}
-                      aria-label={`Reservar ${service.name}`}
-                      className="mt-4 inline-flex min-h-11 items-center rounded-control bg-accent px-5 font-semibold text-accent-fg transition-[background-color,scale] duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-hover active:scale-(--press-scale)"
+              <h3 className="border-b border-border-strong pb-2 text-xl font-semibold tracking-tight leading-tight">
+                {group.category}
+              </h3>
+              <ul className="m-0 list-none p-0">
+                {group.services.map((service) => {
+                  const position = order.indexOf(service.id);
+                  const number = String(position + 1).padStart(2, '0');
+                  const swatch = (position % SWATCH_COUNT) + 1;
+                  return (
+                    <li
+                      key={service.id}
+                      className="group grid grid-cols-[9rem_minmax(0,1fr)] items-center gap-x-4 gap-y-2 border-b border-border py-5 sm:grid-cols-[13rem_minmax(0,1fr)_auto_auto] sm:gap-x-6"
                     >
-                      Reservar
-                    </Link>
-                  </li>
-                ))}
+                      <div className="relative row-span-2 sm:row-span-1">
+                        {/* eslint-disable-next-line @next/next/no-img-element -- SVG propio, decorativo, con tamaño reservado */}
+                        <img
+                          src={`/images/carta/muestra-${swatch}-h.svg`}
+                          alt=""
+                          width={440}
+                          height={120}
+                          className="block h-auto w-full transition-transform duration-(--duration-base) ease-(--ease-soft) group-hover:translate-x-(--swatch-slide)"
+                        />
+                        <span
+                          aria-hidden="true"
+                          className="absolute left-0 top-1/4 flex h-1/2 w-[13.5%] items-center justify-center text-xs font-semibold tabular-nums text-bg"
+                        >
+                          {number}
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-lg font-semibold tracking-tight leading-tight">{service.name}</h4>
+                        <p className="mt-1 text-fg-muted">{formatDuration(service.duration_min)}</p>
+                      </div>
+                      <p className="text-lg font-semibold tabular-nums sm:text-right">
+                        {formatPriceFrom(service.price_from_cents)}
+                      </p>
+                      <Link
+                        href={{ pathname: ROUTES.reservar, query: { servicio: service.id } }}
+                        aria-label={`Reservar ${service.name}`}
+                        className={`col-span-2 justify-self-start sm:col-span-1 ${SECONDARY_CLASS}`}
+                      >
+                        Reservar
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

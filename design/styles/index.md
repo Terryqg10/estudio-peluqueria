@@ -19,6 +19,7 @@ según `design/palette-rules.md` (regla general, modos claro y oscuro).
 | `v2-immersive-3d` | Immersive 3D | Landings con hero 3D y animación | claro | Hero a pantalla, capas con parallax | por definir | Web energy drink + hero 3D de cripto |
 | `v3-editorial-dark` | Editorial Dark | Marcas con carácter, editorial | oscuro | A sangre: nav y hero a `100dvh`, esquinas rectas | por definir | Hero split oscuro con titular gigante |
 | `v4-dense-workspace` | Dense Workspace | Herramientas internas, SaaS, paneles | claro | `grid-cols-12`, filas tabulares | por definir (sin referencias) | Estándares propios del usuario |
+| `v5-color-chart` | Color Chart (del proyecto) | Home de peluquería de portfolio, Persuade | claro (base fría) | Contenedor, abanico de muestras | borrador 0.1.0 (ADR-0040) | Carta de niveles de color de tintes profesionales |
 
 Documento hermano: `design/palette-rules.md` — regla general de paleta
 (modos claro y oscuro). Los estilos la referencian; solo pueden
