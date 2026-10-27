@@ -8,7 +8,7 @@ import { ROUTES } from '@/lib/routes';
 import { cancelAppointmentAction } from './actions';
 
 const BUTTON_CLASS =
-  'inline-flex min-h-11 items-center justify-center rounded-control px-6 font-semibold transition-colors duration-(--duration-fast) disabled:opacity-60';
+  'inline-flex min-h-11 items-center justify-center rounded-control px-6 font-semibold transition-[background-color,scale] duration-(--duration-fast) ease-(--ease-soft) active:scale-(--press-scale) disabled:opacity-60';
 
 const MESSAGES: Record<Exclude<CancelResult, { ok: true }>['error'], string> = {
   INVALID_LINK: 'Este enlace ya no es válido. Si necesitas ayuda con tu cita, contacta con el salón.',
@@ -61,7 +61,7 @@ export function CancelAppointment({ token }: { token: string }) {
   return (
     <div className="mt-4">
       {error ? (
-        <div role="alert" className="mb-4 rounded-card bg-accent-soft p-4 text-fg">
+        <div role="alert" className="mb-4 border-y border-danger py-4 text-fg">
           <p>{MESSAGES[error]}</p>
           {error === 'TOO_LATE' || error === 'INVALID_LINK' ? (
             <Link
@@ -75,8 +75,8 @@ export function CancelAppointment({ token }: { token: string }) {
       ) : null}
 
       {confirming ? (
-        <div role="group" aria-labelledby={titleId} className="rounded-card bg-surface p-6 shadow-card">
-          <h2 id={titleId} className="font-display text-xl font-semibold">
+        <div role="group" aria-labelledby={titleId} className="border border-border-strong bg-surface p-5 sm:p-6">
+          <h2 id={titleId} className="font-display text-xl font-semibold tracking-tight leading-tight">
             ¿Cancelar tu cita?
           </h2>
           <p className="mt-2 text-fg-muted">El hueco quedará libre y no podrás recuperarlo con este enlace.</p>

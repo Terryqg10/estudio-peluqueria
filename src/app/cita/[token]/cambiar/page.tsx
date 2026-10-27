@@ -88,7 +88,7 @@ export default async function CambiarCitaPage({ params }: { params: Promise<{ to
       </p>
 
       <noscript>
-        <p className="mt-6 rounded-card bg-surface p-5 shadow-card">
+        <p className="mt-6 border-y border-border-strong py-4">
           Para cambiar la cita necesitas activar JavaScript. Mientras tanto puedes llamarnos desde{' '}
           <Link href={ROUTES.contacto} className="text-accent-text">
             Contacto

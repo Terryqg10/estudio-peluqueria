@@ -20,8 +20,15 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
+// Muestra decorativa estable por servicio (1-8), igual que en la confirmación.
+function swatchOf(name: string): number {
+  let sum = 0;
+  for (const char of name) sum += char.codePointAt(0) ?? 0;
+  return (sum % 8) + 1;
+}
+
 const CHANGE_TEXT_LINK_CLASS =
-  'inline-flex min-h-11 items-center justify-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-colors duration-(--duration-fast) hover:bg-accent-hover';
+  'inline-flex min-h-11 items-center justify-center rounded-control bg-accent px-6 font-semibold text-accent-fg transition-[background-color,scale] duration-(--duration-fast) ease-(--ease-soft) hover:bg-accent-hover active:scale-(--press-scale)';
 
 export default async function CitaPage({
   params,
@@ -83,12 +90,21 @@ export default async function CitaPage({
       <p className="mt-3 text-fg-muted">Estos son los datos de tu cita.</p>
 
       {justChanged ? (
-        <p role="status" className="mt-6 rounded-card bg-accent-soft p-4 text-fg">
+        <p role="status" className="mt-6 border-y border-border-strong py-4 text-fg">
           Hemos cambiado tu cita. Estos son sus nuevos datos.
         </p>
       ) : null}
 
-      <dl className="mt-8 grid gap-4 rounded-container bg-surface p-6 shadow-card sm:grid-cols-2">
+      <section aria-label="Datos de la cita" className="mt-8 border border-border-strong bg-surface p-5 sm:p-6">
+        {/* eslint-disable-next-line @next/next/no-img-element -- SVG propio, decorativo, con tamaño reservado */}
+        <img
+          src={`/images/carta/muestra-${swatchOf(appointment.serviceName)}-h.svg`}
+          alt=""
+          width={440}
+          height={120}
+          className="h-auto w-full max-w-md"
+        />
+        <dl className="mt-5 grid gap-4 sm:grid-cols-2">
         <div>
           <dt className="text-fg-muted">Servicio</dt>
           <dd className="font-semibold">{appointment.serviceName}</dd>
@@ -105,7 +121,7 @@ export default async function CitaPage({
         </div>
         <div>
           <dt className="text-fg-muted">Hora</dt>
-          <dd className="font-semibold">{formatSlotTime(appointment.startsAt)}</dd>
+          <dd className="font-semibold tabular-nums">{formatSlotTime(appointment.startsAt)}</dd>
         </div>
         <div>
           <dt className="text-fg-muted">Estado</dt>
@@ -114,10 +130,11 @@ export default async function CitaPage({
         {appointment.priceFromCents !== null ? (
           <div>
             <dt className="text-fg-muted">Precio</dt>
-            <dd className="font-semibold text-accent-text">{formatPriceFrom(appointment.priceFromCents)}</dd>
+            <dd className="font-semibold tabular-nums text-accent-text">{formatPriceFrom(appointment.priceFromCents)}</dd>
           </div>
         ) : null}
-      </dl>
+        </dl>
+      </section>
 
       {isActive ? (
         appointment.canChange ? (
@@ -130,7 +147,7 @@ export default async function CitaPage({
             <CancelAppointment token={token} />
           </>
         ) : (
-          <p className="mt-8 rounded-card bg-accent-soft p-4 text-fg">
+          <p role="note" className="mt-8 border-y border-border-strong py-4 text-fg">
             Faltan menos de 24 horas para tu cita y ya no se puede cancelar ni cambiar desde aquí.
             Contacta con el salón.
           </p>

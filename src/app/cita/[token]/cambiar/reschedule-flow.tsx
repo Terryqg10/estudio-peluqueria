@@ -130,8 +130,8 @@ export function RescheduleFlow({ token, serviceId, serviceName, current, stylist
 
   return (
     <div className="space-y-12">
-      <section aria-labelledby="actual-titulo" className="rounded-container bg-surface p-6 shadow-card">
-        <h2 id="actual-titulo" className="font-display text-2xl font-semibold">
+      <section aria-labelledby="actual-titulo" className="border border-border-strong bg-surface p-5 sm:p-6">
+        <h2 id="actual-titulo" className="font-display text-2xl font-semibold tracking-tight leading-tight">
           Tu cita actual
         </h2>
         <dl className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -173,13 +173,13 @@ export function RescheduleFlow({ token, serviceId, serviceName, current, stylist
         </p>
 
         {selectionLost ? (
-          <div role="status" className="rounded-card bg-accent-soft p-4 text-fg">
+          <div role="status" className="border-y border-border-strong py-4 text-fg">
             <p>Esa hora acaba de ocuparse. Elige otra.</p>
           </div>
         ) : null}
 
         {status === 'error' ? (
-          <div role="alert" className="rounded-card bg-surface p-5 shadow-card">
+          <div role="alert" className="border-y border-danger py-4">
             <p className="font-semibold">No hemos podido cargar los horarios.</p>
             <button
               type="button"
@@ -190,7 +190,7 @@ export function RescheduleFlow({ token, serviceId, serviceName, current, stylist
             </button>
           </div>
         ) : status === 'ready' && options.length === 0 ? (
-          <p className="rounded-card bg-surface p-5 text-fg-muted shadow-card">
+          <p className="border-y border-border-strong py-4 text-fg-muted">
             No quedan horas libres este día. Prueba con otro día de la tira.
           </p>
         ) : (
@@ -199,7 +199,7 @@ export function RescheduleFlow({ token, serviceId, serviceName, current, stylist
       </section>
 
       {error ? (
-        <div role="alert" className="rounded-card bg-accent-soft p-4 text-fg">
+        <div role="alert" className="border-y border-danger py-4 text-fg">
           <p>{MESSAGES[error]}</p>
           {error === 'TOO_LATE' || error === 'INVALID_LINK' ? (
             <Link href={ROUTES.contacto} className="mt-2 inline-flex min-h-11 items-center text-accent-text hover:underline">
@@ -210,8 +210,8 @@ export function RescheduleFlow({ token, serviceId, serviceName, current, stylist
       ) : null}
 
       {selectedOption && selection ? (
-        <section aria-labelledby="nueva-titulo" className="rounded-container bg-surface p-6 shadow-card">
-          <h2 id="nueva-titulo" className="font-display text-2xl font-semibold">
+        <section aria-labelledby="nueva-titulo" className="border border-border-strong bg-surface p-5 sm:p-6">
+          <h2 id="nueva-titulo" className="font-display text-2xl font-semibold tracking-tight leading-tight">
             Tu cita nueva
           </h2>
           <dl className="mt-4 grid gap-3 sm:grid-cols-2">
