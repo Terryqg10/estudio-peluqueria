@@ -63,7 +63,7 @@ describe('demo-seed (T-029)', () => {
     expect(noEnv.status).not.toBe(0);
     const localUrl = spawnSync(process.execPath, ['scripts/demo-seed.mjs', '--remote'], {
       encoding: 'utf8',
-      env: { ...process.env, NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54421', SUPABASE_SERVICE_ROLE_KEY: 'x' },
+      env: { ...process.env, NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:55421', SUPABASE_SERVICE_ROLE_KEY: 'x' },
     });
     expect(localUrl.status).not.toBe(0);
     expect(localUrl.stderr).toContain('no puede ser local');

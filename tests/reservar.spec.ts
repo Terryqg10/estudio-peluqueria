@@ -25,7 +25,9 @@ test.describe('reservar: orden y preselección', () => {
     // Orden visual y de DOM: servicio → día y hora (con la fila de cada estilista).
     const stylistRow = page.getByRole('group', { name: 'Carmen Ortega' });
     await expect(stylistRow).toBeVisible();
-    const y = async (locator: ReturnType<Page['locator']>) => (await locator.boundingBox())?.y ?? -1;
+    // Posición respecto al documento: el desplazamiento automático tras elegir servicio no la altera.
+    const y = (locator: ReturnType<Page['locator']>) =>
+      locator.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
     const service = await y(page.getByRole('group', { name: 'Elige tu servicio' }));
     const day = await y(page.getByRole('heading', { name: 'Elige día y hora' }));
     const row = await y(stylistRow);
